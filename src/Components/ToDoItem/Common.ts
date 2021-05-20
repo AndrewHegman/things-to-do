@@ -1,0 +1,11 @@
+import { ToDoItem } from "../../Interface/ToDoItem";
+
+export interface IToDoItemProps {
+  category: string;
+  item: ToDoItem;
+  onEdit: () => void;
+  onInfo: () => void;
+  onDelete: () => void;
+}
+
+export interface ICreateNewToDoItemProps {}
