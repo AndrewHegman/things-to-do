@@ -28,4 +28,7 @@ export const useToDoItemStyles = makeStyles((theme: Theme) => ({
     flexDirection: "column",
     justifyContent: "space-between",
   },
+  inputTypography: {
+    ...theme.typography.h5,
+  },
 }));

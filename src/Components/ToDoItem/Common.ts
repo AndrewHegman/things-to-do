@@ -8,4 +8,7 @@ export interface IToDoItemProps {
   onDelete: () => void;
 }
 
-export interface ICreateNewToDoItemProps {}
+export interface ICreatingNewToDoItemProps {
+  category: string;
+  onSubmit: (name: string) => void;
+}

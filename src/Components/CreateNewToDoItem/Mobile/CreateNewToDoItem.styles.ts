@@ -28,4 +28,12 @@ export const useCreateNewToDoItemStyles = makeStyles((theme: Theme) => ({
     flexDirection: "column",
     justifyContent: "space-between",
   },
+  dialogAppBar: {
+    display: "flex",
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+  },
+  text: {
+    fontSize: "16px",
+  },
 }));

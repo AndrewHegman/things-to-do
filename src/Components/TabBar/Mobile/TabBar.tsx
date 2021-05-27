@@ -1,17 +1,16 @@
 import React from "react";
-import { IconButton, Typography, Dialog, Slide, Button, List, ListItem, ListItemText, InputBase } from "@material-ui/core";
+import { IconButton, Typography, Button, List, ListItem, InputBase, Divider } from "@material-ui/core";
 import { Menu as MenuIcon } from "@material-ui/icons";
 import { useTabBarStyles } from "./TabBar.styles";
 import { AppBar } from "../../AppBar/AppBar";
 import { IBaseTabBarProps } from "../Common";
 import { useHistory } from "react-router-dom";
-import { TransitionProps } from "@material-ui/core/transitions/transition";
+import { Dialog } from "../../Dialog/Dialog";
+import { actions } from "../../../Redux/Common/commonActions";
+import { Category } from "../../../Interface/Category";
+import { TypographyInput } from "../../TypographyInput";
 
 const newCategoryPlaceholder = "New Category...";
-
-const Transition = React.forwardRef(function Transition(props: TransitionProps & { children?: React.ReactElement }, ref: React.Ref<unknown>) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
 
 interface ITabBarProps extends IBaseTabBarProps {}
 
@@ -21,7 +20,7 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
   const [newCategoryName, setNewCategoryName] = React.useState<string>(newCategoryPlaceholder);
   const classes = useTabBarStyles();
   const history = useHistory();
-  const newCategoryRef = React.useRef<string>("");
+  const newCategoryKeyRef = React.useRef<string>();
   const createNewCategoryRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -35,8 +34,8 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
     setShowDrawer(true);
   };
 
-  const onNewTabClicked = (newTab: string) => {
-    newCategoryRef.current = newTab;
+  const onNewTabClicked = (newCategoryKey: string) => {
+    newCategoryKeyRef.current = newCategoryKey;
     setShowDrawer(false);
   };
 
@@ -50,8 +49,9 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
   };
 
   const onTransitionFinished = () => {
-    if (newCategoryRef.current && newCategoryRef.current !== history.location.pathname) {
-      history.push(newCategoryRef.current);
+    if (newCategoryKeyRef.current && newCategoryKeyRef.current !== props.currentCategory.key) {
+      // history.push(newCategoryKeyRef.current.pathName);
+      props.onChangeCategory(newCategoryKeyRef.current);
     }
   };
 
@@ -73,13 +73,7 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
         </IconButton>
       </AppBar>
 
-      <Dialog
-        fullScreen
-        open={showDrawer}
-        onClose={() => setShowDrawer(false)}
-        TransitionComponent={Transition}
-        TransitionProps={{ onExited: onTransitionFinished }}
-      >
+      <Dialog isOpen={showDrawer} onClose={() => setShowDrawer(false)} onTransitionFinished={onTransitionFinished}>
         <AppBar className={classes.dialogAppBar}>
           <Button onClick={() => setShowDrawer(false)} color="inherit">
             close
@@ -87,19 +81,16 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
         </AppBar>
         <List component="nav">
           {props.categories.map((category) => (
-            <ListItem button onClick={() => onNewTabClicked(category.pathName)} key={category.pathName}>
-              <InputBase value={category.displayName} readOnly />
+            <ListItem button onClick={() => onNewTabClicked(category.key)} key={category.pathName}>
+              <Typography variant={"h5"} component={"h2"}>
+                {category.displayName}
+              </Typography>
             </ListItem>
           ))}
-          <ListItem onClick={() => onCreateNewTabClicked()}>
-            <InputBase
-              value={newCategoryName}
-              readOnly={!isEditingNewCategory}
-              onChange={(event) => setNewCategoryName(event.target.value)}
-              onBlur={onCreateNewTabBlur}
-            />
+          <Divider />
+          <ListItem onClick={onCreateNewTabClicked}>
+            <TypographyInput clearTextOnFirstEnter onBlur={onCreateNewTabBlur} defaultValue={newCategoryPlaceholder} />
           </ListItem>
-          {/* {isEditingNewCategory && <InputBase inputRef={createNewCategoryRef} placeholder="Search…" onBlur={() => setIsEditingNewCategory(false)} />} */}
         </List>
       </Dialog>
     </>

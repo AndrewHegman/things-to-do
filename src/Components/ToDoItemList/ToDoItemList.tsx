@@ -4,13 +4,20 @@ import { ToDoItemEntry } from "../ToDoItem/ToDoItem";
 import { useToDoItemListStyles } from "./ToDoItemList.styles";
 import { ToDoItem } from "../../Interface/ToDoItem";
 import { CreateNewToDoItem } from "../CreateNewToDoItem/Mobile";
+import { AddNewToDoItemButton } from "../AddNewToDoItemButton/AddNewToDoItemButton";
+import { CreatingNewToDoItem } from "../ToDoItem/Mobile";
 
 interface IToDoListItemProps {
   categoryName: string;
   items: ToDoItem[];
+  isCreatingNewItem: boolean;
+  onSubmitNewItem: (name: string) => void;
+  onDeleteItem: (id: string) => void;
 }
 
 export const ToDoItemList: React.FC<IToDoListItemProps> = (props) => {
+  const { isCreatingNewItem, onSubmitNewItem, onDeleteItem } = props;
+
   const classes = useToDoItemListStyles();
 
   const onEdit = (id: string) => {
@@ -20,11 +27,11 @@ export const ToDoItemList: React.FC<IToDoListItemProps> = (props) => {
     console.log(`info ${id}`);
   };
   const onDelete = (id: string) => {
-    console.log(`delete ${id}`);
+    onDeleteItem(id);
   };
 
   return (
-    <Container className={classes.contentContainer}>
+    <Container className={classes.contentContainer} disableGutters>
       <Box>
         {props.items && (
           <>
@@ -38,7 +45,7 @@ export const ToDoItemList: React.FC<IToDoListItemProps> = (props) => {
                 category={props.categoryName}
               />
             ))}
-            <CreateNewToDoItem />
+            {isCreatingNewItem && <CreatingNewToDoItem category={props.categoryName} onSubmit={onSubmitNewItem} />}
           </>
         )}
       </Box>

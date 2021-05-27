@@ -1,5 +1,5 @@
 import React from "react";
-import { getToDos } from "../API/MockFetch";
+import { getCategories, getToDos } from "../API/MockFetch";
 import { SearchBar } from "../Components/SearchBar";
 import { TabBar } from "../Components/TabBar/TabBar";
 import { ToDoItem } from "../Interface/ToDoItem";
@@ -7,29 +7,39 @@ import { ToDoItemList } from "../Components/ToDoItemList";
 import { RouterProps } from "react-router-dom";
 import { Category } from "../Interface/Category";
 import { features } from "../features";
+import { AddNewToDoItemButton } from "../Components/AddNewToDoItemButton/AddNewToDoItemButton";
+import { Container } from "@material-ui/core";
+import { useMainStyles } from "./Main.styles";
 
 interface IMainProps extends Partial<RouterProps> {
-  currentCategory: Category;
-  categories: Category[];
+  categoryKey: string;
+  categoryDisplayName: string;
 }
 
 export const Main: React.FC<IMainProps> = (props) => {
   const [items, setItems] = React.useState<ToDoItem[]>();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const classes = useMainStyles();
 
   React.useEffect(() => {
-    getToDos(props.currentCategory.key).then((data) => setItems(data));
-  }, [props.currentCategory, props.categories]);
+    setIsLoading(true);
+    getToDos(props.categoryKey).then((data) => {
+      setItems(data);
+      setIsLoading(false);
+    });
+  }, [props.categoryKey]);
 
   return (
     <>
-      {items && (
-        <>
-          <TabBar currentCategory={props.currentCategory} categories={props.categories} />
+      {!isLoading && items && (
+        <Container className={classes.contentContainer}>
+          {/* <TabBar categories={props.categories} /> */}
           {features.useSearchBar && <SearchBar />}
-          <ToDoItemList items={items} categoryName={props.currentCategory.displayName} />
-        </>
+          {/* <ToDoItemList items={items} categoryName={props.currentCategory.displayName} /> */}
+          {/* <AddNewToDoItemButton /> */}
+        </Container>
       )}
-      {!items && <div>Loading...</div>}
+      {isLoading && <div>Loading...</div>}
     </>
   );
 };
