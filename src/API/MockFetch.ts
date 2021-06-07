@@ -11,14 +11,19 @@ export const getToDos = (categoryKey: string) => {
   return Promise.resolve(items.filter((item) => item.categoryKey === categoryKey));
 };
 
-export const createCategory = (newCategory: Category) => {
-  categories.push(newCategory);
-  return Promise.resolve(newCategory);
+export const createCategory = (newCategory: Omit<Category, "key">) => {
+  if (categories.find((category) => category.displayName === newCategory.displayName)) {
+    return Promise.reject(`A category named ${newCategory.displayName} already exists!`);
+  }
+  const _newCategory = { ...newCategory, key: `${categories.length}` };
+  categories.push(_newCategory);
+  return Promise.resolve(_newCategory);
 };
 
 export const createItem = (newItem: Omit<ToDoItem, "id">) => {
-  items.push({ ...newItem, id: `${items.length}` });
-  return Promise.resolve(newItem);
+  const _newItem = { ...newItem, id: `${items.length}` };
+  items.push(_newItem);
+  return Promise.resolve(_newItem);
 };
 
 export const deleteItem = (id: string) => {

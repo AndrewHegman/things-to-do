@@ -1,7 +1,6 @@
 import { makeStyles, createStyles, Theme, fade } from "@material-ui/core/styles";
 
 export const useTabBarStyles = makeStyles((theme: Theme) => {
-  console.log(theme);
   return createStyles({
     activeTab: {
       ...theme.typography.button,

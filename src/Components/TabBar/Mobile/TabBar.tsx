@@ -9,6 +9,7 @@ import { Dialog } from "../../Dialog/Dialog";
 import { actions } from "../../../Redux/Common/commonActions";
 import { Category } from "../../../Interface/Category";
 import { TypographyInput } from "../../TypographyInput";
+import { createCategory } from "../../../API/MockFetch";
 
 const newCategoryPlaceholder = "New Category...";
 
@@ -16,19 +17,9 @@ interface ITabBarProps extends IBaseTabBarProps {}
 
 export const TabBar: React.FC<ITabBarProps> = (props) => {
   const [showDrawer, setShowDrawer] = React.useState<boolean>(false);
-  const [isEditingNewCategory, setIsEditingNewCategory] = React.useState<boolean>(false);
-  const [newCategoryName, setNewCategoryName] = React.useState<string>(newCategoryPlaceholder);
   const classes = useTabBarStyles();
   const history = useHistory();
   const newCategoryKeyRef = React.useRef<string>();
-  const createNewCategoryRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    // This ensures that the component is rendered before we focus
-    if (isEditingNewCategory) {
-      createNewCategoryRef.current?.focus();
-    }
-  }, [isEditingNewCategory]);
 
   const toggleDrawer = (event: React.KeyboardEvent | React.MouseEvent) => {
     setShowDrawer(true);
@@ -39,15 +30,6 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
     setShowDrawer(false);
   };
 
-  const onCreateNewTabClicked = () => {
-    // This is a bit hacky...should probably just monitor
-    // if the input has ever been changed.
-    if (newCategoryName === newCategoryPlaceholder) {
-      setNewCategoryName("");
-    }
-    setIsEditingNewCategory(true);
-  };
-
   const onTransitionFinished = () => {
     if (newCategoryKeyRef.current && newCategoryKeyRef.current !== props.currentCategory.key) {
       // history.push(newCategoryKeyRef.current.pathName);
@@ -55,11 +37,16 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
     }
   };
 
-  const onCreateNewTabBlur = () => {
-    setIsEditingNewCategory(false);
-    if (newCategoryName === "") {
-      setNewCategoryName(newCategoryPlaceholder);
-    }
+  const onCreateNewTabBlur = (text: string) => {
+    // This should be safe from creating a category with the default name since the input automatically clears the text on enter
+    createCategory({
+      displayName: text,
+      pathName: `/${text}`,
+    })
+      .then((category) => {
+        onNewTabClicked(category.key);
+      })
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -88,7 +75,7 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
             </ListItem>
           ))}
           <Divider />
-          <ListItem onClick={onCreateNewTabClicked}>
+          <ListItem>
             <TypographyInput clearTextOnFirstEnter onBlur={onCreateNewTabBlur} defaultValue={newCategoryPlaceholder} />
           </ListItem>
         </List>
