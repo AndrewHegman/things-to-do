@@ -3,33 +3,58 @@ import { items } from "../Data/Items";
 import { Category } from "../Interface/Category";
 import { ToDoItem } from "../Interface/ToDoItem";
 
-export const getCategories = () => {
-  return Promise.resolve(categories);
+let slowMode = false;
+
+const resolveSlowPromiseWrapper = <T>(resData: T) => {
+  return new Promise<T>((res) => setTimeout(() => res(resData), slowMode ? 2000 : 0));
 };
 
-export const getToDos = (categoryKey: string) => {
-  return Promise.resolve(items.filter((item) => item.categoryKey === categoryKey));
+const rejectSlowPromiseWrapper = <T>(resData: T) => {
+  return new Promise<T>((res) => setTimeout(() => res(resData), slowMode ? 2000 : 0));
+};
+
+export const getCategories = () => {
+  return resolveSlowPromiseWrapper(categories);
+};
+
+export const getToDos = (categoryName: string) => {
+  return resolveSlowPromiseWrapper(items.filter((item) => item.categoryKey === categoryName));
+};
+
+export const getToDosByKey = (categoryKey: string) => {
+  return resolveSlowPromiseWrapper(items.filter((item) => item.categoryKey === categoryKey));
 };
 
 export const createCategory = (newCategory: Omit<Category, "key">) => {
   if (categories.find((category) => category.displayName === newCategory.displayName)) {
-    return Promise.reject(`A category named ${newCategory.displayName} already exists!`);
+    rejectSlowPromiseWrapper(`A category named ${newCategory.displayName} already exists!`);
   }
   const _newCategory = { ...newCategory, key: `${categories.length}` };
   categories.push(_newCategory);
-  return Promise.resolve(_newCategory);
+  return resolveSlowPromiseWrapper(_newCategory);
 };
 
 export const createItem = (newItem: Omit<ToDoItem, "id">) => {
   const _newItem = { ...newItem, id: `${items.length}` };
   items.push(_newItem);
-  return Promise.resolve(_newItem);
+  return resolveSlowPromiseWrapper(_newItem);
 };
 
 export const deleteItem = (id: string) => {
-  items.splice(
-    items.findIndex((item) => item.id === id),
-    1
-  );
-  return Promise.resolve();
+  const idx = items.findIndex((item) => item.id === id);
+  if (idx > -1) {
+    items.splice(
+      items.findIndex((item) => item.id === id),
+      1
+    );
+  }
+  return resolveSlowPromiseWrapper({});
+};
+
+export const toggleSlowMode = () => {
+  slowMode = !slowMode;
+};
+
+export const getSlowMode = () => {
+  return slowMode;
 };

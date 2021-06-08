@@ -23,10 +23,9 @@ export const Main: React.FC<IMainProps> = (props) => {
 
   React.useEffect(() => {
     setIsLoading(true);
-    getToDos(props.categoryKey).then((data) => {
-      setItems(data);
-      setIsLoading(false);
-    });
+    // getToDos(props.categoryKey).then((data) => {
+    //   setIsLoading(false);
+    // });
   }, [props.categoryKey]);
 
   return (

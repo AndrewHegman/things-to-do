@@ -4,12 +4,12 @@ import { Menu as MenuIcon } from "@material-ui/icons";
 import { useTabBarStyles } from "./TabBar.styles";
 import { AppBar } from "../../AppBar/AppBar";
 import { IBaseTabBarProps } from "../Common";
-import { useHistory } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import { Dialog } from "../../Dialog/Dialog";
-import { actions } from "../../../Redux/Common/commonActions";
 import { Category } from "../../../Interface/Category";
 import { TypographyInput } from "../../TypographyInput";
 import { createCategory } from "../../../API/MockFetch";
+import { IMatchParameters, IRouterState } from "../../../Interface/Router";
 
 const newCategoryPlaceholder = "New Category...";
 
@@ -18,22 +18,23 @@ interface ITabBarProps extends IBaseTabBarProps {}
 export const TabBar: React.FC<ITabBarProps> = (props) => {
   const [showDrawer, setShowDrawer] = React.useState<boolean>(false);
   const classes = useTabBarStyles();
-  const history = useHistory();
-  const newCategoryKeyRef = React.useRef<string>();
+  const history = useHistory<IRouterState>();
+  const newCategoryKeyRef = React.useRef<Category>();
+
+  const match = useRouteMatch<IMatchParameters>();
 
   const toggleDrawer = (event: React.KeyboardEvent | React.MouseEvent) => {
     setShowDrawer(true);
   };
 
-  const onNewTabClicked = (newCategoryKey: string) => {
+  const onNewTabClicked = (newCategoryKey: Category) => {
     newCategoryKeyRef.current = newCategoryKey;
     setShowDrawer(false);
   };
 
   const onTransitionFinished = () => {
-    if (newCategoryKeyRef.current && newCategoryKeyRef.current !== props.currentCategory.key) {
-      // history.push(newCategoryKeyRef.current.pathName);
-      props.onChangeCategory(newCategoryKeyRef.current);
+    if (newCategoryKeyRef.current && newCategoryKeyRef.current.key !== match.params.category) {
+      history.push(newCategoryKeyRef.current.pathName);
     }
   };
 
@@ -41,10 +42,12 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
     // This should be safe from creating a category with the default name since the input automatically clears the text on enter
     createCategory({
       displayName: text,
-      pathName: `/${text}`,
+      pathName: `/${text.toLowerCase()}`,
     })
       .then((category) => {
-        onNewTabClicked(category.key);
+        newCategoryKeyRef.current = category;
+        setShowDrawer(false);
+        // Need to redirect here and update ListItems page to show loading spinner
       })
       .catch((err) => console.error(err));
   };
@@ -53,14 +56,14 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
     <>
       <AppBar className={classes.appBar}>
         <Typography className={classes.activeTab} variant="button">
-          {props.currentCategory.displayName}
+          {match.params.category}
         </Typography>
         <IconButton className={classes.menuButton} color="inherit" onClick={toggleDrawer}>
           <MenuIcon />
         </IconButton>
       </AppBar>
 
-      <Dialog isOpen={showDrawer} onClose={() => setShowDrawer(false)} onTransitionFinished={onTransitionFinished}>
+      <Dialog isOpen={showDrawer} onClose={() => setShowDrawer(false)} onTransitionFinished={() => onTransitionFinished()}>
         <AppBar className={classes.dialogAppBar}>
           <Button onClick={() => setShowDrawer(false)} color="inherit">
             close
@@ -68,7 +71,7 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
         </AppBar>
         <List component="nav">
           {props.categories.map((category) => (
-            <ListItem button onClick={() => onNewTabClicked(category.key)} key={category.pathName}>
+            <ListItem button onClick={() => onNewTabClicked(category)} key={category.pathName}>
               <Typography variant={"h5"} component={"h2"}>
                 {category.displayName}
               </Typography>
