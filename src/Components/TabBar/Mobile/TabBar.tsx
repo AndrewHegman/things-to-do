@@ -8,18 +8,30 @@ import { useHistory, useRouteMatch } from "react-router-dom";
 import { Dialog } from "../../Dialog/Dialog";
 import { Category } from "../../../Interface/Category";
 import { TypographyInput } from "../../TypographyInput";
-import { createCategory } from "../../../API/MockFetch";
+// import { createCategory } from "../../../API/MockFetch";
 import { IMatchParameters, IRouterState } from "../../../Interface/Router";
+import { v4 as uuidv4 } from "uuid";
+import { connect, ConnectedProps, useDispatch } from "react-redux";
+import { RootState } from "../../../Redux/store";
+import { actions } from "../../../Redux";
 
 const newCategoryPlaceholder = "New Category...";
 
-interface ITabBarProps extends IBaseTabBarProps {}
+interface ITabBarProps extends IBaseTabBarProps, PropsFromRedux {}
 
-export const TabBar: React.FC<ITabBarProps> = (props) => {
+const mapStateToProps = (state: RootState) => {
+  return {
+    categories: state.categories.categories,
+    currentCategory: state.categories.currentCategory,
+  };
+};
+
+const TabBarComponent: React.FC<ITabBarProps> = (props) => {
   const [showDrawer, setShowDrawer] = React.useState<boolean>(false);
   const classes = useTabBarStyles();
   const history = useHistory<IRouterState>();
   const newCategoryKeyRef = React.useRef<Category>();
+  const dispatch = useDispatch();
 
   const match = useRouteMatch<IMatchParameters>();
 
@@ -33,30 +45,32 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
   };
 
   const onTransitionFinished = () => {
-    if (newCategoryKeyRef.current && newCategoryKeyRef.current.key !== match.params.category) {
+    if (newCategoryKeyRef.current && newCategoryKeyRef.current.key !== match.params.categoryId) {
       history.push(newCategoryKeyRef.current.pathName);
     }
   };
 
   const onCreateNewTabBlur = (text: string) => {
-    // This should be safe from creating a category with the default name since the input automatically clears the text on enter
-    createCategory({
-      displayName: text,
-      pathName: `/${text.toLowerCase()}`,
-    })
-      .then((category) => {
-        newCategoryKeyRef.current = category;
-        setShowDrawer(false);
-        // Need to redirect here and update ListItems page to show loading spinner
-      })
-      .catch((err) => console.error(err));
+    const uuid = uuidv4();
+    dispatch(actions.categories.createCategory({ displayName: text, pathName: `/${uuid}`, key: uuid }));
+
+    // createCategory({
+    //   displayName: text,
+    //   pathName: `/${uuidv4()}`,
+    // });
+    // .then((category) => {
+    //   newCategoryKeyRef.current = category;
+    //   setShowDrawer(false);
+    //   // Need to redirect here and update ListItems page to show loading spinner
+    // })
+    // .catch((err) => console.error(err));
   };
 
   return (
     <>
       <AppBar className={classes.appBar}>
         <Typography className={classes.activeTab} variant="button">
-          {match.params.category}
+          {props.currentCategory.displayName}
         </Typography>
         <IconButton className={classes.menuButton} color="inherit" onClick={toggleDrawer}>
           <MenuIcon />
@@ -69,9 +83,9 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
             close
           </Button>
         </AppBar>
-        <List component="nav">
+        <List component="nav" className={classes.tabListContainer}>
           {props.categories.map((category) => (
-            <ListItem button onClick={() => onNewTabClicked(category)} key={category.pathName}>
+            <ListItem button onClick={() => onNewTabClicked(category)} key={category.key}>
               <Typography variant={"h5"} component={"h2"}>
                 {category.displayName}
               </Typography>
@@ -86,3 +100,7 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
     </>
   );
 };
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+export const TabBar = connector(TabBarComponent);

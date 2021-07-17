@@ -7,7 +7,6 @@ export const useMainStyles = makeStyles((theme: Theme) =>
       height: "100%",
       display: "flex",
       flexDirection: "column",
-      justifyContent: "space-between",
     },
   })
 );

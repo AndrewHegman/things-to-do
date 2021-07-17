@@ -9,10 +9,5 @@ export interface IAppBarProps {
 export const AppBar: React.FC<IAppBarProps> = (props) => {
   const classes = useAppBarStyles();
 
-  return (
-    <>
-      <MuiAppBar {...props}>{props.children}</MuiAppBar>
-      <div className={classes.appBarSpacer} />
-    </>
-  );
+  return <MuiAppBar {...props}>{props.children}</MuiAppBar>;
 };

@@ -9,6 +9,5 @@ export interface IToDoItemProps {
 }
 
 export interface ICreatingNewToDoItemProps {
-  category: string;
   onSubmit: (name: string) => void;
 }

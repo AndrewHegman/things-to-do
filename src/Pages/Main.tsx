@@ -1,5 +1,5 @@
 import React from "react";
-import { getCategories, getToDos } from "../API/MockFetch";
+import { getToDos } from "../API/MockFetch";
 import { SearchBar } from "../Components/SearchBar";
 import { TabBar } from "../Components/TabBar/TabBar";
 import { ToDoItem } from "../Interface/ToDoItem";

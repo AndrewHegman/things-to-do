@@ -1,10 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { commonReducer } from "./Common/commonReducer";
+import { rootReducer } from "./Store/index";
 
 export const store = configureStore({
-  reducer: {
-    common: commonReducer,
-  },
+  reducer: rootReducer,
   devTools: process.env.NODE_ENV !== "production",
 });
 

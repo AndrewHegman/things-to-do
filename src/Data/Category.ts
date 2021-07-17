@@ -5,12 +5,12 @@ import { Category } from "../Interface/Category";
 export const categories: Category[] = [
   {
     key: "0",
-    pathName: "/movies",
+    pathName: "/0",
     displayName: "Movies",
   },
   {
     key: "1",
-    pathName: "/restaurants",
+    pathName: "/1",
     displayName: "Restaurants",
   },
 ];

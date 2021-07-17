@@ -4,6 +4,8 @@ export const useToDoItemStyles = makeStyles((theme: Theme) => ({
   root: {
     minWidth: 275,
     marginBottom: theme.spacing(2),
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
 
   title: {

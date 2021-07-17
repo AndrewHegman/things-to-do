@@ -4,23 +4,40 @@ import { useToDoItemStyles } from "./ToDoItem.styles";
 import { Info as InfoButton, Delete as DeleteIcon, Edit as EditIcon } from "@material-ui/icons";
 import { ICreatingNewToDoItemProps } from "../Common";
 import { TypographyInput } from "../../TypographyInput/TypographyInput";
+import { connect, ConnectedProps } from "react-redux";
+import { RootState } from "../../../Redux/store";
 
-interface IMobileCreatingNewToDoItem extends ICreatingNewToDoItemProps {}
+interface IMobileCreatingNewToDoItem extends ICreatingNewToDoItemProps, PropsFromRedux {}
 
-export const CreatingNewToDoItem: React.FC<IMobileCreatingNewToDoItem> = (props) => {
+const mapStateToProps = (state: RootState) => ({
+  currentCategory: state.categories.currentCategory,
+});
+
+const CreatingNewToDoItemComponent: React.FC<IMobileCreatingNewToDoItem> = (props) => {
+  const [isDirty, setIsDirty] = React.useState(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const cardRef = React.useRef<HTMLDivElement>(null);
+
   const { onSubmit } = props;
   const classes = useToDoItemStyles();
 
-  // Should update this component to delete itself if the user doesn't interact with it and focuses somewhere else
+  React.useEffect(() => {
+    inputRef.current?.focus();
+  }, [inputRef]);
+
+  React.useEffect(() => {
+    cardRef.current?.scrollIntoView();
+  }, [cardRef]);
+
   return (
-    <Card className={classes.root}>
+    <Card className={classes.root} ref={cardRef}>
       <CardContent>
         <div className={classes.contentContainer}>
           <div className={classes.infoContainer}>
             <Typography className={classes.title} color="textSecondary" gutterBottom>
-              {props.category}
+              {props.currentCategory.displayName}
             </Typography>
-            <TypographyInput defaultValue={"Enter name..."} clearTextOnFirstEnter onBlur={onSubmit} />
+            <TypographyInput placeholder={"Enter name..."} clearTextOnFirstEnter onBlur={onSubmit} onChange={() => setIsDirty(true)} ref={inputRef} />
           </div>
           <div className={classes.actionsContainer}>
             <EditIcon />
@@ -34,3 +51,7 @@ export const CreatingNewToDoItem: React.FC<IMobileCreatingNewToDoItem> = (props)
     </Card>
   );
 };
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+export const CreatingNewToDoItem = connector(CreatingNewToDoItemComponent);

@@ -1,6 +1,5 @@
 import React from "react";
 import { Card, CardContent, Typography, Chip, Divider, Button, List, ListItem, InputBase } from "@material-ui/core";
-import { AppBar } from "../../AppBar/AppBar";
 import { useCreateNewToDoItemStyles } from "./CreateNewToDoItem.styles";
 import { ICreateNewToDoItemProps } from "../Common";
 import { Dialog } from "../../Dialog/Dialog";

@@ -4,17 +4,14 @@ import { Category } from "../Interface/Category";
 import { ToDoItem } from "../Interface/ToDoItem";
 
 let slowMode = false;
+const slowModeTime = 2000;
 
 const resolveSlowPromiseWrapper = <T>(resData: T) => {
-  return new Promise<T>((res) => setTimeout(() => res(resData), slowMode ? 2000 : 0));
+  return new Promise<T>((res) => setTimeout(() => res(resData), slowMode ? slowModeTime : 0));
 };
 
 const rejectSlowPromiseWrapper = <T>(resData: T) => {
-  return new Promise<T>((res) => setTimeout(() => res(resData), slowMode ? 2000 : 0));
-};
-
-export const getCategories = () => {
-  return resolveSlowPromiseWrapper(categories);
+  return new Promise<T>((res) => setTimeout(() => res(resData), slowMode ? slowModeTime : 0));
 };
 
 export const getToDos = (categoryName: string) => {
@@ -23,15 +20,6 @@ export const getToDos = (categoryName: string) => {
 
 export const getToDosByKey = (categoryKey: string) => {
   return resolveSlowPromiseWrapper(items.filter((item) => item.categoryKey === categoryKey));
-};
-
-export const createCategory = (newCategory: Omit<Category, "key">) => {
-  if (categories.find((category) => category.displayName === newCategory.displayName)) {
-    rejectSlowPromiseWrapper(`A category named ${newCategory.displayName} already exists!`);
-  }
-  const _newCategory = { ...newCategory, key: `${categories.length}` };
-  categories.push(_newCategory);
-  return resolveSlowPromiseWrapper(_newCategory);
 };
 
 export const createItem = (newItem: Omit<ToDoItem, "id">) => {

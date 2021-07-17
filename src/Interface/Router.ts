@@ -3,5 +3,5 @@ export interface IRouterState {
 }
 
 export interface IMatchParameters {
-  category: string;
+  categoryId: string;
 }

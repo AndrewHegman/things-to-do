@@ -71,5 +71,8 @@ export const useTabBarStyles = makeStyles((theme: Theme) => {
         width: "20ch",
       },
     },
+    tabListContainer: {
+      paddingTop: `calc(${theme.spacing(2)}px + ${theme.mixins.toolbar.minHeight}px)`,
+    },
   });
 });

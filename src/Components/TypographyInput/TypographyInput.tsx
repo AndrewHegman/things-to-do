@@ -12,15 +12,15 @@ interface ITypographInputProps {
   variant?: Variant;
   defaultValue?: string;
   resetOnEmpty?: boolean; // default to true
-  ref?: React.Ref<HTMLInputElement | undefined>; // Currently doesn't work -- need a ForwardRef
   onChange?: (text: string) => void;
+  onFocus?: () => void;
 }
 
-export const TypographyInput: React.FC<ITypographInputProps> = (props) => {
-  const { variant, placeholder, clearTextOnFirstEnter, clearTextOnEnter, defaultValue, onBlur, ref, resetOnEmpty, onChange } = props;
+export const TypographyInput = React.forwardRef<HTMLInputElement, ITypographInputProps>((props, ref) => {
+  const { variant, placeholder, clearTextOnFirstEnter, clearTextOnEnter, defaultValue, onBlur, resetOnEmpty, onChange } = props;
   const [text, setText] = React.useState<string>(defaultValue || "");
   const isModified = React.useRef<boolean>(false);
-
+  console.log(ref);
   const onTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     isModified.current = true;
     setText(event.target.value);
@@ -55,7 +55,8 @@ export const TypographyInput: React.FC<ITypographInputProps> = (props) => {
       onChange={onTextChange}
       onClick={onClick}
       onBlur={handleOnBlur}
-      ref={ref}
+      onFocus={props.onFocus}
+      inputRef={ref}
     />
   );
-};
+});

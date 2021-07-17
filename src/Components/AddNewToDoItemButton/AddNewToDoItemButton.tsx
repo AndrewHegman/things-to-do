@@ -1,6 +1,5 @@
 import React from "react";
-import { Card, Fab, CardContent, Typography } from "@material-ui/core";
-import { Add as AddIcon } from "@material-ui/icons";
+import { Card, CardContent, Typography } from "@material-ui/core";
 import { useAddNewToDoItemButtonStyles } from "./AddNewToDoItemButton.styles";
 
 interface IAddNewToDoItemButtonProps {
@@ -15,10 +14,7 @@ export const AddNewToDoItemButton: React.FC<IAddNewToDoItemButtonProps> = (props
   };
 
   return (
-    // <Fab className={classes.floatingActionButton}>
-    //   <AddIcon />
-    // </Fab>
-    <Card onClick={() => handleClick()}>
+    <Card onClick={() => handleClick()} className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h2">
           Add New...

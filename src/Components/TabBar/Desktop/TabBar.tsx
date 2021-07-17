@@ -1,14 +1,20 @@
 import React from "react";
 import { Tabs, Tab } from "@material-ui/core";
-import { getCategories } from "../../../API/MockFetch";
-
 import { AppBar } from "../../AppBar/AppBar";
 import { IBaseTabBarProps } from "../Common";
 import { Category } from "../../../Interface/Category";
+import { connect, ConnectedProps } from "react-redux";
+import { RootState } from "../../../Redux/store";
 
-interface ITabBarProps extends IBaseTabBarProps {}
+interface ITabBarProps extends IBaseTabBarProps, PropsFromRedux {}
 
-export const TabBar: React.FC<ITabBarProps> = (props) => {
+const mapStateToProps = (state: RootState) => {
+  return {
+    categories: state.categories.categories,
+  };
+};
+
+const TabBarComponent: React.FC<ITabBarProps> = (props) => {
   const [activeTab, setActiveTab] = React.useState<number>(0);
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
@@ -25,3 +31,7 @@ export const TabBar: React.FC<ITabBarProps> = (props) => {
     </AppBar>
   );
 };
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+export const TabBar = connector(TabBarComponent);
