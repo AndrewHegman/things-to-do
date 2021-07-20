@@ -6,7 +6,7 @@ export const useAppStyles = makeStyles((theme: Theme) =>
       // paddingTop: `${theme.mixins.toolbar.minHeight}px`,
       // paddingBottom: `${theme.spacing(2)}px`,
       // height: `calc(100vh)`,
-      border: "1px solid red",
+      // border: "1px solid red",
       paddingLeft: "0px",
       paddingRight: "0px",
     },

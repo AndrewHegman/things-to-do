@@ -2,7 +2,7 @@ import { actionTypes, CategoryActionTypes, CategoriesState } from "./types";
 
 export const initialState: CategoriesState = {
   categories: [],
-  isLoading: false,
+  isCategoriesLoading: false,
   currentCategory: {
     key: "",
     pathName: "",
@@ -15,21 +15,21 @@ export const categoriesReducer = (state = initialState, action: CategoryActionTy
     case actionTypes.WAIT_ON_REQUEST:
       return {
         ...state,
-        isLoading: true,
+        isCategoriesLoading: true,
       };
 
     case actionTypes.SET_CATEGORIES:
       return {
         ...state,
         categories: [...action.categories],
-        isLoading: false,
+        isCategoriesLoading: false,
       };
 
     case actionTypes.SET_CURRENT_CATEGORY:
       return {
         ...state,
         currentCategory: action.category,
-        isLoading: false,
+        isCategoriesLoading: false,
       };
 
     default:

@@ -7,42 +7,28 @@ import { CreateNewToDoItem } from "../CreateNewToDoItem/Mobile";
 import { AddNewToDoItemButton } from "../AddNewToDoItemButton/AddNewToDoItemButton";
 import { CreatingNewToDoItem } from "../ToDoItem/Mobile";
 import { Category } from "../../Interface/Category";
-import { createItem, deleteItem, getToDosByKey } from "../../API/MockFetch";
 import { useRouteMatch } from "react-router";
 import { IMatchParameters } from "../../Interface/Router";
-import { connect, ConnectedProps } from "react-redux";
+import { connect, ConnectedProps, useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
+import { actions, selectors } from "../../Redux";
+import { DeveloperTools } from "../DeveloperTools";
 
-interface IToDoListItemProps extends PropsFromRedux {
-  onDeleteItem: (id: string) => void;
-}
+interface IToDoListItemProps extends PropsFromRedux {}
 
 const mapStateToProps = (state: RootState) => {
   return {
-    isLoading: state.categories.isLoading,
+    isLoading: state.categories.isCategoriesLoading,
     currentCategory: state.categories.currentCategory,
   };
 };
 
 export const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
-  const { onDeleteItem } = props;
-
-  const [todos, setTodos] = React.useState<ToDoItem[]>([]);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isCreatingNewItem, setIsCreatingNewItem] = React.useState<boolean>(false);
-  const [isReloadNeeded, setIsReloadNeeded] = React.useState<boolean>(false);
 
   const classes = useToDoItemListStyles();
-  const match = useRouteMatch<IMatchParameters>();
-  const category = React.useRef<Category>();
-
-  React.useEffect(() => {
-    loadTodos();
-  }, [match.params.categoryId]);
-
-  React.useEffect(() => {
-    loadTodos();
-  }, [isReloadNeeded]);
+  const dispatch = useDispatch();
+  const selectCurrentToDos = useSelector(selectors.toDos.getCurrentToDos);
 
   const onEdit = (id: string) => {
     console.log(`edit ${id}`);
@@ -51,20 +37,7 @@ export const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
     console.log(`info ${id}`);
   };
   const onDelete = (id: string) => {
-    deleteItem(id).then(() => setIsReloadNeeded(true));
-  };
-
-  const loadTodos = () => {
-    setIsLoading(true);
-
-    Promise.all([getToDosByKey(match.params.categoryId)]).then((result) => {
-      setTodos(result[0]);
-      setIsLoading(false);
-      setIsReloadNeeded(false);
-
-      // category.current = result[1];
-      console.log(category.current);
-    });
+    dispatch(actions.toDos.deleteToDo(id));
   };
 
   const onAddNewItem = () => {
@@ -77,26 +50,21 @@ export const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
       return;
     }
 
-    setIsLoading(true);
-    createItem({
-      name: text,
-      categoryKey: match.params.categoryId,
-      tags: [],
-    }).then((newTodo) => {
-      // // This isn't the best way to do this...this could cause some weird flickering,
-      // // but its quick and easy and it ensures the server stays up to date with UI
-      // setTodos([...todos, newTodo]);
-      // loadTodos();
-      setIsReloadNeeded(true);
-    });
+    dispatch(
+      actions.toDos.createToDo({
+        name: text,
+        categoryKey: props.currentCategory.key,
+        tags: [],
+      })
+    );
   };
 
   return (
-    <Container className={isLoading ? classes.contentContainer_dataLoaded : classes.contentContainer_dataLoaded} disableGutters>
+    <Container className={props.isLoading ? classes.contentContainer_dataLoaded : classes.contentContainer_dataLoaded} disableGutters>
       <Box>
-        {!isLoading && (
+        {!props.isLoading && (
           <>
-            {todos.map((item, i) => (
+            {selectCurrentToDos.map((item, i) => (
               <ToDoItemEntry
                 onEdit={() => onEdit(item.id)}
                 onInfo={() => onInfo(item.id)}
@@ -111,13 +79,13 @@ export const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
           </>
         )}
       </Box>
-      {isLoading && (
+      {props.isLoading && (
         <>
           <Typography>Please wait, data is loading...</Typography>
           <CircularProgress />
         </>
       )}
-      {/* <DeveloperTools /> */}
+      <DeveloperTools />
     </Container>
   );
 };
@@ -125,4 +93,4 @@ export const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const ToDoItemList = connect(mapStateToProps)(ToDoItemListComponent);
+export const ToDoItemList = connector(ToDoItemListComponent);

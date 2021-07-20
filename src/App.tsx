@@ -1,6 +1,6 @@
 import "./App.css";
 import React from "react";
-import { createItem, getToDos, deleteItem } from "./API/MockFetch";
+// import { createItem, getToDos, deleteItem } from "./API/MockFetch";
 import { Category } from "./Interface/Category";
 import { SearchBar } from "./Components/SearchBar";
 import { TabBar } from "./Components/TabBar/TabBar";
@@ -17,7 +17,7 @@ import { RootState } from "./Redux/store";
 
 const mapStateToProps = (state: RootState) => {
   return {
-    isLoading: state.categories.isLoading,
+    isLoading: state.categories.isCategoriesLoading,
     currentCategory: state.categories.currentCategory,
   };
 };
@@ -30,17 +30,8 @@ const AppComponent: React.FC<PropsFromRedux> = (props) => {
 
   React.useEffect(() => {
     dispatch(actions.getCategories());
-
-    // setIsLoadingCategories(true);
-    // getCategories().then((categories) => {
-    //   setCategories(categories);
-    //   setIsLoadingCategories(false);
-    // });
+    dispatch(actions.getToDos());
   }, []);
-
-  const onDelete = (id: string) => {
-    deleteItem(id).then(() => setCacheStale(true));
-  };
 
   const classes = useAppStyles();
 
@@ -54,7 +45,7 @@ const AppComponent: React.FC<PropsFromRedux> = (props) => {
           {!props.isLoading && (
             <>
               <TabBar slowMode={false} />
-              <ToDoItemList onDeleteItem={onDelete} />
+              <ToDoItemList />
             </>
           )}
         </Route>

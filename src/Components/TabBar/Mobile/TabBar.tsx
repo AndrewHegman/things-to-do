@@ -8,7 +8,6 @@ import { useHistory, useRouteMatch } from "react-router-dom";
 import { Dialog } from "../../Dialog/Dialog";
 import { Category } from "../../../Interface/Category";
 import { TypographyInput } from "../../TypographyInput";
-// import { createCategory } from "../../../API/MockFetch";
 import { IMatchParameters, IRouterState } from "../../../Interface/Router";
 import { v4 as uuidv4 } from "uuid";
 import { connect, ConnectedProps, useDispatch } from "react-redux";
@@ -45,25 +44,24 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
   };
 
   const onTransitionFinished = () => {
-    if (newCategoryKeyRef.current && newCategoryKeyRef.current.key !== match.params.categoryId) {
-      history.push(newCategoryKeyRef.current.pathName);
+    if (newCategoryKeyRef.current) {
+      dispatch(actions.categories.setCurrentCategory(newCategoryKeyRef.current!));
+    } else {
+      console.warn("WARNING - newCategoryKeyRef is undefined");
     }
   };
 
   const onCreateNewTabBlur = (text: string) => {
-    const uuid = uuidv4();
-    dispatch(actions.categories.createCategory({ displayName: text, pathName: `/${uuid}`, key: uuid }));
-
-    // createCategory({
-    //   displayName: text,
-    //   pathName: `/${uuidv4()}`,
-    // });
-    // .then((category) => {
-    //   newCategoryKeyRef.current = category;
-    //   setShowDrawer(false);
-    //   // Need to redirect here and update ListItems page to show loading spinner
-    // })
-    // .catch((err) => console.error(err));
+    console.error("Save off newly created UUID. Check for dispatch error");
+    dispatch(
+      actions.categories.createCategory(
+        {
+          displayName: text,
+          key: uuidv4(),
+        },
+        false
+      )
+    );
   };
 
   return (

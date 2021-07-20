@@ -8,6 +8,7 @@ export const useToDoItemListStyles = makeStyles((theme: Theme) => {
     height: "100%",
     display: "flex",
     paddingTop: `calc(${theme.spacing(2)}px + ${theme.mixins.toolbar.minHeight}px)`,
+    minHeight: "100vh",
   };
 
   return createStyles({

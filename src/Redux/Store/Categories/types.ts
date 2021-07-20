@@ -12,7 +12,7 @@ export const actionTypes = {
 
 export interface CategoriesState {
   categories: Category[];
-  isLoading: boolean;
+  isCategoriesLoading: boolean;
   currentCategory: Category;
 }
 
