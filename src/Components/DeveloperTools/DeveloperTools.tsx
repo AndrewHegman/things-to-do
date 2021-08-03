@@ -5,13 +5,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Drawer,
   FormControlLabel,
   FormGroup,
   Input,
   InputAdornment,
   Switch,
-  TextField,
 } from "@material-ui/core";
 import { useDeveloperToolsStyles } from "./DeveloperTools.styles";
 import { connect, ConnectedProps, useDispatch } from "react-redux";

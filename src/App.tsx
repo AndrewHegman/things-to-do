@@ -1,36 +1,47 @@
 import "./App.css";
 import React from "react";
-// import { createItem, getToDos, deleteItem } from "./API/MockFetch";
-import { Category } from "./Interface/Category";
 import { SearchBar } from "./Components/SearchBar";
 import { TabBar } from "./Components/TabBar/TabBar";
-import { ToDoItem } from "./Interface/ToDoItem";
 import { ToDoItemList } from "./Components/ToDoItemList";
 import { features } from "./features";
 import { Container } from "@material-ui/core";
 import { useAppStyles } from "./App.styles";
-import { Redirect, Route, RouteComponentProps, Switch, useHistory, useRouteMatch } from "react-router";
-import { IRouterState } from "./Interface/Router";
+import { Redirect, Route, Switch } from "react-router";
 import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { actions } from "./Redux";
 import { RootState } from "./Redux/store";
+import { categories } from "./API/categories";
 
 const mapStateToProps = (state: RootState) => {
   return {
-    isLoading: state.categories.isCategoriesLoading,
     currentCategory: state.categories.currentCategory,
+    isSlowMode: state.common.isSlowMode,
+    slowModeTime: state.common.slowModeTime,
   };
 };
 
 const AppComponent: React.FC<PropsFromRedux> = (props) => {
-  // const [isLoadingCategories, setIsLoadingCategories] = React.useState<boolean>(true);
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [cacheStale, setCacheStale] = React.useState<boolean>(true);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    dispatch(actions.getCategories());
-    dispatch(actions.getToDos());
+    setIsLoading(true);
+    categories
+      .getCategories(props.isSlowMode, props.slowModeTime)
+      .then((categories) => {
+        setIsLoading(false);
+        if (categories.length === 0) {
+        } else {
+          dispatch(actions.categories.setCategories(categories));
+          dispatch(actions.categories.setCurrentCategory(categories[0].key));
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      });
+    // No dependency array beause this should only run once--on app load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const classes = useAppStyles();
@@ -38,11 +49,11 @@ const AppComponent: React.FC<PropsFromRedux> = (props) => {
   return (
     <Container className={classes.container}>
       {features.useSearchBar && <SearchBar />}
-      {props.isLoading && <div>loading...</div>}
+      {isLoading && <div>loading...</div>}
 
       <Switch>
         <Route exact path={"/:categoryId"}>
-          {!props.isLoading && (
+          {!isLoading && (
             <>
               <TabBar slowMode={false} />
               <ToDoItemList />

@@ -1,6 +1,7 @@
 import { resolveSlowPromiseWrapper, rejectSlowPromiseWrapper } from "./common";
 import { items as toDoItems } from "../Data/Items";
 import { ToDoItem } from "../Interface/ToDoItem";
+import { v4 as uuidv4 } from "uuid";
 
 export const toDos = {
   getAllToDos: (isSlowMode: boolean, slowModeTime: number) => {
@@ -15,15 +16,20 @@ export const toDos = {
     );
   },
 
-  createItem: (newItem: ToDoItem, isSlowMode: boolean, slowModeTime: number) => {
-    toDoItems.push(newItem);
+  createItem: (newItem: Omit<ToDoItem, "id">, isSlowMode: boolean, slowModeTime: number) => {
+    toDoItems.push({ ...newItem, id: uuidv4() });
     return resolveSlowPromiseWrapper(toDoItems, isSlowMode, slowModeTime);
   },
 
-  updateToDo: (id: string, updated: Partial<Omit<ToDoItem, "id">>, isSlowMode: boolean, slowModeTime: number): Promise<ToDoItem[] | string> => {
+  updateToDo: (
+    id: string,
+    updated: Partial<Omit<ToDoItem, "id">>,
+    isSlowMode: boolean,
+    slowModeTime: number
+  ): Promise<ToDoItem[]> => {
     const toDoToChange = toDoItems.find((toDo) => toDo.id === id);
     if (!toDoToChange) {
-      return rejectSlowPromiseWrapper(`No category found with id ${id}`, isSlowMode, slowModeTime);
+      throw rejectSlowPromiseWrapper(`No category found with id ${id}`, isSlowMode, slowModeTime);
     }
 
     if (updated.categoryKey) {
@@ -41,10 +47,10 @@ export const toDos = {
     return resolveSlowPromiseWrapper(toDoItems, isSlowMode, slowModeTime);
   },
 
-  deleteItem: (id: string, isSlowMode: boolean, slowModeTime: number): Promise<ToDoItem[] | string> => {
+  deleteItem: (id: string, isSlowMode: boolean, slowModeTime: number): Promise<ToDoItem[]> => {
     const idx = toDoItems.findIndex((item) => item.id === id);
     if (idx === -1) {
-      return rejectSlowPromiseWrapper(`No ToDo item found with id ${id}`, isSlowMode, slowModeTime);
+      throw rejectSlowPromiseWrapper(`No ToDo item found with id ${id}`, isSlowMode, slowModeTime);
     }
     toDoItems.splice(idx, 1);
     return resolveSlowPromiseWrapper(toDoItems, isSlowMode, slowModeTime);

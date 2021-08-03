@@ -14,10 +14,22 @@ interface ITypographInputProps {
   resetOnEmpty?: boolean; // default to true
   onChange?: (text: string) => void;
   onFocus?: () => void;
+  resetOnBlur?: boolean;
 }
 
 export const TypographyInput = React.forwardRef<HTMLInputElement, ITypographInputProps>((props, ref) => {
-  const { variant, placeholder, clearTextOnFirstEnter, clearTextOnEnter, defaultValue, onBlur, resetOnEmpty, onChange } = props;
+  const {
+    variant,
+    placeholder,
+    clearTextOnFirstEnter,
+    clearTextOnEnter,
+    defaultValue,
+    onBlur,
+    resetOnEmpty,
+    onChange,
+    resetOnBlur,
+  } = props;
+
   const [text, setText] = React.useState<string>(defaultValue || "");
   const isModified = React.useRef<boolean>(false);
   console.log(ref);
@@ -37,7 +49,7 @@ export const TypographyInput = React.forwardRef<HTMLInputElement, ITypographInpu
 
   const handleOnBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     // resetOnEmpty should default to 'true' but it is optional (hence the verbose boolean check)
-    if (!isModified.current || (text === "" && resetOnEmpty !== false)) {
+    if (!isModified.current || (text === "" && resetOnEmpty !== false) || resetOnBlur) {
       setText(defaultValue || "");
       isModified.current = false;
     }

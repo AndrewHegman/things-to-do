@@ -2,6 +2,6 @@ export interface IRouterState {
   redirectToNotFound: boolean;
 }
 
-export interface IMatchParameters {
+export interface IRouteParams {
   categoryId: string;
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Typography, Chip, Divider, InputBase } from "@material-ui/core";
+import { Card, CardContent, Typography, Chip, Divider } from "@material-ui/core";
 import { useToDoItemStyles } from "./ToDoItem.styles";
 import { Info as InfoButton, Delete as DeleteIcon, Edit as EditIcon } from "@material-ui/icons";
 import { IToDoItemProps } from "../Common";

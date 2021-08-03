@@ -1,18 +1,26 @@
 import React from "react";
-import { IconButton, Typography, Button, List, ListItem, InputBase, Divider } from "@material-ui/core";
+import {
+  IconButton,
+  Typography,
+  Button,
+  List,
+  ListItem,
+  Divider,
+  Dialog as MuiDialog,
+  CircularProgress,
+} from "@material-ui/core";
 import { Menu as MenuIcon } from "@material-ui/icons";
 import { useTabBarStyles } from "./TabBar.styles";
 import { AppBar } from "../../AppBar/AppBar";
 import { IBaseTabBarProps } from "../Common";
-import { useHistory, useRouteMatch } from "react-router-dom";
 import { Dialog } from "../../Dialog/Dialog";
 import { Category } from "../../../Interface/Category";
 import { TypographyInput } from "../../TypographyInput";
-import { IMatchParameters, IRouterState } from "../../../Interface/Router";
 import { v4 as uuidv4 } from "uuid";
 import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { RootState } from "../../../Redux/store";
 import { actions } from "../../../Redux";
+import { categories } from "../../../API/categories";
 
 const newCategoryPlaceholder = "New Category...";
 
@@ -22,46 +30,56 @@ const mapStateToProps = (state: RootState) => {
   return {
     categories: state.categories.categories,
     currentCategory: state.categories.currentCategory,
+    isSlowMode: state.common.isSlowMode,
+    slowModeTime: state.common.slowModeTime,
   };
 };
 
 const TabBarComponent: React.FC<ITabBarProps> = (props) => {
   const [showDrawer, setShowDrawer] = React.useState<boolean>(false);
-  const classes = useTabBarStyles();
-  const history = useHistory<IRouterState>();
-  const newCategoryKeyRef = React.useRef<Category>();
-  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const match = useRouteMatch<IMatchParameters>();
+  const classes = useTabBarStyles();
+  const newCategoryKeyRef = React.useRef<string>();
+
+  const dispatch = useDispatch();
 
   const toggleDrawer = (event: React.KeyboardEvent | React.MouseEvent) => {
     setShowDrawer(true);
   };
 
-  const onNewTabClicked = (newCategoryKey: Category) => {
-    newCategoryKeyRef.current = newCategoryKey;
+  const onNewTabClicked = (newCategory: Category) => {
+    newCategoryKeyRef.current = newCategory.key;
     setShowDrawer(false);
   };
 
   const onTransitionFinished = () => {
     if (newCategoryKeyRef.current) {
-      dispatch(actions.categories.setCurrentCategory(newCategoryKeyRef.current!));
+      dispatch(actions.categories.setCurrentCategory(newCategoryKeyRef.current));
     } else {
-      console.warn("WARNING - newCategoryKeyRef is undefined");
+      console.error("WARNING - newCategoryKeyRef is undefined");
     }
   };
 
-  const onCreateNewTabBlur = (text: string) => {
-    console.error("Save off newly created UUID. Check for dispatch error");
-    dispatch(
-      actions.categories.createCategory(
+  const onCreateNewTabBlur = async (text: string) => {
+    newCategoryKeyRef.current = uuidv4();
+    setIsLoading(true);
+    try {
+      const _categories = await categories.createCategory(
         {
           displayName: text,
-          key: uuidv4(),
+          key: newCategoryKeyRef.current,
+          pathName: encodeURIComponent(text),
         },
-        false
-      )
-    );
+        props.isSlowMode,
+        props.slowModeTime
+      );
+      dispatch(actions.categories.setCategories(_categories));
+      setIsLoading(false);
+      setShowDrawer(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -91,10 +109,22 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
           ))}
           <Divider />
           <ListItem>
-            <TypographyInput clearTextOnFirstEnter onBlur={onCreateNewTabBlur} defaultValue={newCategoryPlaceholder} />
+            <TypographyInput
+              clearTextOnFirstEnter
+              onBlur={onCreateNewTabBlur}
+              defaultValue={newCategoryPlaceholder}
+              resetOnBlur={true}
+            />
           </ListItem>
         </List>
       </Dialog>
+
+      <MuiDialog open={isLoading} fullScreen={false}>
+        <div className={classes.loadingDialog}>
+          <CircularProgress />
+          <Typography>Creating category...</Typography>
+        </div>
+      </MuiDialog>
     </>
   );
 };

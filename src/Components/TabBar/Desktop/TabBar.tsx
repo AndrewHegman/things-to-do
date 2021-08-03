@@ -2,7 +2,6 @@ import React from "react";
 import { Tabs, Tab } from "@material-ui/core";
 import { AppBar } from "../../AppBar/AppBar";
 import { IBaseTabBarProps } from "../Common";
-import { Category } from "../../../Interface/Category";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../Redux/store";
 

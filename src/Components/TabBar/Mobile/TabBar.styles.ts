@@ -74,5 +74,11 @@ export const useTabBarStyles = makeStyles((theme: Theme) => {
     tabListContainer: {
       paddingTop: `calc(${theme.spacing(2)}px + ${theme.mixins.toolbar.minHeight}px)`,
     },
+    loadingDialog: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      margin: "10px",
+    },
   });
 });

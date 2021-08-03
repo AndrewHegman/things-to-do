@@ -14,7 +14,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const CreatingNewToDoItemComponent: React.FC<IMobileCreatingNewToDoItem> = (props) => {
-  const [isDirty, setIsDirty] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const cardRef = React.useRef<HTMLDivElement>(null);
 
@@ -37,7 +36,7 @@ const CreatingNewToDoItemComponent: React.FC<IMobileCreatingNewToDoItem> = (prop
             <Typography className={classes.title} color="textSecondary" gutterBottom>
               {props.currentCategory.displayName}
             </Typography>
-            <TypographyInput placeholder={"Enter name..."} clearTextOnFirstEnter onBlur={onSubmit} onChange={() => setIsDirty(true)} ref={inputRef} />
+            <TypographyInput placeholder={"Enter name..."} clearTextOnFirstEnter onBlur={onSubmit} ref={inputRef} />
           </div>
           <div className={classes.actionsContainer}>
             <EditIcon />
