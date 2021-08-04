@@ -15,7 +15,13 @@ export const useDeveloperToolsStyles = makeStyles((theme: Theme) => {
     },
     container: {
       display: "flex",
-      alignItems: "flex-start",
+      flexDirection: "column",
+    },
+    settingsContainer: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
   });
 });
