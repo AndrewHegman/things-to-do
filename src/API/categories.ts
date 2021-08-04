@@ -1,33 +1,39 @@
 import { categories as categoriesData } from "../Data/Category";
 import { Category } from "../Interface/Category";
-import { resolveSlowPromiseWrapper, rejectSlowPromiseWrapper } from "./common";
+import { resolveSlowPromiseWrapper, rejectSlowPromiseWrapper, unpackFetchData, baseUrl, URLBuilder } from "./common";
 
 export const categories = {
   getCategoryById: async (categoryId: string, isSlowMode: boolean, slowModeTime: number) => {
-    return resolveSlowPromiseWrapper(
-      categoriesData.find((category) => category.key === categoryId),
-      isSlowMode,
-      slowModeTime
-    );
+    const urlBuilder = new URLBuilder();
+    return resolveSlowPromiseWrapper(urlBuilder.get().categories().byId(categoryId).fetch(), isSlowMode, slowModeTime);
   },
 
   getCategories: async (isSlowMode: boolean, slowModeTime: number) => {
-    return resolveSlowPromiseWrapper(categoriesData, isSlowMode, slowModeTime);
+    const urlBuilder = new URLBuilder();
+    return resolveSlowPromiseWrapper(urlBuilder.get().categories().fetch(), isSlowMode, slowModeTime);
   },
 
   createCategory: async (newCategory: Category, isSlowMode: boolean, slowModeTime: number) => {
-    if (newCategory.displayName === "") {
-      throw rejectSlowPromiseWrapper(`Categories must have a valid name`, isSlowMode, slowModeTime);
-    }
-    if (categoriesData.find((category) => category.displayName === newCategory.displayName)) {
-      throw rejectSlowPromiseWrapper(
-        `A category named ${newCategory.displayName} already exists!`,
-        isSlowMode,
-        slowModeTime
-      );
-    }
-    categoriesData.push(newCategory);
-    return resolveSlowPromiseWrapper(categoriesData, isSlowMode, slowModeTime);
+    const urlBuilder = new URLBuilder();
+
+    return resolveSlowPromiseWrapper(
+      urlBuilder
+        .create()
+        .categories()
+        .withBody(JSON.stringify(newCategory))
+        .fetch((error) => {
+          if (categoriesData.find((category) => category.displayName === newCategory.displayName)) {
+            throw rejectSlowPromiseWrapper(
+              `A category named ${newCategory.displayName} already exists!`,
+              isSlowMode,
+              slowModeTime
+            );
+          }
+          throw rejectSlowPromiseWrapper(error, isSlowMode, slowModeTime);
+        }),
+      isSlowMode,
+      slowModeTime
+    );
   },
 
   updateCategory: async (

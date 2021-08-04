@@ -62,6 +62,10 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
   };
 
   const onCreateNewTabBlur = async (text: string) => {
+    if (props.categories.find((category) => category.displayName === text)) {
+      console.error("Categories must have a valid name");
+      return;
+    }
     newCategoryKeyRef.current = uuidv4();
     setIsLoading(true);
     try {
@@ -79,6 +83,7 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
       setShowDrawer(false);
     } catch (error) {
       console.error(error);
+      return;
     }
   };
 
