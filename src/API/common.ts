@@ -8,11 +8,18 @@ export const rejectSlowPromiseWrapper = <T>(resData: T, slowMode: boolean, slowM
   return new Promise<T>((res, rej) => setTimeout(() => rej(resData), slowMode ? slowModeTime : 0));
 };
 
-export const unpackFetchData = async (response: Promise<Response>, errorHandler?: (error: unknown) => void) => {
+export const unpackFetchData = async (request: Promise<Response>, errorHandler?: (error: unknown) => void) => {
   try {
-    return await (await response).json();
+    const response = await request;
+    if (response.ok) {
+      return await response.json();
+    }
+    throw response;
   } catch (error) {
-    errorHandler && errorHandler(error);
+    if (errorHandler) {
+      return errorHandler(error);
+    }
+    console.error(error);
   }
 };
 

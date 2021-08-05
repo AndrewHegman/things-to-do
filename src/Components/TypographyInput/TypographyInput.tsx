@@ -15,6 +15,7 @@ interface ITypographInputProps {
   onChange?: (text: string) => void;
   onFocus?: () => void;
   resetOnBlur?: boolean;
+  disabled?: boolean;
 }
 
 export const TypographyInput = React.forwardRef<HTMLInputElement, ITypographInputProps>((props, ref) => {
@@ -28,6 +29,7 @@ export const TypographyInput = React.forwardRef<HTMLInputElement, ITypographInpu
     resetOnEmpty,
     onChange,
     resetOnBlur,
+    disabled,
   } = props;
 
   const [text, setText] = React.useState<string>(defaultValue || "");
@@ -69,6 +71,7 @@ export const TypographyInput = React.forwardRef<HTMLInputElement, ITypographInpu
       onBlur={handleOnBlur}
       onFocus={props.onFocus}
       inputRef={ref}
+      disabled={disabled}
     />
   );
 });

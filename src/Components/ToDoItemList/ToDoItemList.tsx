@@ -22,7 +22,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-export const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
+const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
   const [isCreatingNewItem, setIsCreatingNewItem] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 

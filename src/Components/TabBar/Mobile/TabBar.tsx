@@ -9,7 +9,7 @@ import {
   Dialog as MuiDialog,
   CircularProgress,
 } from "@material-ui/core";
-import { Menu as MenuIcon } from "@material-ui/icons";
+import { Menu as MenuIcon, MoreVert } from "@material-ui/icons";
 import { useTabBarStyles } from "./TabBar.styles";
 import { AppBar } from "../../AppBar/AppBar";
 import { IBaseTabBarProps } from "../Common";
@@ -21,6 +21,8 @@ import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { RootState } from "../../../Redux/store";
 import { actions } from "../../../Redux";
 import { categories } from "../../../API/categories";
+import { CategoryListItem } from "../../CategoryListItem/CategoryListItem";
+import { LoadingDialog } from "../../LoadingDialog/LoadingDialog";
 
 const newCategoryPlaceholder = "New Category...";
 
@@ -38,6 +40,8 @@ const mapStateToProps = (state: RootState) => {
 const TabBarComponent: React.FC<ITabBarProps> = (props) => {
   const [showDrawer, setShowDrawer] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [categoryMenuAnchorEl, setCategoryMenuAnchorEl] = React.useState<Element>();
+  const [showConfirmDelete, setShowConfirmDelete] = React.useState<boolean>(false);
 
   const classes = useTabBarStyles();
   const newCategoryKeyRef = React.useRef<string>();
@@ -49,19 +53,26 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
   };
 
   const onNewTabClicked = (newCategory: Category) => {
-    newCategoryKeyRef.current = newCategory.key;
-    setShowDrawer(false);
+    if (!categoryMenuAnchorEl) {
+      newCategoryKeyRef.current = newCategory.key;
+      setShowDrawer(false);
+    }
   };
 
   const onTransitionFinished = () => {
     if (newCategoryKeyRef.current) {
       dispatch(actions.categories.setCurrentCategory(newCategoryKeyRef.current));
     } else {
-      console.error("WARNING - newCategoryKeyRef is undefined");
+      // Previously, this state was indicative of a bug because there should be no way _not_ have a category selected
+      // There is now a default state for an unselected category, so this should be a valid state
+      // console.error("WARNING - newCategoryKeyRef is undefined");
     }
   };
 
   const onCreateNewTabBlur = async (text: string) => {
+    if (text === "") {
+      return;
+    }
     if (props.categories.find((category) => category.displayName === text)) {
       console.error("Categories must have a valid name");
       return;
@@ -98,7 +109,16 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
         </IconButton>
       </AppBar>
 
-      <Dialog isOpen={showDrawer} onClose={() => setShowDrawer(false)} onTransitionFinished={() => onTransitionFinished()}>
+      <Dialog
+        isOpen={showDrawer || !!props.showDrawer}
+        onClose={(_, reason) => {
+          if (!categoryMenuAnchorEl) {
+            setShowDrawer(false);
+            props.onDrawerClose && props.onDrawerClose();
+          }
+        }}
+        onTransitionFinished={() => onTransitionFinished()}
+      >
         <AppBar className={classes.dialogAppBar}>
           <Button onClick={() => setShowDrawer(false)} color="inherit">
             close
@@ -106,11 +126,7 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
         </AppBar>
         <List component="nav" className={classes.tabListContainer}>
           {props.categories.map((category) => (
-            <ListItem button onClick={() => onNewTabClicked(category)} key={category.key}>
-              <Typography variant={"h5"} component={"h2"}>
-                {category.displayName}
-              </Typography>
-            </ListItem>
+            <CategoryListItem onNewTabClicked={() => onNewTabClicked(category)} category={category} key={category.key} />
           ))}
           <Divider />
           <ListItem>
@@ -123,13 +139,7 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
           </ListItem>
         </List>
       </Dialog>
-
-      <MuiDialog open={isLoading} fullScreen={false}>
-        <div className={classes.loadingDialog}>
-          <CircularProgress />
-          <Typography>Creating category...</Typography>
-        </div>
-      </MuiDialog>
+      <LoadingDialog dialogText={"Creating category..."} isLoading={isLoading} />
     </>
   );
 };

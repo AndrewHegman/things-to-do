@@ -80,5 +80,12 @@ export const useTabBarStyles = makeStyles((theme: Theme) => {
       alignItems: "center",
       margin: "10px",
     },
+
+    confirmDeleteDialog: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      margin: "10px",
+    },
   });
 });

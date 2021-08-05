@@ -11,6 +11,8 @@ import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { actions } from "./Redux";
 import { RootState } from "./Redux/store";
 import { categories } from "./API/categories";
+import { ToDoItemListPage } from "./Pages/ToDoItemList/ToDoItemList";
+import { NoCategoriesPage } from "./Pages/NoCategoriesPage/NoCategoriesPage";
 
 const mapStateToProps = (state: RootState) => {
   return {
@@ -30,11 +32,7 @@ const AppComponent: React.FC<PropsFromRedux> = (props) => {
       .getCategories(props.isSlowMode, props.slowModeTime)
       .then((categories) => {
         setIsLoading(false);
-        if (categories.length === 0) {
-        } else {
-          dispatch(actions.categories.setCategories(categories));
-          dispatch(actions.categories.setCurrentCategory(categories[0].key));
-        }
+        dispatch(actions.categories.setCategories(categories));
       })
       .catch((error) => {
         console.error(error);
@@ -53,14 +51,11 @@ const AppComponent: React.FC<PropsFromRedux> = (props) => {
 
       <Switch>
         <Route exact path={"/:categoryId"}>
-          {!isLoading && (
-            <>
-              <TabBar slowMode={false} />
-              <ToDoItemList />
-            </>
-          )}
+          {!isLoading && <ToDoItemListPage />}
         </Route>
-
+        <Route exact path={"/"}>
+          <NoCategoriesPage />
+        </Route>
         <Route path="*">
           <div>Whale whale whale whale</div>
         </Route>

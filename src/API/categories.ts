@@ -1,6 +1,5 @@
-import { categories as categoriesData } from "../Data/Category";
 import { Category } from "../Interface/Category";
-import { resolveSlowPromiseWrapper, rejectSlowPromiseWrapper, unpackFetchData, baseUrl, URLBuilder } from "./common";
+import { resolveSlowPromiseWrapper, URLBuilder } from "./common";
 
 export const categories = {
   getCategoryById: async (categoryId: string, isSlowMode: boolean, slowModeTime: number) => {
@@ -17,20 +16,7 @@ export const categories = {
     const urlBuilder = new URLBuilder();
 
     return resolveSlowPromiseWrapper(
-      urlBuilder
-        .create()
-        .categories()
-        .withBody(JSON.stringify(newCategory))
-        .fetch((error) => {
-          if (categoriesData.find((category) => category.displayName === newCategory.displayName)) {
-            throw rejectSlowPromiseWrapper(
-              `A category named ${newCategory.displayName} already exists!`,
-              isSlowMode,
-              slowModeTime
-            );
-          }
-          throw rejectSlowPromiseWrapper(error, isSlowMode, slowModeTime);
-        }),
+      urlBuilder.create().categories().withBody(JSON.stringify(newCategory)).fetch(),
       isSlowMode,
       slowModeTime
     );
@@ -42,25 +28,18 @@ export const categories = {
     isSlowMode: boolean,
     slowModeTime: number
   ) => {
-    const categoryToChange = categoriesData.find((category) => category.key === categoryId);
-    if (!categoryToChange) {
-      throw rejectSlowPromiseWrapper(`No category found with id ${categoryId}`, isSlowMode, slowModeTime);
-    }
+    const urlBuilder = new URLBuilder();
 
-    if (updated.displayName) {
-      categoryToChange.displayName = updated.displayName;
-    }
-
-    return resolveSlowPromiseWrapper(categoriesData, isSlowMode, slowModeTime);
+    return resolveSlowPromiseWrapper(
+      urlBuilder.update().categories().byId(categoryId).withBody(JSON.stringify(updated)).fetch(),
+      isSlowMode,
+      slowModeTime
+    );
   },
 
-  deleteCategory: async (categoryId: string, isSlowMode: boolean, slowModeTime: number) => {
-    const categoryIdx = categoriesData.findIndex((category) => category.key === categoryId);
-    if (categoryIdx === -1) {
-      throw rejectSlowPromiseWrapper(`No category found with id ${categoryId}`, isSlowMode, slowModeTime);
-    }
-    categoriesData.splice(categoryIdx, 1);
+  deleteCategory: async (categoryId: string, isSlowMode: boolean, slowModeTime: number): Promise<Category[]> => {
+    const urlBuilder = new URLBuilder();
 
-    return resolveSlowPromiseWrapper(categoriesData, isSlowMode, slowModeTime);
+    return resolveSlowPromiseWrapper(urlBuilder.delete().categories().byId(categoryId).fetch(), isSlowMode, slowModeTime);
   },
 };
