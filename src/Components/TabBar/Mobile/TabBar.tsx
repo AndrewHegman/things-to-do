@@ -1,15 +1,6 @@
 import React from "react";
-import {
-  IconButton,
-  Typography,
-  Button,
-  List,
-  ListItem,
-  Divider,
-  Dialog as MuiDialog,
-  CircularProgress,
-} from "@material-ui/core";
-import { Menu as MenuIcon, MoreVert } from "@material-ui/icons";
+import { IconButton, Typography, Button, List, ListItem, Divider } from "@material-ui/core";
+import { Menu as MenuIcon } from "@material-ui/icons";
 import { useTabBarStyles } from "./TabBar.styles";
 import { AppBar } from "../../AppBar/AppBar";
 import { IBaseTabBarProps } from "../Common";
@@ -23,6 +14,7 @@ import { actions } from "../../../Redux";
 import { categories } from "../../../API/categories";
 import { CategoryListItem } from "../../CategoryListItem/CategoryListItem";
 import { LoadingDialog } from "../../LoadingDialog/LoadingDialog";
+import { InformationDialog } from "../../InformationDialog/InformationDialog";
 
 const newCategoryPlaceholder = "New Category...";
 
@@ -37,11 +29,14 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
+enum Dialogs {
+  IsLoading = 0,
+  DuplicateCategory = 1,
+}
+
 const TabBarComponent: React.FC<ITabBarProps> = (props) => {
   const [showDrawer, setShowDrawer] = React.useState<boolean>(false);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [categoryMenuAnchorEl, setCategoryMenuAnchorEl] = React.useState<Element>();
-  const [showConfirmDelete, setShowConfirmDelete] = React.useState<boolean>(false);
+  const [currentDialogs, setCurrentDialogs] = React.useState<Dialogs[]>([]);
 
   const classes = useTabBarStyles();
   const newCategoryKeyRef = React.useRef<string>();
@@ -53,10 +48,8 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
   };
 
   const onNewTabClicked = (newCategory: Category) => {
-    if (!categoryMenuAnchorEl) {
-      newCategoryKeyRef.current = newCategory.key;
-      setShowDrawer(false);
-    }
+    newCategoryKeyRef.current = newCategory.key;
+    onCloseDrawer();
   };
 
   const onTransitionFinished = () => {
@@ -74,11 +67,11 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
       return;
     }
     if (props.categories.find((category) => category.displayName === text)) {
-      console.error("Categories must have a valid name");
+      openDialogs([Dialogs.DuplicateCategory]);
       return;
     }
     newCategoryKeyRef.current = uuidv4();
-    setIsLoading(true);
+    openDialogs([Dialogs.IsLoading]);
     try {
       const _categories = await categories.createCategory(
         {
@@ -90,12 +83,29 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
         props.slowModeTime
       );
       dispatch(actions.categories.setCategories(_categories));
-      setIsLoading(false);
-      setShowDrawer(false);
+      closeDialogs([Dialogs.IsLoading]);
+      onCloseDrawer();
     } catch (error) {
       console.error(error);
       return;
     }
+  };
+
+  const onCloseDrawer = () => {
+    setShowDrawer(false);
+    props.onDrawerClose && props.onDrawerClose();
+  };
+
+  const closeDialogs = (dialogsToClose: Dialogs[]) => {
+    setCurrentDialogs(currentDialogs.filter((dialog) => !dialogsToClose.includes(dialog)));
+  };
+
+  const openDialogs = (dialogsToOpen: Dialogs[]) => {
+    dialogsToOpen.forEach((dialog) => {
+      if (!currentDialogs.includes(dialog)) {
+        setCurrentDialogs([...currentDialogs, dialog]);
+      }
+    });
   };
 
   return (
@@ -112,15 +122,12 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
       <Dialog
         isOpen={showDrawer || !!props.showDrawer}
         onClose={(_, reason) => {
-          if (!categoryMenuAnchorEl) {
-            setShowDrawer(false);
-            props.onDrawerClose && props.onDrawerClose();
-          }
+          onCloseDrawer();
         }}
         onTransitionFinished={() => onTransitionFinished()}
       >
         <AppBar className={classes.dialogAppBar}>
-          <Button onClick={() => setShowDrawer(false)} color="inherit">
+          <Button onClick={() => onCloseDrawer()} color="inherit">
             close
           </Button>
         </AppBar>
@@ -139,7 +146,12 @@ const TabBarComponent: React.FC<ITabBarProps> = (props) => {
           </ListItem>
         </List>
       </Dialog>
-      <LoadingDialog dialogText={"Creating category..."} isLoading={isLoading} />
+      <LoadingDialog dialogText={"Creating category..."} isOpen={currentDialogs.includes(Dialogs.IsLoading)} />
+      <InformationDialog
+        dialogText={"Categories must have a unique name"}
+        isOpen={currentDialogs.includes(Dialogs.DuplicateCategory)}
+        onClose={() => closeDialogs([Dialogs.DuplicateCategory])}
+      />
     </>
   );
 };

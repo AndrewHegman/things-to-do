@@ -4,7 +4,7 @@ import { Button, Dialog as MuiDialog, DialogActions, Typography } from "@materia
 export interface IInformationDialogProps {
   isOpen: boolean;
   dialogText: string;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 export const InformationDialog: React.FC<IInformationDialogProps> = (props) => {
@@ -14,7 +14,7 @@ export const InformationDialog: React.FC<IInformationDialogProps> = (props) => {
     <MuiDialog open={isOpen} fullScreen={false}>
       <Typography>{dialogText}</Typography>
       <DialogActions>
-        <Button onClick={() => onClose()}> Ok</Button>
+        <Button onClick={() => onClose && onClose()}>Ok</Button>
       </DialogActions>
     </MuiDialog>
   );

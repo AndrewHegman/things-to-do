@@ -34,7 +34,7 @@ export const TypographyInput = React.forwardRef<HTMLInputElement, ITypographInpu
 
   const [text, setText] = React.useState<string>(defaultValue || "");
   const isModified = React.useRef<boolean>(false);
-  console.log(ref);
+
   const onTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     isModified.current = true;
     setText(event.target.value);

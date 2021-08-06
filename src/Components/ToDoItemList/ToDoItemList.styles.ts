@@ -2,8 +2,7 @@ import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 export const useToDoItemListStyles = makeStyles((theme: Theme) => {
   const defaultStyles = {
-    // backgroundColor: theme.palette.background.default,
-    backgroundColor: "wheat",
+    backgroundColor: theme.palette.background.default,
 
     height: "100%",
     display: "flex",

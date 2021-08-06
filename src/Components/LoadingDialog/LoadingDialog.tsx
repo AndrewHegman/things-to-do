@@ -3,19 +3,19 @@ import { Dialog as MuiDialog, CircularProgress, Typography } from "@material-ui/
 import { useLoadingDialogStyles } from "./LoadingDialog.styles";
 
 export interface ILoadingDialogProps {
-  isLoading: boolean;
-  dialogText: string;
+  isOpen: boolean;
+  dialogText?: string;
 }
 
 export const LoadingDialog: React.FC<ILoadingDialogProps> = (props) => {
-  const { isLoading, dialogText } = props;
+  const { isOpen, dialogText } = props;
   const classes = useLoadingDialogStyles();
 
   return (
-    <MuiDialog open={isLoading} fullScreen={false}>
+    <MuiDialog open={isOpen} fullScreen={false}>
       <div className={classes.loadingDialog}>
         <CircularProgress />
-        <Typography>{dialogText}</Typography>
+        <Typography>{dialogText || "Loading, please wait..."}</Typography>
       </div>
     </MuiDialog>
   );

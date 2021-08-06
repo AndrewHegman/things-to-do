@@ -14,7 +14,6 @@ export const NoCategoriesPage: React.FC<INoCategoriesPageProps> = (props) => {
       <TabBar
         showDrawer={showDrawer}
         onDrawerClose={() => {
-          console.log("here");
           setShowDrawer(false);
         }}
       />

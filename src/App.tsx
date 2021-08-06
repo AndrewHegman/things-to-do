@@ -4,7 +4,7 @@ import { SearchBar } from "./Components/SearchBar";
 import { TabBar } from "./Components/TabBar/TabBar";
 import { ToDoItemList } from "./Components/ToDoItemList";
 import { features } from "./features";
-import { Container } from "@material-ui/core";
+import { Container, createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { useAppStyles } from "./App.styles";
 import { Redirect, Route, Switch } from "react-router";
 import { connect, ConnectedProps, useDispatch } from "react-redux";
@@ -13,6 +13,24 @@ import { RootState } from "./Redux/store";
 import { categories } from "./API/categories";
 import { ToDoItemListPage } from "./Pages/ToDoItemList/ToDoItemList";
 import { NoCategoriesPage } from "./Pages/NoCategoriesPage/NoCategoriesPage";
+import { InformationDialog } from "./Components/InformationDialog/InformationDialog";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: "#8eacbc",
+      main: "#607d8c",
+      dark: "#34515f",
+      contrastText: "#000",
+    },
+    secondary: {
+      light: "#cfff94",
+      main: "#9ccc64",
+      dark: "#6b9b36",
+      contrastText: "#000",
+    },
+  },
+});
 
 const mapStateToProps = (state: RootState) => {
   return {
@@ -42,26 +60,28 @@ const AppComponent: React.FC<PropsFromRedux> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const classes = useAppStyles();
+  const classes = useAppStyles(theme);
 
   return (
-    <Container className={classes.container}>
-      {features.useSearchBar && <SearchBar />}
-      {isLoading && <div>loading...</div>}
+    <ThemeProvider theme={theme}>
+      <Container className={classes.container}>
+        {features.useSearchBar && <SearchBar />}
+        {isLoading && <div>loading...</div>}
 
-      <Switch>
-        <Route exact path={"/:categoryId"}>
-          {!isLoading && <ToDoItemListPage />}
-        </Route>
-        <Route exact path={"/"}>
-          <NoCategoriesPage />
-        </Route>
-        <Route path="*">
-          <div>Whale whale whale whale</div>
-        </Route>
-      </Switch>
-      <Redirect to={props.currentCategory.pathName} />
-    </Container>
+        <Switch>
+          <Route exact path={"/:categoryId"}>
+            {!isLoading && <ToDoItemListPage />}
+          </Route>
+          <Route exact path={"/"}>
+            <NoCategoriesPage />
+          </Route>
+          <Route path="*">
+            <div>Whale whale whale whale</div>
+          </Route>
+        </Switch>
+        <Redirect to={props.currentCategory.pathName} />
+      </Container>
+    </ThemeProvider>
   );
 };
 

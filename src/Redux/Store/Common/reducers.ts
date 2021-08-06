@@ -2,9 +2,6 @@ import { BackendEndpoint } from "../../../Interface/Endpoints";
 import { actionTypes, CommonActionTypes, CommonState } from "./types";
 require("dotenv");
 
-console.log(process.env.REACT_APP_IS_PROD);
-console.log(process.env.REACT_APP_IS_PROD === "true");
-console.log(process.env.REACT_APP_IS_PROD === "true" ? BackendEndpoint.BackendDatabaseProd : BackendEndpoint.FrontEndStatic);
 export const initialState: CommonState = {
   slowModeTime: 2000,
   isSlowMode: false,

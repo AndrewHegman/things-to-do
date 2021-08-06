@@ -14,12 +14,8 @@ export const AddNewToDoItemButton: React.FC<IAddNewToDoItemButtonProps> = (props
   };
 
   return (
-    <Card onClick={() => handleClick()} className={classes.root}>
-      <CardContent>
-        <Typography variant="h5" component="h2">
-          Add New...
-        </Typography>
-      </CardContent>
-    </Card>
+    <Typography className={classes.root} variant="h5" component="h2" onClick={() => handleClick()}>
+      Add New...
+    </Typography>
   );
 };

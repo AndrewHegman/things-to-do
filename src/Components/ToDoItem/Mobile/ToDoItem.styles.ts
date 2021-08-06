@@ -23,6 +23,8 @@ export const useToDoItemStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    marginLeft: theme.spacing(2),
+    alignItems: "center",
   },
   infoContainer: {},
   actionsContainer: {
