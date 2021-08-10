@@ -1,3 +1,4 @@
+import { Tag } from "../../Interface/Tags";
 import { ToDoItem } from "../../Interface/ToDoItem";
 
 export interface IToDoItemProps {
@@ -7,7 +8,7 @@ export interface IToDoItemProps {
   onInfo: () => void;
   onDelete: () => void;
   isEditing: boolean;
-  tags: string[];
+  tags: Tag[];
 }
 
 export interface ICreatingNewToDoItemProps {

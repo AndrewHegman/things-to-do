@@ -1,4 +1,4 @@
 export const features = {
   useSearchBar: false,
-  useTags: false,
+  useTags: true,
 } as const;

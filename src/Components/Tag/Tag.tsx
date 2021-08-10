@@ -1,13 +1,18 @@
-import { Chip } from "@material-ui/core";
+import { Chip, ChipProps } from "@material-ui/core";
 import React from "react";
-import { connect, ConnectedProps } from "react-redux";
+import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { tags as TagsAPI } from "../../API/tags";
 import { Tag as TagType } from "../../Interface/Tags";
+import { actions } from "../../Redux";
 import { RootState } from "../../Redux/Store/index";
-import { ConfirmationDialog } from "../ConfirmationDialog/ConfirmationDialog";
+import { ConfirmationDialog } from "../Dialogs/ConfirmationDialog";
+import { LoadingDialog } from "../Dialogs/LoadingDialog";
 
 interface ITagProps extends PropsFromRedux {
   tag: TagType;
+  isSelected: boolean;
+  onClick: () => void;
+  deletable: boolean;
 }
 
 enum Dialogs {
@@ -20,8 +25,11 @@ const mapStateToProps = (state: RootState) => ({
   slowModeTime: state.common.slowModeTime,
 });
 
-export const TagComponent: React.FC<ITagProps> = ({ tag, isSlowMode, slowModeTime }) => {
+const TagComponent: React.FC<ITagProps> = ({ tag, isSlowMode, slowModeTime, isSelected, onClick, deletable }) => {
   const [currentDialogs, setCurrentDialogs] = React.useState<Dialogs[]>([]);
+  const chipRef = React.useRef<HTMLDivElement>(null);
+
+  const dispatch = useDispatch();
 
   const closeDialogs = (dialogsToClose: Dialogs[]) => {
     setCurrentDialogs(currentDialogs.filter((dialog) => !dialogsToClose.includes(dialog)));
@@ -35,9 +43,29 @@ export const TagComponent: React.FC<ITagProps> = ({ tag, isSlowMode, slowModeTim
     });
   };
 
+  const deleteTag = async () => {
+    openDialogs([Dialogs.IsLoading]);
+    dispatch(actions.tags.setTags(await TagsAPI.deleteTag(tag.id, isSlowMode, slowModeTime)));
+    closeDialogs([Dialogs.ConfirmDelete, Dialogs.IsLoading]);
+  };
+
+  const handleClick = () => {
+    chipRef.current?.blur();
+    onClick();
+  };
+
+  const chipProps: ChipProps = {
+    label: tag.name,
+    style: { margin: "2px" },
+    color: isSelected ? "primary" : "default",
+    onClick: () => handleClick(),
+    ref: chipRef,
+  };
+
   return (
     <>
-      <Chip onDelete={() => openDialogs([Dialogs.ConfirmDelete])} label={tag.name} style={{ margin: "2px" }} />
+      {deletable && <Chip {...chipProps} onDelete={() => openDialogs([Dialogs.ConfirmDelete])} />}
+      {!deletable && <Chip {...chipProps} clickable={false} />}
       <ConfirmationDialog
         isOpen={currentDialogs.includes(Dialogs.ConfirmDelete)}
         onClose={() => closeDialogs([Dialogs.ConfirmDelete])}
@@ -46,11 +74,9 @@ export const TagComponent: React.FC<ITagProps> = ({ tag, isSlowMode, slowModeTim
         onCancel={() => {
           closeDialogs([Dialogs.ConfirmDelete]);
         }}
-        onConfirm={() => {
-          closeDialogs([Dialogs.ConfirmDelete]);
-          TagsAPI.deleteTag(tag.id, isSlowMode, slowModeTime);
-        }}
+        onConfirm={() => deleteTag()}
       />
+      <LoadingDialog isOpen={currentDialogs.includes(Dialogs.IsLoading)} />
     </>
   );
 };

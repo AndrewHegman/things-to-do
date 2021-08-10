@@ -1,16 +1,17 @@
 import { Button, Chip, Divider } from "@material-ui/core";
 import React from "react";
-import { connect, ConnectedProps } from "react-redux";
+import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { tags as TagsAPI } from "../../API/tags";
-import { Tag } from "../../Interface/Tags";
 import { RootState } from "../../Redux/Store/index";
 import { AppBar } from "../AppBar/AppBar";
-import { ConfirmationDialog } from "../ConfirmationDialog/ConfirmationDialog";
+import { ConfirmationDialog } from "../Dialogs/ConfirmationDialog";
 import { Dialog } from "../Dialog/Dialog";
-import { LoadingDialog } from "../LoadingDialog/LoadingDialog";
+import { LoadingDialog } from "../Dialogs/LoadingDialog";
 import { TypographyInput } from "../TypographyInput";
 import { useCreateToDoDrawerStyles } from "./CreateToDoDrawer.styles";
-import { Tag as TagComponent } from "../Tag/Tag";
+import { Tag } from "../Tag/Tag";
+import { actions } from "../../Redux";
+import { AddNewTag } from "../Tag/AddNewTag";
 
 interface ICreateToDoDrawerProps extends PropsFromRedux {
   isOpen: boolean;
@@ -26,13 +27,15 @@ enum Dialogs {
 const mapStateToProps = (state: RootState) => ({
   isSlowMode: state.common.isSlowMode,
   slowModeTime: state.common.slowModeTime,
+  tags: state.tags.tags,
 });
 
 const CreateToDoDrawerComponent: React.FC<ICreateToDoDrawerProps> = (props) => {
   const [currentDialogs, setCurrentDialogs] = React.useState<Dialogs[]>([]);
-  const [tags, setTags] = React.useState<Tag[]>([]);
+  const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
 
   const classes = useCreateToDoDrawerStyles();
+  const dispatch = useDispatch();
 
   const closeDialogs = (dialogsToClose: Dialogs[]) => {
     setCurrentDialogs(currentDialogs.filter((dialog) => !dialogsToClose.includes(dialog)));
@@ -46,15 +49,24 @@ const CreateToDoDrawerComponent: React.FC<ICreateToDoDrawerProps> = (props) => {
     });
   };
 
+  const handleTagClick = (tagId: string) => {
+    const idx = selectedTags.findIndex((selectedTag) => selectedTag === tagId);
+    if (idx > -1) {
+      setSelectedTags([...selectedTags.slice(0, idx), ...selectedTags.slice(idx + 1)]);
+    } else {
+      setSelectedTags([...selectedTags, tagId]);
+    }
+  };
+
   React.useEffect(() => {
     const loadTags = async () => {
       openDialogs([Dialogs.IsLoading]);
-      setTags(await TagsAPI.getAllTags(props.isSlowMode, props.slowModeTime));
+      dispatch(actions.tags.setTags(await TagsAPI.getAllTags(props.isSlowMode, props.slowModeTime)));
       closeDialogs([Dialogs.IsLoading]);
     };
     loadTags();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
@@ -68,9 +80,16 @@ const CreateToDoDrawerComponent: React.FC<ICreateToDoDrawerProps> = (props) => {
           <TypographyInput clearTextOnFirstEnter placeholder={"New to-do name..."} />
           <Divider />
           <div className={classes.tagContainer}>
-            {tags.map((tag) => (
-              <TagComponent tag={tag} />
+            {props.tags.map((tag) => (
+              <Tag
+                tag={tag}
+                key={tag.id}
+                isSelected={!!selectedTags.find((selectedTag) => selectedTag === tag.id)}
+                onClick={() => handleTagClick(tag.id)}
+                deletable
+              />
             ))}
+            <AddNewTag />
           </div>
         </div>
       </Dialog>

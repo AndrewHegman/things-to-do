@@ -13,8 +13,8 @@ import { RootState } from "../../../Redux/store";
 import { actions } from "../../../Redux";
 import { categories } from "../../../API/categories";
 import { CategoryListItem } from "../../CategoryListItem/CategoryListItem";
-import { LoadingDialog } from "../../LoadingDialog/LoadingDialog";
-import { InformationDialog } from "../../InformationDialog/InformationDialog";
+import { LoadingDialog } from "../../Dialogs/LoadingDialog";
+import { InformationDialog } from "../../Dialogs/InformationDialog";
 
 const newCategoryPlaceholder = "New Category...";
 

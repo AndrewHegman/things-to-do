@@ -10,8 +10,8 @@ import { DeveloperTools } from "../DeveloperTools";
 import { toDos } from "../../API/toDos";
 import { useParams } from "react-router";
 import { IRouteParams } from "../../Interface/Router";
-import { InformationDialog } from "../InformationDialog/InformationDialog";
-import { LoadingDialog } from "../LoadingDialog/LoadingDialog";
+import { InformationDialog } from "../Dialogs/InformationDialog";
+import { LoadingDialog } from "../Dialogs/LoadingDialog";
 import { TypographyInput } from "../TypographyInput";
 import { CreateToDoDrawer } from "../CreateToDoDrawer/CreateToDoDrawer";
 import { Tag } from "../../Interface/Tags";
@@ -45,8 +45,9 @@ const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
   React.useEffect(() => {
     const fetchToDosAndTags = async () => {
       openDialogs([Dialogs.IsLoading]);
+      const _tags = await TagsAPI.getAllTags(props.isSlowMode, props.slowModeTime);
+      setTags(_tags);
       dispatch(actions.toDos.setToDos(await toDos.getToDosByCategoryKey(categoryId, props.isSlowMode, props.slowModeTime)));
-      setTags(await TagsAPI.getAllTags(props.isSlowMode, props.slowModeTime));
       closeDialogs([Dialogs.IsLoading]);
     };
     fetchToDosAndTags();
@@ -135,22 +136,10 @@ const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
               key={i}
               item={item}
               category={props.currentCategory.displayName}
-              tags={item.tags.map((toDoTag) => tags.find((tag) => toDoTag === tag.id)?.name || "")}
+              tags={item.tags.map((tag) => tags.find((_tag) => _tag.id === tag)).filter((tag) => tag !== undefined) as Tag[]}
             />
           ))}
           {!isCreatingNewItem && <AddNewToDoItemButton onClick={onAddNewItem} />}
-          {/* {isCreatingNewItem && (
-            <TypographyInput
-              placeholder={"Enter name..."}
-              clearTextOnFirstEnter
-              onBlur={(text) => {
-                // setIsEditingExisting(false);
-                // onEdit(text);
-                setIsCreatingNewItem(false);
-              }}
-              // ref={inputRef}
-            />
-          )} */}
           <CreateToDoDrawer isOpen={isCreatingNewItem} onClose={() => setIsCreatingNewItem(false)} />
         </Box>
 

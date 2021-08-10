@@ -5,6 +5,7 @@ import { IToDoItemProps } from "../Common";
 import { features } from "../../../features";
 import { ActionMenu } from "../../ActionMenu/ActionMenu";
 import { TypographyInput } from "../../TypographyInput";
+import { Tag } from "../../Tag/Tag";
 
 interface IMobileToDoItemProps extends IToDoItemProps {}
 
@@ -20,7 +21,8 @@ export const ToDoItem: React.FC<IMobileToDoItemProps> = (props) => {
           <Typography variant="h5" component="h2">
             {item?.name}
           </Typography>
-          {features.useTags && tags.map((tag) => <Chip className={classes.tags} label={tag} key={tag} />)}
+          {features.useTags &&
+            tags.map((tag) => <Tag key={tag.id} deletable={false} isSelected={true} onClick={() => {}} tag={tag} />)}
         </div>
         <ActionMenu menuItems={[]} />
       </div>

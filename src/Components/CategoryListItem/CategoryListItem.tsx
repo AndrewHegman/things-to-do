@@ -15,11 +15,11 @@ import { categories } from "../../API/categories";
 import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { RootState } from "../../Redux/Store/index";
 import { actions } from "../../Redux";
-import { LoadingDialog } from "../LoadingDialog/LoadingDialog";
+import { LoadingDialog } from "../Dialogs/LoadingDialog";
 import { TypographyInput } from "../TypographyInput";
-import { InformationDialog } from "../InformationDialog/InformationDialog";
+import { InformationDialog } from "../Dialogs/InformationDialog";
 import { ActionMenu } from "../ActionMenu/ActionMenu";
-import { ConfirmationDialog } from "../ConfirmationDialog/ConfirmationDialog";
+import { ConfirmationDialog } from "../Dialogs/ConfirmationDialog";
 
 interface ICategoryListItem extends PropsFromRedux {
   onNewTabClicked: (category: Category) => void;

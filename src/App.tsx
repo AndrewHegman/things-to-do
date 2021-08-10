@@ -13,7 +13,7 @@ import { RootState } from "./Redux/store";
 import { categories } from "./API/categories";
 import { ToDoItemListPage } from "./Pages/ToDoItemList/ToDoItemList";
 import { NoCategoriesPage } from "./Pages/NoCategoriesPage/NoCategoriesPage";
-import { InformationDialog } from "./Components/InformationDialog/InformationDialog";
+import { InformationDialog } from "./Components/Dialogs/InformationDialog";
 
 const theme = createMuiTheme({
   palette: {
