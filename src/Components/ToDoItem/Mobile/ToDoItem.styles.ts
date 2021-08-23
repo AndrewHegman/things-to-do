@@ -9,7 +9,9 @@ export const useToDoItemStyles = makeStyles((theme: Theme) => ({
   },
 
   title: {
-    fontSize: 14,
+    marginLeft: "12px",
+    marginTop: "12px",
+    marginBottom: "12px",
   },
   pos: {
     marginBottom: 6,
@@ -24,6 +26,8 @@ export const useToDoItemStyles = makeStyles((theme: Theme) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+    marginBottom: theme.spacing(2),
     alignItems: "center",
   },
   infoContainer: {},
@@ -34,5 +38,9 @@ export const useToDoItemStyles = makeStyles((theme: Theme) => ({
   },
   inputTypography: {
     ...theme.typography.h5,
+  },
+  tagContainer: {
+    marginLeft: "10px",
+    marginBottom: "10px",
   },
 }));

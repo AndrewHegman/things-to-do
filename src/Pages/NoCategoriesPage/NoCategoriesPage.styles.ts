@@ -2,7 +2,7 @@ import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 export const useNoCategoriesPageStyles = makeStyles((theme: Theme) => {
   const defaultStyles = {
-    // backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.background.default,
 
     height: "100%",
     display: "flex",

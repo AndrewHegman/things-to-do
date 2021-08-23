@@ -1,17 +1,26 @@
 import React from "react";
-import { Typography, Divider } from "@material-ui/core";
+import { Typography, Card } from "@material-ui/core";
 import { useToDoItemStyles } from "./ToDoItem.styles";
 import { IToDoItemProps } from "../Common";
 import { features } from "../../../features";
 import { ActionMenu } from "../../ActionMenu/ActionMenu";
-import { Tag } from "../../Tag/Tag";
+import { connect, ConnectedProps, useDispatch } from "react-redux";
+import { RootState } from "../../../Redux/Store/index";
+import { actions } from "../../../Redux";
+import { Tag } from "../../../Interface/Tags";
+import { Tag as TagComponent } from "../../Tag/Tag";
 
-interface IMobileToDoItemProps extends IToDoItemProps {}
+const mapStateToProps = (state: RootState) => ({
+  selectedTags: state.tags.selectedTags,
+});
 
-export const ToDoItem: React.FC<IMobileToDoItemProps> = (props) => {
+interface IMobileToDoItemProps extends IToDoItemProps, PropsFromRedux {}
+
+const ToDoItemComponent: React.FC<IMobileToDoItemProps> = (props) => {
   const classes = useToDoItemStyles();
+  const dispatch = useDispatch();
 
-  const { item, tags } = props;
+  const { item, tags, selectedTags } = props;
 
   const menuItems = [
     {
@@ -22,19 +31,35 @@ export const ToDoItem: React.FC<IMobileToDoItemProps> = (props) => {
     { text: "Delete", onClick: props.onDelete, closeMenuOnClick: false },
   ];
 
+  const onTagClick = (selectedTag: Tag) => {
+    if (selectedTags.findIndex((tag) => tag.id === selectedTag.id) !== -1) {
+      dispatch(actions.tags.removeSelectedTag(selectedTag));
+    } else {
+      dispatch(actions.tags.addSelectedTag(selectedTag));
+    }
+  };
+
   return (
     <>
-      <div className={classes.contentContainer}>
+      <Card className={classes.contentContainer}>
         <div className={classes.infoContainer}>
-          <Typography variant="h5" component="h2">
+          <Typography variant="h5" component="h2" className={classes.title}>
             {item?.name}
           </Typography>
-          {features.useTags &&
-            tags.map((tag) => <Tag key={tag.id} deletable={false} isSelected={true} onClick={() => {}} tag={tag} />)}
+          <div className={classes.tagContainer}>
+            {features.useTags &&
+              tags.map((tag) => (
+                <TagComponent key={tag.id} deletable={false} isSelected={true} onClick={() => onTagClick(tag)} tag={tag} />
+              ))}
+          </div>
         </div>
         <ActionMenu menuItems={menuItems} />
-      </div>
-      <Divider />
+      </Card>
     </>
   );
 };
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const ToDoItem = connector(ToDoItemComponent);

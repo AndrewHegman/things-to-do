@@ -12,11 +12,14 @@ import { categories } from "./API/categories";
 import { ToDoItemListPage } from "./Pages/ToDoItemList/ToDoItemList";
 import { NoCategoriesPage } from "./Pages/NoCategoriesPage/NoCategoriesPage";
 
+// #dcdcdc
+// 65c3c8
+
 const theme = createMuiTheme({
   palette: {
     primary: {
       light: "#8eacbc",
-      main: "#607d8c",
+      main: "#65c3c8",
       dark: "#34515f",
       contrastText: "#000",
     },
@@ -25,6 +28,21 @@ const theme = createMuiTheme({
       main: "#9ccc64",
       dark: "#6b9b36",
       contrastText: "#000",
+    },
+    background: {
+      default: "#efeae6",
+    },
+  },
+  overrides: {
+    MuiPaper: {
+      root: {
+        backgroundColor: "#faf7f5",
+      },
+    },
+    MuiChip: {
+      label: {
+        color: "#faf7f5",
+      },
     },
   },
 });

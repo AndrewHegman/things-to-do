@@ -5,11 +5,6 @@ export const useToDoItemStyles = makeStyles((theme: Theme) => ({
     minWidth: 275,
     marginBottom: theme.spacing(2),
   },
-  bullet: {
-    display: "inline-block",
-    margin: "0 2px",
-    transform: "scale(0.8)",
-  },
   title: {
     fontSize: 14,
   },
