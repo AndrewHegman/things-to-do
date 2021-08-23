@@ -10,12 +10,13 @@ import { DeveloperTools } from "../DeveloperTools";
 import { toDos } from "../../API/toDos";
 import { useParams } from "react-router";
 import { IRouteParams } from "../../Interface/Router";
-import { InformationDialog } from "../Dialogs/InformationDialog";
 import { LoadingDialog } from "../Dialogs/LoadingDialog";
-import { TypographyInput } from "../TypographyInput";
 import { CreateToDoDrawer } from "../CreateToDoDrawer/CreateToDoDrawer";
 import { Tag } from "../../Interface/Tags";
 import { tags as TagsAPI } from "../../API/tags";
+import { InformationDialog } from "../Dialogs/InformationDialog";
+import { ConfirmationDialog } from "../Dialogs/ConfirmationDialog";
+import { ToDoItem } from "../../Interface/ToDoItem";
 
 interface IToDoListItemProps extends PropsFromRedux {}
 
@@ -28,8 +29,9 @@ const mapStateToProps = (state: RootState) => {
 };
 
 enum Dialogs {
-  DuplicateToDo = 0,
-  IsLoading = 1,
+  IsLoading = 0,
+  NetworkError = 1,
+  ConfirmDelete = 2,
 }
 
 const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
@@ -40,6 +42,9 @@ const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
   const classes = useToDoItemListStyles();
   const dispatch = useDispatch();
   const selectCurrentToDos = useSelector(selectors.toDos.getCurrentToDos);
+  const networkError = React.useRef<string>("");
+  const selectedToDo = React.useRef<ToDoItem>();
+
   const { categoryId } = useParams<IRouteParams>();
 
   React.useEffect(() => {
@@ -63,45 +68,26 @@ const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
     console.log(`info ${id}`);
   };
 
-  const onDelete = async (id: string) => {
+  const onDelete = async () => {
+    if (!selectedToDo.current) {
+      console.error("Unable to delete ToDo. selectedToDo ref is undefined.");
+      return;
+    }
     try {
       openDialogs([Dialogs.IsLoading]);
-      const _toDos = await toDos.deleteItem(id, props.isSlowMode, props.slowModeTime);
-      dispatch(actions.toDos.setToDos(_toDos));
-      closeDialogs([Dialogs.IsLoading]);
-    } catch (error) {
-      console.error(error);
+      dispatch(
+        actions.toDos.setToDos(await toDos.deleteItem(selectedToDo.current.id, props.isSlowMode, props.slowModeTime))
+      );
+    } catch (error: any) {
+      // TODO: Test this
+      networkError.current = error;
+      openDialogs([Dialogs.NetworkError]);
     }
+    closeDialogs([Dialogs.IsLoading, Dialogs.ConfirmDelete, Dialogs.NetworkError]);
   };
 
   const onAddNewItem = () => {
     setIsCreatingNewItem(true);
-  };
-
-  const onSubmitNewItem = async (text: string) => {
-    setIsCreatingNewItem(false);
-    if (!text) {
-      return;
-    }
-
-    if (selectCurrentToDos.find((toDo) => toDo.name === text)) {
-      openDialogs([Dialogs.DuplicateToDo]);
-      return;
-    }
-
-    openDialogs([Dialogs.IsLoading]);
-    const _toDos = await toDos.createItem(
-      {
-        name: text,
-        categoryKey: props.currentCategory.key,
-        tags: [],
-      },
-      props.isSlowMode,
-      props.slowModeTime
-    );
-
-    dispatch(actions.toDos.setToDos(_toDos));
-    closeDialogs([Dialogs.IsLoading]);
   };
 
   const closeDialogs = (dialogsToClose: Dialogs[]) => {
@@ -131,7 +117,10 @@ const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
             <ToDoItemEntry
               onEdit={() => onEdit(item.id)}
               onInfo={() => onInfo(item.id)}
-              onDelete={() => onDelete(item.id)}
+              onDelete={() => {
+                selectedToDo.current = item;
+                openDialogs([Dialogs.ConfirmDelete]);
+              }}
               isEditing={false}
               key={i}
               item={item}
@@ -145,12 +134,20 @@ const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
 
         <DeveloperTools />
       </Container>
-      <InformationDialog
-        dialogText={"To-do items must have a unique name"}
-        isOpen={currentDialogs.includes(Dialogs.DuplicateToDo)}
-        onClose={() => closeDialogs([Dialogs.DuplicateToDo])}
-      />
       <LoadingDialog isOpen={currentDialogs.includes(Dialogs.IsLoading)} dialogText={"Please wait..."} />
+      <InformationDialog
+        isOpen={currentDialogs.includes(Dialogs.NetworkError)}
+        dialogText={networkError.current}
+        title={"Network Error"}
+      />
+      <ConfirmationDialog
+        isOpen={currentDialogs.includes(Dialogs.ConfirmDelete)}
+        text="Are you sure you want to delete the ToDo?"
+        onCancel={() => closeDialogs([Dialogs.ConfirmDelete])}
+        onClose={() => closeDialogs([Dialogs.ConfirmDelete])}
+        title="Delete ToDo?"
+        onConfirm={() => onDelete()}
+      />
     </>
   );
 };

@@ -4,7 +4,7 @@ import { ToDoItem } from "../../Interface/ToDoItem";
 export interface IToDoItemProps {
   category: string;
   item?: ToDoItem;
-  onEdit: (text: string) => void;
+  onEdit: () => void;
   onInfo: () => void;
   onDelete: () => void;
   isEditing: boolean;

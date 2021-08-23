@@ -31,7 +31,7 @@ const DeveloperToolsComponent: React.FC<IDeveloperToolsProps> = (props) => {
   const [showDialog, setShowDialog] = React.useState<boolean>(false);
   const [localSlowModeTime, setLocalSlowModeTime] = React.useState<string>(`${props.slowModeTime}`);
   const [errorText, setErrorText] = React.useState<string>("");
-  console.log(props);
+
   const dispatch = useDispatch();
 
   const classes = useDeveloperToolsStyles();
@@ -42,7 +42,6 @@ const DeveloperToolsComponent: React.FC<IDeveloperToolsProps> = (props) => {
 
   const onChangeSlowModeTime = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { value } = event.target;
-    console.log(parseInt(value));
 
     if (parseInt(value) <= 0) {
       setErrorText("Delay must be at least 0");
@@ -58,7 +57,6 @@ const DeveloperToolsComponent: React.FC<IDeveloperToolsProps> = (props) => {
   };
 
   const onBackendSelectChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>, child: ReactNode) => {
-    console.log(event.target.value);
     dispatch(actions.setBackendEndpoint(event.target.value as BackendEndpoint));
   };
 

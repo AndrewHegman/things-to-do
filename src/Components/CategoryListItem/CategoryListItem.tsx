@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Typography,
-  ListItem,
-  Dialog as MuiDialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-} from "@material-ui/core";
+import { Typography, ListItem } from "@material-ui/core";
 import { Category } from "../../Interface/Category";
 import { useCategoryListItemStyles } from "./CategoryListItem.types";
 import { categories } from "../../API/categories";

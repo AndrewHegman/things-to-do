@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { useAddNewToDoItemButtonStyles } from "./AddNewToDoItemButton.styles";
 
 interface IAddNewToDoItemButtonProps {

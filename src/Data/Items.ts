@@ -1,5 +1,4 @@
-import { ToDoItem, ToDoItemResponse } from "../Interface/ToDoItem";
-import { Tags } from "./Tags";
+import { ToDoItem } from "../Interface/ToDoItem";
 
 export const items: ToDoItem[] = [
   {

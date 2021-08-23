@@ -1,4 +1,4 @@
-import { makeStyles, createStyles, Theme, fade } from "@material-ui/core/styles";
+import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 export const useCreateToDoDrawerStyles = makeStyles((theme: Theme) => {
   return createStyles({
@@ -10,6 +10,8 @@ export const useCreateToDoDrawerStyles = makeStyles((theme: Theme) => {
     contentContainer: {
       paddingTop: `calc(${theme.spacing(1)}px + ${theme.mixins.toolbar.minHeight}px)`,
       padding: theme.spacing(0, 0, 0, 2),
+      display: "flex",
+      flexDirection: "column",
     },
     tagContainer: {
       paddingTop: theme.spacing(2),

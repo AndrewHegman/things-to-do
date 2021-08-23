@@ -1,8 +1,6 @@
 import "./App.css";
 import React from "react";
 import { SearchBar } from "./Components/SearchBar";
-import { TabBar } from "./Components/TabBar/TabBar";
-import { ToDoItemList } from "./Components/ToDoItemList";
 import { features } from "./features";
 import { Container, createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { useAppStyles } from "./App.styles";
@@ -13,7 +11,6 @@ import { RootState } from "./Redux/store";
 import { categories } from "./API/categories";
 import { ToDoItemListPage } from "./Pages/ToDoItemList/ToDoItemList";
 import { NoCategoriesPage } from "./Pages/NoCategoriesPage/NoCategoriesPage";
-import { InformationDialog } from "./Components/Dialogs/InformationDialog";
 
 const theme = createMuiTheme({
   palette: {

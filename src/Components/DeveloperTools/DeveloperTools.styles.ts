@@ -1,7 +1,6 @@
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 export const useDeveloperToolsStyles = makeStyles((theme: Theme) => {
-  console.log(theme);
   return createStyles({
     button: {
       backgroundColor: theme.palette.primary.main,
