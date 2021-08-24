@@ -28,7 +28,7 @@ const ToDoItemComponent: React.FC<IMobileToDoItemProps> = (props) => {
       onClick: props.onEdit,
       closeMenuOnClick: true,
     },
-    { text: "Delete", onClick: props.onDelete, closeMenuOnClick: false },
+    { text: "Delete", onClick: props.onDelete, closeMenuOnClick: true },
   ];
 
   const onTagClick = (selectedTag: Tag) => {
@@ -49,7 +49,13 @@ const ToDoItemComponent: React.FC<IMobileToDoItemProps> = (props) => {
           <div className={classes.tagContainer}>
             {features.useTags &&
               tags.map((tag) => (
-                <TagComponent key={tag.id} deletable={false} isSelected={true} onClick={() => onTagClick(tag)} tag={tag} />
+                <TagComponent
+                  key={tag.id}
+                  deletable={false}
+                  isSelected={selectedTags.map((tag) => tag.id).includes(tag.id)}
+                  onClick={() => onTagClick(tag)}
+                  tag={tag}
+                />
               ))}
           </div>
         </div>

@@ -8,11 +8,12 @@ import { Dialog } from "../Dialog/Dialog";
 import { LoadingDialog } from "../Dialogs/LoadingDialog";
 import { TypographyInput } from "../TypographyInput";
 import { useCreateToDoDrawerStyles } from "./CreateToDoDrawer.styles";
-import { Tag } from "../Tag/Tag";
+import { Tag as TagComponent } from "../Tag/Tag";
 import { actions, selectors } from "../../Redux";
 import { AddNewTag } from "../Tag/AddNewTag";
 import { toDos } from "../../API/toDos";
 import { InformationDialog } from "../Dialogs/InformationDialog";
+import { Tag } from "../../Interface/Tags";
 
 interface ICreateToDoDrawerProps extends PropsFromRedux {
   isOpen: boolean;
@@ -34,8 +35,10 @@ const mapStateToProps = (state: RootState) => ({
 
 const CreateToDoDrawerComponent: React.FC<ICreateToDoDrawerProps> = (props) => {
   const [currentDialogs, setCurrentDialogs] = React.useState<Dialogs[]>([]);
-  const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = React.useState<Tag[]>([]);
   const [toDoName, setToDoName] = React.useState<string>("");
+  const [tagSearchText, setTagSearchText] = React.useState<string>("");
+  const [visibleTags, setVisibleTags] = React.useState<Tag[]>([]);
 
   const classes = useCreateToDoDrawerStyles();
   const dispatch = useDispatch();
@@ -53,12 +56,12 @@ const CreateToDoDrawerComponent: React.FC<ICreateToDoDrawerProps> = (props) => {
     });
   };
 
-  const handleTagClick = (tagId: string) => {
-    const idx = selectedTags.findIndex((selectedTag) => selectedTag === tagId);
+  const handleTagClick = (tag: Tag) => {
+    const idx = selectedTags.findIndex((selectedTag) => selectedTag.id === tag.id);
     if (idx > -1) {
       setSelectedTags([...selectedTags.slice(0, idx), ...selectedTags.slice(idx + 1)]);
     } else {
-      setSelectedTags([...selectedTags, tagId]);
+      setSelectedTags([...selectedTags, tag]);
     }
   };
 
@@ -80,7 +83,7 @@ const CreateToDoDrawerComponent: React.FC<ICreateToDoDrawerProps> = (props) => {
           {
             categoryKey: props.currentCategory.key,
             name: toDoName,
-            tags: selectedTags,
+            tags: selectedTags.map((tag) => tag.id),
           },
           props.isSlowMode,
           props.slowModeTime
@@ -91,6 +94,25 @@ const CreateToDoDrawerComponent: React.FC<ICreateToDoDrawerProps> = (props) => {
     closeDialogs([Dialogs.IsLoading]);
     props.onClose();
   };
+
+  React.useEffect(() => {
+    let matchingTags: Tag[];
+    if (tagSearchText === "") {
+      matchingTags = selectedTags;
+    } else {
+      let exact = false;
+      matchingTags = props.tags.filter((tag) => {
+        if (tag.name === tagSearchText) {
+          exact = true;
+        }
+        return tag.name.includes(tagSearchText) || selectedTags.find((selectedTag) => selectedTag.id === tag.id);
+      });
+      if (!exact) {
+        matchingTags.push({ id: null as unknown as string, name: tagSearchText });
+      }
+    }
+    setVisibleTags(matchingTags);
+  }, [props.tags, tagSearchText, selectedTags]);
 
   React.useEffect(() => {
     return () => {
@@ -121,16 +143,25 @@ const CreateToDoDrawerComponent: React.FC<ICreateToDoDrawerProps> = (props) => {
           <TypographyInput clearTextOnFirstEnter placeholder={"New to-do name..."} onChange={(text) => setToDoName(text)} />
           <Divider />
           <div className={classes.tagContainer}>
-            {props.tags.map((tag) => (
-              <Tag
-                tag={tag}
-                key={tag.id}
-                isSelected={!!selectedTags.find((selectedTag) => selectedTag === tag.id)}
-                onClick={() => handleTagClick(tag.id)}
-                deletable
-              />
-            ))}
-            <AddNewTag />
+            <TypographyInput
+              clearTextOnFirstEnter
+              placeholder={"Add some tags!"}
+              onChange={(text) => setTagSearchText(text)}
+            />
+            {visibleTags.map((tag) => {
+              if (tag.id === null) {
+                return <AddNewTag label={tag.name} />;
+              }
+              return (
+                <TagComponent
+                  tag={tag}
+                  key={tag.id}
+                  isSelected={!!selectedTags.find((selectedTag) => selectedTag.id === tag.id)}
+                  onClick={() => handleTagClick(tag)}
+                  deletable={false}
+                />
+              );
+            })}
           </div>
           <Button
             style={{ alignSelf: "center" }}

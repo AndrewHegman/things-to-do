@@ -40,9 +40,19 @@ const theme = createMuiTheme({
       },
     },
     MuiChip: {
-      label: {
+      root: {
+        fontWeight: "bold",
+        fontSize: "16px",
+      },
+      outlinedPrimary: {
+        color: "#65c3c8",
+      },
+      colorPrimary: {
         color: "#faf7f5",
       },
+      // label: {
+      //   color: "#faf7f5",
+      // },
     },
   },
 });

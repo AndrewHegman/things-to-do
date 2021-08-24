@@ -8,7 +8,9 @@ import { InformationDialog } from "../Dialogs/InformationDialog";
 import { InputDialog } from "../Dialogs/InputDialog";
 import { LoadingDialog } from "../Dialogs/LoadingDialog";
 
-interface IAddNewTagProps extends PropsFromRedux {}
+interface IAddNewTagProps extends PropsFromRedux {
+  label?: string;
+}
 
 enum Dialogs {
   IsLoading = 0,
@@ -23,7 +25,7 @@ const mapStateToProps = (state: RootState) => ({
   tags: state.tags.tags,
 });
 
-const AddNewTagComponent: React.FC<IAddNewTagProps> = ({ isSlowMode, slowModeTime, tags }) => {
+const AddNewTagComponent: React.FC<IAddNewTagProps> = ({ isSlowMode, slowModeTime, tags, label }) => {
   const [currentDialogs, setCurrentDialogs] = React.useState<Dialogs[]>([]);
 
   const dispatch = useDispatch();
@@ -58,7 +60,13 @@ const AddNewTagComponent: React.FC<IAddNewTagProps> = ({ isSlowMode, slowModeTim
 
   return (
     <>
-      <Chip label={"Add new..."} style={{ margin: "2px" }} onClick={() => openDialogs([Dialogs.EnterTagName])} />
+      {/* <Chip label={label ?? "Add new..."} style={{ margin: "2px" }} onClick={() => openDialogs([Dialogs.EnterTagName])} /> */}
+      <Chip
+        label={label ?? "Add new..."}
+        style={{ margin: "2px" }}
+        onClick={label ? () => createNewTag(label) : () => openDialogs([Dialogs.EnterTagName])}
+      />
+
       <InputDialog
         isOpen={currentDialogs.includes(Dialogs.EnterTagName)}
         title="New Tag"

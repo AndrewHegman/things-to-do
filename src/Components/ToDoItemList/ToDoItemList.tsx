@@ -25,6 +25,7 @@ const mapStateToProps = (state: RootState) => {
     currentCategory: state.categories.currentCategory,
     isSlowMode: state.common.isSlowMode,
     slowModeTime: state.common.slowModeTime,
+    selectedTags: state.tags.selectedTags,
   };
 };
 
@@ -102,6 +103,14 @@ const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
     });
   };
 
+  const getToDoItems = () => {
+    const { selectedTags } = props;
+    if (selectedTags.length === 0) {
+      return selectCurrentToDos;
+    }
+    return selectCurrentToDos.filter((toDoItem) => selectedTags.some((tag) => toDoItem.tags.includes(tag.id)));
+  };
+
   return (
     <>
       <Container
@@ -113,7 +122,7 @@ const ToDoItemListComponent: React.FC<IToDoListItemProps> = (props) => {
         disableGutters
       >
         <Box>
-          {selectCurrentToDos.map((item, i) => (
+          {getToDoItems().map((item, i) => (
             <ToDoItemEntry
               onEdit={() => onEdit(item.id)}
               onInfo={() => onInfo(item.id)}
