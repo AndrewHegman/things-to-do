@@ -1,7 +1,7 @@
-export const resolveSlowPromiseWrapper = <T>(resData: T, slowMode: boolean, slowModeTime: number) => {
-  return new Promise<T>((res) => setTimeout(() => res(resData), slowMode ? slowModeTime : 0));
+export const resolveSlowPromiseWrapper = <T>(resData: T, slowModeTime: number) => {
+  return new Promise((res, rej) => setTimeout(() => res({ json: () => Promise.resolve(resData), ok: true } as Response), slowModeTime));
 };
 
-export const rejectSlowPromiseWrapper = <T>(resData: T, slowMode: boolean, slowModeTime: number) => {
-  return new Promise<T>((res, rej) => setTimeout(() => rej(resData), slowMode ? slowModeTime : 0));
+export const rejectSlowPromiseWrapper = (resData: string, slowModeTime: number) => {
+  return new Promise((res, rej) => setTimeout(() => res({ ok: false, json: () => Promise.resolve({}), statusText: resData } as Response)));
 };

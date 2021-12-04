@@ -1,9 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { rootReducer } from "./Store/index";
+import { categoriesReducer } from "./categories";
+import { categoriesDialogReducer } from "./categoriesDialog";
+import { toDoItemsReducer } from "./toDoItems";
 
 export const store = configureStore({
-  reducer: rootReducer,
-  devTools: process.env.NODE_ENV !== "production",
+  reducer: {
+    categories: categoriesReducer,
+    toDoItems: toDoItemsReducer,
+    categoriesDialog: categoriesDialogReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
+
+export type AppDispatch = typeof store.dispatch;

@@ -1,65 +1,31 @@
 import "./App.css";
 import React from "react";
-// import { createItem, getToDos, deleteItem } from "./API/MockFetch";
-import { Category } from "./Interface/Category";
-import { SearchBar } from "./Components/SearchBar";
-import { TabBar } from "./Components/TabBar/TabBar";
-import { ToDoItem } from "./Interface/ToDoItem";
-import { ToDoItemList } from "./Components/ToDoItemList";
-import { features } from "./features";
-import { Container } from "@material-ui/core";
-import { useAppStyles } from "./App.styles";
-import { Redirect, Route, RouteComponentProps, Switch, useHistory, useRouteMatch } from "react-router";
-import { IRouterState } from "./Interface/Router";
-import { connect, ConnectedProps, useDispatch } from "react-redux";
+import { ToDoList } from "./Components/ToDoList";
+import { useAppDispatch, useAppSelector } from "./Redux/hooks";
 import { actions } from "./Redux";
-import { RootState } from "./Redux/store";
+import { selectors } from "./Redux/categories";
+import { CategoriesDialog } from "./Components/CategoriesDialog";
+import { TTDAppBar } from "./Components/AppBar";
+import { ThemeProvider } from "@emotion/react";
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    isLoading: state.categories.isCategoriesLoading,
-    currentCategory: state.categories.currentCategory,
-  };
-};
+const App: React.FC = (props) => {
+  const dispatch = useAppDispatch();
 
-const AppComponent: React.FC<PropsFromRedux> = (props) => {
-  // const [isLoadingCategories, setIsLoadingCategories] = React.useState<boolean>(true);
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [cacheStale, setCacheStale] = React.useState<boolean>(true);
-  const dispatch = useDispatch();
+  const currentCategory = useAppSelector(selectors.selectCurrentCategory);
 
-  React.useEffect(() => {
-    dispatch(actions.getCategories());
-    dispatch(actions.getToDos());
-  }, []);
+  const chooseACategoryPage = <div onClick={() => dispatch(actions.categoriesDialog.open())}>Please choose a category by clicking here</div>;
 
-  const classes = useAppStyles();
+  const theme = {};
 
   return (
-    <Container className={classes.container}>
-      {features.useSearchBar && <SearchBar />}
-      {props.isLoading && <div>loading...</div>}
-
-      <Switch>
-        <Route exact path={"/:categoryId"}>
-          {!props.isLoading && (
-            <>
-              <TabBar slowMode={false} />
-              <ToDoItemList />
-            </>
-          )}
-        </Route>
-
-        <Route path="*">
-          <div>Whale whale whale whale</div>
-        </Route>
-      </Switch>
-      <Redirect to={props.currentCategory.pathName} />
-    </Container>
+    <ThemeProvider theme={theme}>
+      <div>
+        <TTDAppBar />
+        <CategoriesDialog />
+        {currentCategory ? <ToDoList /> : chooseACategoryPage}
+      </div>
+    </ThemeProvider>
   );
 };
 
-const connector = connect(mapStateToProps);
-type PropsFromRedux = ConnectedProps<typeof connector>;
-const App = connect(mapStateToProps)(AppComponent);
 export default App;

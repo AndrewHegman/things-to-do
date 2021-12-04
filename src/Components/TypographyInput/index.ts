@@ -1,1 +1,0 @@
-export { TypographyInput } from "./TypographyInput";
