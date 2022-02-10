@@ -2,21 +2,21 @@ import { Chip, Divider, Drawer, List, ListItem, ListItemText, Typography, useThe
 import React from "react";
 import { ToDoItem } from "../Interface/ToDoItem";
 import { useAppSelector, selectors } from "../Redux";
-import { toDos as toDoItemsApi } from "../API/toDos";
 import { Box } from "@mui/system";
 import { CreateToDoDialog } from "./CreateToDoDialog";
 import { APIBuilder } from "../API/urlBuilder";
+import { ConfirmationDialog } from "./ConfirmationDialog";
 
 interface IToDoListProps {}
 
 export const ToDoList: React.FC<IToDoListProps> = () => {
   const [toDoItems, setToDoItems] = React.useState<ToDoItem[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [showDrawer, setShowDrawer] = React.useState(false);
   const [showCreateToDoDialog, setShowCreateToDoDialog] = React.useState(true);
+  const [selectedToDo, setSelectedToDo] = React.useState<ToDoItem>();
+  const [showDeleteToDoDialog, setShowDeleteToDoDialog] = React.useState<boolean>(false);
 
   const theme = useTheme();
-  const selectedToDo = React.useRef<ToDoItem>();
   const isCategoriesLoading = useAppSelector(selectors.categories.selectCategoriesLoading);
   const currentCategory = useAppSelector(selectors.categories.selectCurrentCategory);
   const apiBuilder = new APIBuilder();
@@ -24,8 +24,6 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
   const fetchToDoItems = async () => {
     if (currentCategory) {
       setIsLoading(true);
-      // setToDoItems(await toDoItemsApi.getToDosByCategoryKey(currentCategory.key, false, 0));
-      console.log(await apiBuilder.toDoItems().byCategoryKey(currentCategory.key).get().fetch());
       setToDoItems(await apiBuilder.toDoItems().byCategoryKey(currentCategory.key).get().fetch());
       setIsLoading(false);
     }
@@ -42,13 +40,13 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
   };
 
   const onToDoSelect = (toDoItem: ToDoItem) => {
-    selectedToDo.current = toDoItem;
-    setShowDrawer(true);
+    setSelectedToDo(toDoItem);
+    // setShowDrawer(true);
   };
 
   const onCloseDrawer = () => {
-    selectedToDo.current = undefined;
-    setShowDrawer(false);
+    setSelectedToDo(undefined);
+    // setShowDrawer(false);
   };
 
   const onCreateToDoDialogClose = async (didUpdate: boolean) => {
@@ -56,6 +54,22 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
       fetchToDoItems();
     }
     setShowCreateToDoDialog(false);
+  };
+
+  const deleteToDo = async () => {
+    if (selectedToDo) {
+      setIsLoading(true);
+      setShowDeleteToDoDialog(false);
+      try {
+        await apiBuilder.toDoItems().delete().byId(selectedToDo.id).fetch();
+        setSelectedToDo(undefined);
+        await fetchToDoItems();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
 
   return (
@@ -66,7 +80,11 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
             {toDoItems.map((toDoItem) => (
               <React.Fragment key={toDoItem.id}>
                 <ListItem onClick={() => onToDoSelect(toDoItem)}>
-                  <ListItemText primary={toDoItem.name} secondary={getTags(toDoItem)} secondaryTypographyProps={{ component: "span" }} />
+                  <ListItemText
+                    primary={toDoItem.name}
+                    secondary={getTags(toDoItem)}
+                    secondaryTypographyProps={{ component: "span" }}
+                  />
                 </ListItem>
                 <Divider />
               </React.Fragment>
@@ -81,7 +99,7 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
       </List>
       <Drawer
         anchor="bottom"
-        open={showDrawer}
+        open={!!selectedToDo}
         onClose={() => onCloseDrawer()}
         PaperProps={{
           sx: {
@@ -92,7 +110,7 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
       >
         <Box>
           <Typography variant="h5" sx={{ textAlign: "center" }}>
-            {selectedToDo.current?.name}
+            {selectedToDo && selectedToDo.name}
           </Typography>
           <Divider />
           <List>
@@ -103,12 +121,26 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
               <ListItemText>More Info</ListItemText>
             </ListItem>
             <ListItem button>
-              <ListItemText sx={{ color: theme.palette.error.light }}>Delete</ListItemText>
+              <ListItemText sx={{ color: theme.palette.error.light }} onClick={() => setShowDeleteToDoDialog(true)}>
+                Delete
+              </ListItemText>
             </ListItem>
           </List>
         </Box>
       </Drawer>
       <CreateToDoDialog isOpen={showCreateToDoDialog} onClose={(didUpdate: boolean) => onCreateToDoDialogClose(didUpdate)} />
+      <ConfirmationDialog
+        open={showDeleteToDoDialog}
+        onClose={() => setShowDeleteToDoDialog(false)}
+        onConfirm={() => deleteToDo()}
+        title="Are you sure?"
+      >
+        This will remove the category along with all associated
+        <em>things</em>.<br />
+        <span style={{ color: theme.palette.error.light }}>
+          <strong>This action cannot be undone.</strong>
+        </span>
+      </ConfirmationDialog>
     </>
   );
 };

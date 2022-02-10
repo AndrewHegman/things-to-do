@@ -150,6 +150,11 @@ class ToDosAPIBuilder {
     return this;
   }
 
+  byId(id: string) {
+    this.id = id;
+    return this;
+  }
+
   byCategoryKey(categoryId: string) {
     this.isByCategory = true;
     this.categoryId = categoryId;

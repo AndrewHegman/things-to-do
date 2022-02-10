@@ -1,22 +1,18 @@
 import React from "react";
-import { AppBar, Button, Chip, Dialog, InputAdornment, Slide, TextField, Typography } from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
+import { AppBar, Button, Chip, Dialog, InputAdornment, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { tags as tagsApi } from "../API/tags";
 import { Tag } from "../Interface/Tags";
 import { Search } from "@mui/icons-material";
-import { Category } from "../Interface/Category";
 import { actions, selectors, useAppDispatch, useAppSelector } from "../Redux";
 import { APIBuilder } from "../API/urlBuilder";
+import { getTransition } from "./Transition";
 
 export interface ICreateToDoDialogProps {
   isOpen: boolean;
   onClose: (didUpdate: boolean) => void;
 }
 
-const Transition = React.forwardRef(function Transition(props: TransitionProps & { children: React.ReactElement }, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+const Transition = getTransition("up");
 
 export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
   const category = useAppSelector(selectors.categories.selectCurrentCategory);
@@ -69,7 +65,9 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
 
   const onSaveClick = () => {
     dispatch(
-      actions.toDoItems.updateNewToDoItem({ tags: selectedTags.map((selectedTag) => allTags.current.find((tag) => tag.id === selectedTag)!) })
+      actions.toDoItems.updateNewToDoItem({
+        tags: selectedTags.map((selectedTag) => allTags.current.find((tag) => tag.id === selectedTag)!),
+      })
     );
     setSearchText("");
     setSelectedTags([]);
@@ -87,7 +85,9 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
 
   React.useEffect(() => {
     const matchingTags =
-      searchText !== "" ? allTags.current?.filter((tag) => tag.name.toLowerCase().includes(searchText.toLowerCase())) : allTags.current;
+      searchText !== ""
+        ? allTags.current?.filter((tag) => tag.name.toLowerCase().includes(searchText.toLowerCase()))
+        : allTags.current;
     setTags(matchingTags);
     setCreateTag(matchingTags.filter((tag) => tag.name === searchText).length ? "" : searchText);
   }, [searchText]);
@@ -134,7 +134,9 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
                 variant={selectedTags.includes(tag.id) ? "filled" : "outlined"}
               />
             ))}
-            {createTag ? <Chip label={searchText} sx={{ margin: "5px" }} onClick={() => onCreateNewTag()} variant="outlined" /> : null}
+            {createTag ? (
+              <Chip label={searchText} sx={{ margin: "5px" }} onClick={() => onCreateNewTag()} variant="outlined" />
+            ) : null}
           </>
         ) : (
           <div>Loading tags...</div>

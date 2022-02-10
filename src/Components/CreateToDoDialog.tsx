@@ -1,23 +1,27 @@
 import React from "react";
 import { AppBar, Button, Chip, Dialog, Slide, TextField, Typography } from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
 import { Box } from "@mui/system";
 import { TagsDialog } from "./TagsDialog";
-import { Category } from "../Interface/Category";
 import { actions, selectors, useAppDispatch, useAppSelector } from "../Redux";
 import { toDos as ToDosApi } from "../API/toDos";
 import { APIBuilder } from "../API/urlBuilder";
+import { getTransition } from "./Transition";
+
 export interface ICreateToDoDialogProps {
   isOpen: boolean;
   onClose: (didUpdate: boolean) => void;
 }
 
-const Transition = React.forwardRef(function Transition(props: TransitionProps & { children: React.ReactElement }, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+// const TransitionAlt = React.forwardRef(function Transition(props: TransitionProps & { children: React.ReactElement }, ref) {
+//   return <Slide direction="up" ref={ref} {...props} />;
+// });
+
+const Transition = getTransition("up");
 
 export const CreateToDoDialog: React.FC<ICreateToDoDialogProps> = (props) => {
   const [isTagsDialogOpen, setIsTagsDialogOpen] = React.useState(false);
+  const transComponent = React.useRef();
+
   const apiBuilder = new APIBuilder();
 
   const { isOpen, onClose } = props;
@@ -63,7 +67,15 @@ export const CreateToDoDialog: React.FC<ICreateToDoDialogProps> = (props) => {
             fullWidth
             onBlur={(e) => dispatch(actions.toDoItems.updateNewToDoItem({ name: e.target.value }))}
           />
-          <TextField disabled label="More information" variant="standard" multiline minRows={1} helperText="Maximum of 250 characters" fullWidth />
+          <TextField
+            disabled
+            label="More information"
+            variant="standard"
+            multiline
+            minRows={1}
+            helperText="Maximum of 250 characters"
+            fullWidth
+          />
           <Button sx={{ textTransform: "none" }} onClick={() => setIsTagsDialogOpen(true)}>
             <b>Labels &gt;</b>
           </Button>
