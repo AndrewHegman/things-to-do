@@ -133,7 +133,7 @@ class ToDosAPIBuilder {
     return this;
   }
 
-  update(updated: Partial<ToDoItem>) {
+  update(updated: Partial<Omit<ToDoItem, "id" | "categoryKey">>) {
     this.updated = updated;
     this.method = "PUT";
     return this;

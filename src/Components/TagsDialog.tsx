@@ -9,20 +9,21 @@ import { getTransition } from "./Transition";
 
 export interface ICreateToDoDialogProps {
   isOpen: boolean;
-  onClose: (didUpdate: boolean) => void;
+  onClose: (tags: Tag[]) => void;
+  selectedTags: Tag[];
 }
 
 const Transition = getTransition("up");
 
 export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
   const category = useAppSelector(selectors.categories.selectCurrentCategory);
-  const newToDoItem = useAppSelector(selectors.toDoItems.selectNewToDoItem);
+  // const newToDoItem = useAppSelector(selectors.toDoItems.selectNewToDoItem);
 
   const [tags, setTags] = React.useState<Tag[]>();
   const [isTagsLoading, setIsTagsLoading] = React.useState(false);
   const [createTag, setCreateTag] = React.useState("");
   const [searchText, setSearchText] = React.useState("");
-  const [selectedTags, setSelectedTags] = React.useState<string[]>(newToDoItem.tags.map((tag) => tag.id));
+  const [selectedTags, setSelectedTags] = React.useState<string[]>(props.selectedTags.map((tag) => tag.id));
 
   const apiBuilder = new APIBuilder();
   const dispatch = useAppDispatch();
@@ -69,10 +70,10 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
         tags: selectedTags.map((selectedTag) => allTags.current.find((tag) => tag.id === selectedTag)!),
       })
     );
+    tagsUpdated.current = false;
+    onClose(selectedTags.map((selectedTag) => allTags.current.find((tag) => tag.id === selectedTag)!));
     setSearchText("");
     setSelectedTags([]);
-    tagsUpdated.current = false;
-    onClose(false);
   };
 
   React.useEffect(() => {
@@ -80,8 +81,8 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
   }, []);
 
   React.useEffect(() => {
-    setSelectedTags(newToDoItem.tags.map((tag) => tag.id));
-  }, [newToDoItem.tags]);
+    setSelectedTags(props.selectedTags.map((tag) => tag.id));
+  }, [props.selectedTags]);
 
   React.useEffect(() => {
     const matchingTags =
@@ -92,8 +93,17 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
     setCreateTag(matchingTags.filter((tag) => tag.name === searchText).length ? "" : searchText);
   }, [searchText]);
 
+  // const isTagSelected = (id: string) => {
+  //   return selectedTags.includes(id) || existingSelectedTags?.map((tag) => tag.id).includes(id);
+  // };
+
   return (
-    <Dialog fullScreen open={isOpen} onClose={() => onClose(false)} TransitionComponent={Transition}>
+    <Dialog
+      fullScreen
+      open={isOpen}
+      onClose={() => onClose(selectedTags.map((selectedTag) => allTags.current.find((tag) => tag.id === selectedTag)!))}
+      TransitionComponent={Transition}
+    >
       <AppBar sx={{ position: "relative" }}>
         <Box sx={{ display: "flex", alignItems: "center", paddingLeft: "5px", justifyContent: "space-around" }}>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>

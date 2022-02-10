@@ -6,6 +6,7 @@ import { Box } from "@mui/system";
 import { CreateToDoDialog } from "./CreateToDoDialog";
 import { APIBuilder } from "../API/urlBuilder";
 import { ConfirmationDialog } from "./ConfirmationDialog";
+import { EditToDoDialog } from "./EditToDoDialog";
 
 interface IToDoListProps {}
 
@@ -15,6 +16,7 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
   const [showCreateToDoDialog, setShowCreateToDoDialog] = React.useState(true);
   const [selectedToDo, setSelectedToDo] = React.useState<ToDoItem>();
   const [showDeleteToDoDialog, setShowDeleteToDoDialog] = React.useState<boolean>(false);
+  const [showEditToDoDialog, setShowEditToDoDialog] = React.useState<boolean>(false);
 
   const theme = useTheme();
   const isCategoriesLoading = useAppSelector(selectors.categories.selectCategoriesLoading);
@@ -54,6 +56,14 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
       fetchToDoItems();
     }
     setShowCreateToDoDialog(false);
+  };
+
+  const onEditToDoDialogClose = async (didUpdate: boolean) => {
+    if (didUpdate) {
+      fetchToDoItems();
+    }
+    setShowEditToDoDialog(false);
+    setSelectedToDo(undefined);
   };
 
   const deleteToDo = async () => {
@@ -115,7 +125,7 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
           <Divider />
           <List>
             <ListItem button>
-              <ListItemText>Edit</ListItemText>
+              <ListItemText onClick={() => setShowEditToDoDialog(true)}>Edit</ListItemText>
             </ListItem>
             <ListItem button disabled>
               <ListItemText>More Info</ListItemText>
@@ -141,6 +151,11 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
           <strong>This action cannot be undone.</strong>
         </span>
       </ConfirmationDialog>
+      <EditToDoDialog
+        isOpen={showEditToDoDialog}
+        toDo={selectedToDo!}
+        onClose={(didUpdate: boolean) => onEditToDoDialogClose(didUpdate)}
+      />
     </>
   );
 };

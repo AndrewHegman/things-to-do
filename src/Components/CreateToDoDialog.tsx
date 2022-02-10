@@ -1,46 +1,56 @@
 import React from "react";
-import { AppBar, Button, Chip, Dialog, Slide, TextField, Typography } from "@mui/material";
+import { AppBar, Button, Chip, Dialog, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { TagsDialog } from "./TagsDialog";
-import { actions, selectors, useAppDispatch, useAppSelector } from "../Redux";
-import { toDos as ToDosApi } from "../API/toDos";
+import { selectors, useAppDispatch, useAppSelector } from "../Redux";
 import { APIBuilder } from "../API/urlBuilder";
 import { getTransition } from "./Transition";
+import { ToDoItem } from "../Interface/ToDoItem";
 
 export interface ICreateToDoDialogProps {
   isOpen: boolean;
   onClose: (didUpdate: boolean) => void;
+  existingToDo?: ToDoItem;
 }
-
-// const TransitionAlt = React.forwardRef(function Transition(props: TransitionProps & { children: React.ReactElement }, ref) {
-//   return <Slide direction="up" ref={ref} {...props} />;
-// });
 
 const Transition = getTransition("up");
 
 export const CreateToDoDialog: React.FC<ICreateToDoDialogProps> = (props) => {
   const [isTagsDialogOpen, setIsTagsDialogOpen] = React.useState(false);
-  const transComponent = React.useRef();
+  const [name, setName] = React.useState(props.existingToDo?.name ?? "");
+  const [tags, setTags] = React.useState(props.existingToDo?.tags ?? []);
+  const { isOpen, onClose, existingToDo } = props;
+
+  React.useEffect(() => {
+    if (existingToDo) {
+      const { tags, name } = existingToDo;
+      if (name) {
+        setName(name);
+      }
+
+      if (tags) {
+        setTags(tags);
+      }
+    }
+  }, [existingToDo]);
 
   const apiBuilder = new APIBuilder();
 
-  const { isOpen, onClose } = props;
-
-  const newToDo = useAppSelector(selectors.toDoItems.selectNewToDoItem);
   const currentCategory = useAppSelector(selectors.categories.selectCurrentCategory);
-  const dispatch = useAppDispatch();
 
   const createNewThing = async () => {
-    await apiBuilder
-      .toDoItems()
-      .create({ ...newToDo, categoryKey: currentCategory!.key })
-      .fetch();
-    dispatch(actions.toDoItems.clearNewToDoItem());
+    await apiBuilder.toDoItems().create({ name, tags, categoryKey: currentCategory!.key }).fetch();
+    onClose(true);
+  };
+
+  const updateThing = async () => {
+    await apiBuilder.toDoItems().byId(existingToDo!.id).update({ name, tags }).fetch();
     onClose(true);
   };
 
   const handleRemoveChip = async (tagId: string) => {
-    dispatch(actions.toDoItems.removeTagFromNewToDoItem(tagId));
+    const idx = tags.findIndex((tag) => tag.id === tagId);
+    setTags([...tags.slice(0, idx), ...tags.slice(idx + 1)]);
   };
 
   return (
@@ -49,7 +59,7 @@ export const CreateToDoDialog: React.FC<ICreateToDoDialogProps> = (props) => {
         <AppBar sx={{ position: "relative" }}>
           <Box sx={{ display: "flex", alignItems: "center", paddingLeft: "5px", justifyContent: "space-around" }}>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Create a new "{currentCategory!.displayName}" thing
+              {props.existingToDo ? `Edit "${props.existingToDo.name}"` : `Create a new "${currentCategory!.displayName}" thing`}
             </Typography>
             <Button sx={{ color: "white" }} variant="text" onClick={() => onClose(false)}>
               <Typography variant="subtitle1" component="div" sx={{ flexGrow: 1, textTransform: "none" }}>
@@ -65,7 +75,9 @@ export const CreateToDoDialog: React.FC<ICreateToDoDialogProps> = (props) => {
             sx={{ paddingBottom: "15px" }}
             helperText="Maximum of 50 characters"
             fullWidth
-            onBlur={(e) => dispatch(actions.toDoItems.updateNewToDoItem({ name: e.target.value }))}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            // onBlur={(e) => dispatch(actions.toDoItems.updateNewToDoItem({ name: e.target.value }))}
           />
           <TextField
             disabled
@@ -80,16 +92,27 @@ export const CreateToDoDialog: React.FC<ICreateToDoDialogProps> = (props) => {
             <b>Labels &gt;</b>
           </Button>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            {newToDo.tags.map((tag) => (
+            {tags.map((tag) => (
               <Chip label={tag.name} key={tag.id} sx={{ margin: "5px" }} onDelete={() => handleRemoveChip(tag.id)} />
             ))}
           </Box>
         </Box>
-        <Button sx={{ textTransform: "none", marginTop: "15px" }} variant="contained" onClick={() => createNewThing()}>
-          Create a New Thing
+        <Button
+          sx={{ textTransform: "none", marginTop: "15px" }}
+          variant="contained"
+          onClick={() => (existingToDo ? updateThing() : createNewThing())}
+        >
+          {existingToDo ? "Update Thing" : "Create a New Thing"}
         </Button>
       </Dialog>
-      <TagsDialog isOpen={isTagsDialogOpen} onClose={() => setIsTagsDialogOpen(false)} />
+      <TagsDialog
+        isOpen={isTagsDialogOpen}
+        onClose={(newTags) => {
+          setTags(newTags);
+          setIsTagsDialogOpen(false);
+        }}
+        selectedTags={tags}
+      />
     </>
   );
 };
