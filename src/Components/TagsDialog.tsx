@@ -3,7 +3,7 @@ import { AppBar, Button, Chip, Dialog, InputAdornment, TextField, Typography } f
 import { Box } from "@mui/system";
 import { Tag } from "../Interface/Tags";
 import { Search } from "@mui/icons-material";
-import { actions, selectors, useAppDispatch, useAppSelector } from "../Redux";
+import { selectors, useAppSelector } from "../Redux";
 import { APIBuilder } from "../API/urlBuilder";
 import { getTransition } from "./Transition";
 
@@ -17,27 +17,21 @@ const Transition = getTransition("up");
 
 export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
   const category = useAppSelector(selectors.categories.selectCurrentCategory);
-  // const newToDoItem = useAppSelector(selectors.toDoItems.selectNewToDoItem);
 
-  const [tags, setTags] = React.useState<Tag[]>();
+  const [tags, setTags] = React.useState<Tag[]>([]);
   const [isTagsLoading, setIsTagsLoading] = React.useState(false);
   const [createTag, setCreateTag] = React.useState("");
   const [searchText, setSearchText] = React.useState("");
-  const [selectedTags, setSelectedTags] = React.useState<string[]>(props.selectedTags.map((tag) => tag.id));
+  const [selectedTags, setSelectedTags] = React.useState<Tag[]>(props.selectedTags || []);
 
   const apiBuilder = new APIBuilder();
-  const dispatch = useAppDispatch();
-  const allTags = React.useRef<Tag[]>([]);
   const tagsUpdated = React.useRef(false);
 
   const { isOpen, onClose } = props;
 
   const getTags = async () => {
     setIsTagsLoading(true);
-    const loadedTags = await apiBuilder.tags().byCategory(category!.key).get().fetch();
-    console.log(loadedTags);
-    allTags.current = loadedTags;
-    setTags(loadedTags);
+    setTags(await apiBuilder.tags().byCategory(category!.key).get().fetch());
     setIsTagsLoading(false);
   };
 
@@ -45,11 +39,11 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
     setSearchText(e.target.value);
   };
 
-  const onTagClick = (tagId: string) => {
+  const onTagClick = (tag: Tag) => {
     tagsUpdated.current = true;
-    const idx = selectedTags.indexOf(tagId);
+    const idx = selectedTags.findIndex((selectedTag) => selectedTag.id === tag.id);
     if (idx === -1) {
-      setSelectedTags([...selectedTags, tagId]);
+      setSelectedTags([...selectedTags, tag]);
     } else {
       setSelectedTags([...selectedTags.slice(0, idx), ...selectedTags.slice(idx + 1)]);
     }
@@ -59,19 +53,15 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
   const onCreateNewTag = async () => {
     tagsUpdated.current = true;
     const newTagId = await apiBuilder.tags().create({ name: searchText, category: category!.key }).fetch();
-    allTags.current = await apiBuilder.tags().get().byCategory(category!.key).fetch();
+    setTags(await apiBuilder.tags().get().byCategory(category!.key).fetch());
     setSelectedTags([...selectedTags, newTagId]);
     setSearchText("");
   };
 
   const onSaveClick = () => {
-    dispatch(
-      actions.toDoItems.updateNewToDoItem({
-        tags: selectedTags.map((selectedTag) => allTags.current.find((tag) => tag.id === selectedTag)!),
-      })
-    );
     tagsUpdated.current = false;
-    onClose(selectedTags.map((selectedTag) => allTags.current.find((tag) => tag.id === selectedTag)!));
+
+    onClose(selectedTags);
     setSearchText("");
     setSelectedTags([]);
   };
@@ -81,29 +71,18 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
   }, []);
 
   React.useEffect(() => {
-    setSelectedTags(props.selectedTags.map((tag) => tag.id));
+    setSelectedTags(props.selectedTags || []);
   }, [props.selectedTags]);
 
   React.useEffect(() => {
     const matchingTags =
-      searchText !== ""
-        ? allTags.current?.filter((tag) => tag.name.toLowerCase().includes(searchText.toLowerCase()))
-        : allTags.current;
+      searchText !== "" ? tags.filter((tag) => tag.name.toLowerCase().includes(searchText.toLowerCase())) : tags;
     setTags(matchingTags);
     setCreateTag(matchingTags.filter((tag) => tag.name === searchText).length ? "" : searchText);
-  }, [searchText]);
-
-  // const isTagSelected = (id: string) => {
-  //   return selectedTags.includes(id) || existingSelectedTags?.map((tag) => tag.id).includes(id);
-  // };
+  }, [searchText, tags]);
 
   return (
-    <Dialog
-      fullScreen
-      open={isOpen}
-      onClose={() => onClose(selectedTags.map((selectedTag) => allTags.current.find((tag) => tag.id === selectedTag)!))}
-      TransitionComponent={Transition}
-    >
+    <Dialog fullScreen open={isOpen} onClose={() => onClose(selectedTags)} TransitionComponent={Transition}>
       <AppBar sx={{ position: "relative" }}>
         <Box sx={{ display: "flex", alignItems: "center", paddingLeft: "5px", justifyContent: "space-around" }}>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -135,13 +114,13 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
       <Box>
         {!isTagsLoading ? (
           <>
-            {tags?.map((tag) => (
+            {tags.map((tag) => (
               <Chip
                 key={tag.id}
                 label={tag.name}
                 sx={{ margin: "5px" }}
-                onClick={() => onTagClick(tag.id)}
-                variant={selectedTags.includes(tag.id) ? "filled" : "outlined"}
+                onClick={() => onTagClick(tag)}
+                variant={selectedTags.findIndex((_tag) => _tag.id === tag.id) === -1 ? "outlined" : "filled"}
               />
             ))}
             {createTag ? (

@@ -10,7 +10,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  Slide,
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
@@ -23,9 +22,6 @@ import { getTransition } from "./Transition";
 
 export interface ICategoriesDialogProps {}
 
-// const TransitionAlt = React.forwardRef(function Transition(props: TransitionProps & { children: React.ReactElement }, ref) {
-//   return <Slide direction="down" ref={ref} {...props} />;
-// });
 const Transition = getTransition("down");
 
 export const CategoriesDialog: React.FC<ICategoriesDialogProps> = (props) => {

@@ -2,7 +2,7 @@ import React from "react";
 import { AppBar, Button, Chip, Dialog, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { TagsDialog } from "./TagsDialog";
-import { selectors, useAppDispatch, useAppSelector } from "../Redux";
+import { selectors, useAppSelector } from "../Redux";
 import { APIBuilder } from "../API/urlBuilder";
 import { getTransition } from "./Transition";
 import { ToDoItem } from "../Interface/ToDoItem";
@@ -40,12 +40,12 @@ export const CreateToDoDialog: React.FC<ICreateToDoDialogProps> = (props) => {
 
   const createNewThing = async () => {
     await apiBuilder.toDoItems().create({ name, tags, categoryKey: currentCategory!.key }).fetch();
-    onClose(true);
+    handleClose(true);
   };
 
   const updateThing = async () => {
     await apiBuilder.toDoItems().byId(existingToDo!.id).update({ name, tags }).fetch();
-    onClose(true);
+    handleClose(true);
   };
 
   const handleRemoveChip = async (tagId: string) => {
@@ -53,15 +53,21 @@ export const CreateToDoDialog: React.FC<ICreateToDoDialogProps> = (props) => {
     setTags([...tags.slice(0, idx), ...tags.slice(idx + 1)]);
   };
 
+  const handleClose = (didUpdate: boolean) => {
+    setName("");
+    setTags([]);
+    onClose(didUpdate);
+  };
+
   return (
     <>
-      <Dialog fullScreen open={isOpen} onClose={() => onClose(false)} TransitionComponent={Transition}>
+      <Dialog fullScreen open={isOpen} onClose={() => handleClose(false)} TransitionComponent={Transition}>
         <AppBar sx={{ position: "relative" }}>
           <Box sx={{ display: "flex", alignItems: "center", paddingLeft: "5px", justifyContent: "space-around" }}>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               {props.existingToDo ? `Edit "${props.existingToDo.name}"` : `Create a new "${currentCategory!.displayName}" thing`}
             </Typography>
-            <Button sx={{ color: "white" }} variant="text" onClick={() => onClose(false)}>
+            <Button sx={{ color: "white" }} variant="text" onClick={() => handleClose(false)}>
               <Typography variant="subtitle1" component="div" sx={{ flexGrow: 1, textTransform: "none" }}>
                 Close
               </Typography>
@@ -77,7 +83,6 @@ export const CreateToDoDialog: React.FC<ICreateToDoDialogProps> = (props) => {
             fullWidth
             value={name}
             onChange={(e) => setName(e.target.value)}
-            // onBlur={(e) => dispatch(actions.toDoItems.updateNewToDoItem({ name: e.target.value }))}
           />
           <TextField
             disabled

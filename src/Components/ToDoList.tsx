@@ -13,7 +13,7 @@ interface IToDoListProps {}
 export const ToDoList: React.FC<IToDoListProps> = () => {
   const [toDoItems, setToDoItems] = React.useState<ToDoItem[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [showCreateToDoDialog, setShowCreateToDoDialog] = React.useState(true);
+  const [showCreateToDoDialog, setShowCreateToDoDialog] = React.useState(false);
   const [selectedToDo, setSelectedToDo] = React.useState<ToDoItem>();
   const [showDeleteToDoDialog, setShowDeleteToDoDialog] = React.useState<boolean>(false);
   const [showEditToDoDialog, setShowEditToDoDialog] = React.useState<boolean>(false);
@@ -26,7 +26,7 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
   const fetchToDoItems = async () => {
     if (currentCategory) {
       setIsLoading(true);
-      setToDoItems(await apiBuilder.toDoItems().byCategoryKey(currentCategory.key).get().fetch());
+      setToDoItems(await apiBuilder.toDoItems().byCategory(currentCategory.key).get().fetch());
       setIsLoading(false);
     }
   };
