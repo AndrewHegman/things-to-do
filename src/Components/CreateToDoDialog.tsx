@@ -6,6 +6,7 @@ import { selectors, useAppSelector } from "../Redux";
 import { APIBuilder } from "../API/urlBuilder";
 import { getTransition } from "./Transition";
 import { ToDoItem } from "../Interface/ToDoItem";
+import { AxiosError } from "axios";
 
 export interface ICreateToDoDialogProps {
   isOpen: boolean;
@@ -38,18 +39,40 @@ export const CreateToDoDialog: React.FC<ICreateToDoDialogProps> = (props) => {
 
   const currentCategory = useAppSelector(selectors.categories.selectCurrentCategory);
 
-  const createNewThing = async () => {
-    await apiBuilder.toDoItems().create({ name, tags, categoryKey: currentCategory!.key }).fetch();
-    handleClose(true);
+  const createNewThing = () => {
+    console.log(currentCategory);
+    apiBuilder
+      .toDoItems()
+      .create({ name, tags, category: currentCategory!._id })
+      .fetch()
+      .catch((err: AxiosError) => {
+        if (err.isAxiosError) {
+          console.log(err.message);
+        }
+      })
+      .finally(() => {
+        handleClose(true);
+      });
   };
 
-  const updateThing = async () => {
-    await apiBuilder.toDoItems().byId(existingToDo!.id).update({ name, tags }).fetch();
-    handleClose(true);
+  const updateThing = () => {
+    apiBuilder
+      .toDoItems()
+      .byId(existingToDo!._id)
+      .update({ name, tags: tags.map((tag) => tag._id) })
+      .fetch()
+      .catch((err: AxiosError) => {
+        if (err.isAxiosError) {
+          console.log(err.message);
+        }
+      })
+      .finally(() => {
+        handleClose(true);
+      });
   };
 
   const handleRemoveChip = async (tagId: string) => {
-    const idx = tags.findIndex((tag) => tag.id === tagId);
+    const idx = tags.findIndex((tag) => tag._id === tagId);
     setTags([...tags.slice(0, idx), ...tags.slice(idx + 1)]);
   };
 
@@ -98,7 +121,7 @@ export const CreateToDoDialog: React.FC<ICreateToDoDialogProps> = (props) => {
           </Button>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             {tags.map((tag) => (
-              <Chip label={tag.name} key={tag.id} sx={{ margin: "5px" }} onDelete={() => handleRemoveChip(tag.id)} />
+              <Chip label={tag.name} key={tag._id} sx={{ margin: "5px" }} onDelete={() => handleRemoveChip(tag._id)} />
             ))}
           </Box>
         </Box>

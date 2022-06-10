@@ -7,35 +7,35 @@ export const toDos = {
     return resolveSlowPromiseWrapper(toDoItems, slowModeTime);
   },
 
-  getToDosByCategoryKey: (categoryKey: string, slowModeTime: number) => {
+  getToDosByCategoryKey: (category: string, slowModeTime: number) => {
     return resolveSlowPromiseWrapper(
-      toDoItems.filter((item) => item.categoryKey === categoryKey),
+      toDoItems.filter((item) => item.category === category),
 
       slowModeTime
     );
   },
 
-  createItem: (newItem: Omit<ToDoItem, "id">, slowModeTime: number) => {
-    if (!newItem.categoryKey) {
+  createItem: (newItem: Omit<ToDoItem, "_id">, slowModeTime: number) => {
+    if (!newItem.category) {
       return rejectSlowPromiseWrapper("All ToDos must have a valid category key", slowModeTime);
     }
 
     if (!newItem.name) {
       return rejectSlowPromiseWrapper("All ToDos must have a valid name", slowModeTime);
     }
-    const _newItem = { ...newItem, id: `${toDoItems.length}` };
+    const _newItem = { ...newItem, _id: `${toDoItems.length}` };
     toDoItems.push(_newItem);
     return resolveSlowPromiseWrapper(_newItem, slowModeTime);
   },
 
-  updateToDo: (id: string, updated: Partial<Omit<ToDoItem, "id">>, slowModeTime: number) => {
-    const toDoToChange = toDoItems.find((toDo) => toDo.id === id);
+  updateToDo: (_id: string, updated: Partial<Omit<ToDoItem, "_id">>, slowModeTime: number) => {
+    const toDoToChange = toDoItems.find((toDo) => toDo._id === _id);
     if (!toDoToChange) {
-      return rejectSlowPromiseWrapper(`No category found with id ${id}`, slowModeTime);
+      return rejectSlowPromiseWrapper(`No category found with id ${_id}`, slowModeTime);
     }
 
-    if (updated.categoryKey) {
-      toDoToChange.categoryKey = updated.categoryKey;
+    if (updated.category) {
+      toDoToChange.category = updated.category;
     }
 
     if (updated.name) {
@@ -49,10 +49,10 @@ export const toDos = {
     return resolveSlowPromiseWrapper(toDoItems, slowModeTime);
   },
 
-  deleteItem: (id: string, slowModeTime: number) => {
-    const idx = toDoItems.findIndex((item) => item.id === id);
+  deleteItem: (_id: string, slowModeTime: number) => {
+    const idx = toDoItems.findIndex((item) => item._id === _id);
     if (idx === -1) {
-      return rejectSlowPromiseWrapper(`No ToDo item found with id ${id}`, slowModeTime);
+      return rejectSlowPromiseWrapper(`No ToDo item found with id ${_id}`, slowModeTime);
     }
     toDoItems.splice(idx, 1);
     return resolveSlowPromiseWrapper(toDoItems, slowModeTime);

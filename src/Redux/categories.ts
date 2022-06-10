@@ -11,7 +11,7 @@ interface CategoriesState {
 
 const initialState: CategoriesState = {
   categories: [],
-  currentCategory: categoriesData[0],
+  currentCategory: null,
   isLoading: false,
 };
 

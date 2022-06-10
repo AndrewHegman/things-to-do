@@ -6,7 +6,7 @@ import { Search } from "@mui/icons-material";
 import { selectors, useAppSelector } from "../Redux";
 import { APIBuilder } from "../API/urlBuilder";
 import { getTransition } from "./Transition";
-
+import { AxiosError, AxiosResponse } from "axios";
 export interface ICreateToDoDialogProps {
   isOpen: boolean;
   onClose: (tags: Tag[]) => void;
@@ -16,24 +16,17 @@ export interface ICreateToDoDialogProps {
 const Transition = getTransition("up");
 
 export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
-  const category = useAppSelector(selectors.categories.selectCurrentCategory);
-
   const [tags, setTags] = React.useState<Tag[]>([]);
-  const [isTagsLoading, setIsTagsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [createTag, setCreateTag] = React.useState("");
   const [searchText, setSearchText] = React.useState("");
   const [selectedTags, setSelectedTags] = React.useState<Tag[]>(props.selectedTags || []);
+  const category = useAppSelector(selectors.categories.selectCurrentCategory);
 
   const apiBuilder = new APIBuilder();
   const tagsUpdated = React.useRef(false);
 
   const { isOpen, onClose } = props;
-
-  const getTags = async () => {
-    setIsTagsLoading(true);
-    setTags(await apiBuilder.tags().byCategory(category!.key).get().fetch());
-    setIsTagsLoading(false);
-  };
 
   const onTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setSearchText(e.target.value);
@@ -41,7 +34,7 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
 
   const onTagClick = (tag: Tag) => {
     tagsUpdated.current = true;
-    const idx = selectedTags.findIndex((selectedTag) => selectedTag.id === tag.id);
+    const idx = selectedTags.findIndex((selectedTag) => selectedTag._id === tag._id);
     if (idx === -1) {
       setSelectedTags([...selectedTags, tag]);
     } else {
@@ -50,11 +43,23 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
     setSearchText("");
   };
 
-  const onCreateNewTag = async () => {
+  const onCreateNewTag = () => {
     tagsUpdated.current = true;
-    const newTagId = await apiBuilder.tags().create({ name: searchText, category: category!.key }).fetch();
-    setTags(await apiBuilder.tags().get().byCategory(category!.key).fetch());
-    setSelectedTags([...selectedTags, newTagId]);
+
+    apiBuilder
+      .tags()
+      .create({ name: searchText, category: category!._id })
+      .fetch()
+      .then((res: AxiosResponse<Tag>) => {
+        setSelectedTags([...selectedTags, res.data]);
+        setTags([...tags, res.data]);
+      })
+      .catch((err: AxiosError) => {
+        if (err.isAxiosError) {
+          console.log(err.message);
+        }
+      })
+      .finally(() => setIsLoading(false));
     setSearchText("");
   };
 
@@ -67,7 +72,23 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
   };
 
   React.useEffect(() => {
-    getTags();
+    setIsLoading(true);
+    apiBuilder
+      .tags()
+      .byCategory(category!._id)
+      .get()
+      .fetch()
+      .then((response: AxiosResponse<Tag[]>) => {
+        setTags(response.data);
+      })
+      .catch((err: AxiosError) => {
+        if (err.isAxiosError) {
+          console.log(err.message);
+        }
+      })
+      .finally(() => setIsLoading(false));
+
+    setIsLoading(false);
   }, []);
 
   React.useEffect(() => {
@@ -79,7 +100,7 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
       searchText !== "" ? tags.filter((tag) => tag.name.toLowerCase().includes(searchText.toLowerCase())) : tags;
     setTags(matchingTags);
     setCreateTag(matchingTags.filter((tag) => tag.name === searchText).length ? "" : searchText);
-  }, [searchText, tags]);
+  }, [searchText]);
 
   return (
     <Dialog fullScreen open={isOpen} onClose={() => onClose(selectedTags)} TransitionComponent={Transition}>
@@ -99,7 +120,7 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
         <TextField
           fullWidth
           value={searchText}
-          disabled={isTagsLoading}
+          disabled={isLoading}
           onChange={onTextChange}
           InputProps={{
             startAdornment: (
@@ -112,15 +133,15 @@ export const TagsDialog: React.FC<ICreateToDoDialogProps> = (props) => {
         />
       </Box>
       <Box>
-        {!isTagsLoading ? (
+        {!isLoading ? (
           <>
             {tags.map((tag) => (
               <Chip
-                key={tag.id}
+                key={tag._id}
                 label={tag.name}
                 sx={{ margin: "5px" }}
                 onClick={() => onTagClick(tag)}
-                variant={selectedTags.findIndex((_tag) => _tag.id === tag.id) === -1 ? "outlined" : "filled"}
+                variant={selectedTags.findIndex((_tag) => _tag._id === tag._id) === -1 ? "outlined" : "filled"}
               />
             ))}
             {createTag ? (

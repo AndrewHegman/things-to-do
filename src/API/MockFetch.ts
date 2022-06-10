@@ -17,14 +17,14 @@ export const foo = "";
 // };
 
 // export const getToDos = (categoryName: string) => {
-//   return resolveSlowPromiseWrapper(items.filter((item) => item.categoryKey === categoryName));
+//   return resolveSlowPromiseWrapper(items.filter((item) => item.category === categoryName));
 // };
 
-// export const getToDosByKey = (categoryKey: string) => {
-//   return resolveSlowPromiseWrapper(items.filter((item) => item.categoryKey === categoryKey));
+// export const getToDosByKey = (category: string) => {
+//   return resolveSlowPromiseWrapper(items.filter((item) => item.category === category));
 // };
 
-// export const createItem = (newItem: Omit<ToDoItem, "id">) => {
+// export const createItem = (newItem: Omit<ToDoItem, "_id">) => {
 //   const _newItem = { ...newItem, id: `${items.length}` };
 //   items.push(_newItem);
 //   return resolveSlowPromiseWrapper(_newItem);

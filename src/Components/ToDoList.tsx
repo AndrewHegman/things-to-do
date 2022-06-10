@@ -7,6 +7,7 @@ import { CreateToDoDialog } from "./CreateToDoDialog";
 import { APIBuilder } from "../API/urlBuilder";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { EditToDoDialog } from "./EditToDoDialog";
+import { AxiosError, AxiosResponse } from "axios";
 
 interface IToDoListProps {}
 
@@ -23,11 +24,25 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
   const currentCategory = useAppSelector(selectors.categories.selectCurrentCategory);
   const apiBuilder = new APIBuilder();
 
-  const fetchToDoItems = async () => {
+  const fetchToDoItems = () => {
     if (currentCategory) {
       setIsLoading(true);
-      setToDoItems(await apiBuilder.toDoItems().byCategory(currentCategory.key).get().fetch());
-      setIsLoading(false);
+      apiBuilder
+        .toDoItems()
+        .byCategory(currentCategory._id)
+        .get()
+        .fetch()
+        .then((res: AxiosResponse<ToDoItem[]>) => {
+          setToDoItems(res.data);
+        })
+        .catch((err: AxiosError) => {
+          if (err.isAxiosError) {
+            console.log(err);
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   };
 
@@ -38,7 +53,7 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
   }, [isCategoriesLoading, currentCategory]);
 
   const getTags = (toDoItem: ToDoItem) => {
-    return toDoItem.tags.map((tag) => <Chip key={tag.id} label={tag.name} />);
+    return toDoItem.tags.map((tag) => <Chip key={tag._id} label={tag.name} />);
   };
 
   const onToDoSelect = (toDoItem: ToDoItem) => {
@@ -71,13 +86,23 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
       setIsLoading(true);
       setShowDeleteToDoDialog(false);
       try {
-        await apiBuilder.toDoItems().delete().byId(selectedToDo.id).fetch();
-        setSelectedToDo(undefined);
-        await fetchToDoItems();
-      } catch (e) {
-        console.error(e);
+        await apiBuilder.toDoItems().delete().byId(selectedToDo._id).fetch();
+      } catch (err) {
+        if ((err as AxiosError).isAxiosError) {
+          console.log((err as AxiosError).message);
+        }
       } finally {
-        setIsLoading(false);
+        setSelectedToDo(undefined);
+        try {
+          const newToDos = await apiBuilder.toDoItems().get().byCategory(currentCategory!._id).fetch();
+          setToDoItems(newToDos.data);
+        } catch (err) {
+          if ((err as AxiosError).isAxiosError) {
+            console.log((err as AxiosError).message);
+          }
+        } finally {
+          setIsLoading(false);
+        }
       }
     }
   };
@@ -88,7 +113,7 @@ export const ToDoList: React.FC<IToDoListProps> = () => {
         {!isLoading ? (
           <>
             {toDoItems.map((toDoItem) => (
-              <React.Fragment key={toDoItem.id}>
+              <React.Fragment key={toDoItem._id}>
                 <ListItem onClick={() => onToDoSelect(toDoItem)}>
                   <ListItemText
                     primary={toDoItem.name}

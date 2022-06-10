@@ -19,6 +19,7 @@ import { actions, selectors, useAppDispatch, useAppSelector } from "../Redux";
 import { Category } from "../Interface/Category";
 import { APIBuilder } from "../API/urlBuilder";
 import { getTransition } from "./Transition";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 export interface ICategoriesDialogProps {}
 
@@ -34,15 +35,23 @@ export const CategoriesDialog: React.FC<ICategoriesDialogProps> = (props) => {
   const isOpen = useAppSelector(selectors.categoriesDialog.selectIsOpen);
   const apiBuilder = new APIBuilder();
 
-  const getCategories = async () => {
-    dispatch(actions.categories.setCategoriesLoading());
-    const loadedCategories = await apiBuilder.categories().get().fetch();
-    setCategories(loadedCategories);
-    dispatch(actions.categories.setCategoriesLoadingFinished());
-  };
-
   React.useEffect(() => {
-    getCategories();
+    dispatch(actions.categories.setCategoriesLoading());
+    apiBuilder
+      .categories()
+      .get()
+      .fetch()
+      .then((res: AxiosResponse<Category[]>) => {
+        setCategories(res.data);
+      })
+      .catch((err: AxiosError) => {
+        if (err.isAxiosError) {
+          console.log(err.message);
+        }
+      })
+      .finally(() => {
+        dispatch(actions.categories.setCategoriesLoadingFinished());
+      });
   }, []);
 
   const onCategoryClick = (category: Category) => {
@@ -50,14 +59,27 @@ export const CategoriesDialog: React.FC<ICategoriesDialogProps> = (props) => {
     dispatch(actions.categoriesDialog.close());
   };
 
-  const handleDeleteCategory = async () => {
+  const handleDeleteCategory = () => {
     if (categoryToDelete) {
       dispatch(actions.categories.setCategoriesLoading());
       setCategoryToDelete(undefined);
       setShowCloseButton(false);
-      const loadedCategories = await apiBuilder.categories().delete().byId(categoryToDelete).fetch();
-      setCategories(loadedCategories);
-      dispatch(actions.categories.setCategoriesLoadingFinished());
+      apiBuilder
+        .categories()
+        .delete()
+        .byId(categoryToDelete)
+        .fetch()
+        .then((res: AxiosResponse<Category[]>) => {
+          setCategories(res.data);
+        })
+        .catch((err: AxiosError) => {
+          if (err.isAxiosError) {
+            console.log(err.message);
+          }
+        })
+        .finally(() => {
+          dispatch(actions.categories.setCategoriesLoadingFinished());
+        });
     }
   };
 
@@ -97,7 +119,7 @@ export const CategoriesDialog: React.FC<ICategoriesDialogProps> = (props) => {
         {categories ? (
           <List>
             {categories.map((category) => (
-              <ListItem key={category.key} onClick={() => onCategoryClick(category)}>
+              <ListItem key={category._id} onClick={() => onCategoryClick(category)}>
                 <ListItemText primary={category.displayName} />
                 <IconButton
                   size="large"
@@ -105,7 +127,7 @@ export const CategoriesDialog: React.FC<ICategoriesDialogProps> = (props) => {
                   color="inherit"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setCategoryToDelete(category.key);
+                    setCategoryToDelete(category._id);
                   }}
                 >
                   <CloseIcon />

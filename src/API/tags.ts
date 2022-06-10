@@ -5,7 +5,7 @@ import { resolveSlowPromiseWrapper, rejectSlowPromiseWrapper } from "./common";
 export const tags = {
   getTagById: async (tagId: string, slowModeTime: number) => {
     return resolveSlowPromiseWrapper(
-      tagsData.find((tag) => tag.id === tagId),
+      tagsData.find((tag) => tag._id === tagId),
 
       slowModeTime
     );
@@ -23,21 +23,21 @@ export const tags = {
     );
   },
 
-  createTag: async (newTag: Omit<Tag, "id">, slowModeTime: number) => {
+  createTag: async (newTag: Omit<Tag, "_id">, slowModeTime: number) => {
     if (newTag.name === "") {
       return rejectSlowPromiseWrapper(`Tags must have a valid name`, slowModeTime);
     }
     if (tagsData.find((tag) => tag.name === newTag.name)) {
       return rejectSlowPromiseWrapper(`A tag named ${newTag.name} already exists!`, slowModeTime);
     }
-    const id = `${tagsData.length}`;
-    const _newTag = { ...newTag, id };
+    const _id = `${tagsData.length}`;
+    const _newTag = { ...newTag, _id };
     tagsData.push(_newTag);
-    return resolveSlowPromiseWrapper(id, slowModeTime);
+    return resolveSlowPromiseWrapper(_id, slowModeTime);
   },
 
-  updateTag: async (tagId: string, updated: Partial<Omit<Tag, "id">>, slowModeTime: number) => {
-    const tagToChange = tagsData.find((tag) => tag.id === tagId);
+  updateTag: async (tagId: string, updated: Partial<Omit<Tag, "_id">>, slowModeTime: number) => {
+    const tagToChange = tagsData.find((tag) => tag._id === tagId);
     if (!tagToChange) {
       return rejectSlowPromiseWrapper(`No tag found with id ${tagId}`, slowModeTime);
     }
@@ -50,7 +50,7 @@ export const tags = {
   },
 
   deleteTag: async (tagId: string, slowModeTime: number) => {
-    const tagIdx = tagsData.findIndex((tag) => tag.id === tagId);
+    const tagIdx = tagsData.findIndex((tag) => tag._id === tagId);
     if (tagIdx === -1) {
       return rejectSlowPromiseWrapper(`No category found with id ${tagId}`, slowModeTime);
     }
