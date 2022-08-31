@@ -1,0 +1,10 @@
+{
+  "ignore": ["*.test.ts", "fixtures/*"],
+  "ext": "ts",
+  "watch": ["src/"],
+  "exec": "ts-node src/index.ts",
+  "events": {
+    "restart": "kill-port 3001",
+    "crash": "kill-port 3001"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.json",
+  "files": ["src/@types/graphql.d.ts"],
+  "typeRoots": ["node_modules/@types", "src/@types"],
+  "compilerOptions": {
+    "module": "commonjs"
+  }
+}
