@@ -1,0 +1,24 @@
+type Tag {
+  id: String
+  name: String
+}
+
+type Thing {
+  id: String
+  name: String
+  tags: [Tag]
+}
+
+type Category {
+  id: String
+  name: String
+  things: [Thing]
+}
+
+type Query {
+  categories: [Category]
+}
+
+schema {
+  query: Query
+}

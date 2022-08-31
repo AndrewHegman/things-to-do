@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -17,10 +13,21 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": [
-    "apps/frontend/src"
+  "exclude": ["node_modules/*", "packages/**/dist/**", "apps/**/dist/**"],
+  // "include": [
+  //   "apps/frontend/src"
+  // ],
+  "references": [
+    {
+      "path": "./packages/graphql"
+    },
+    {
+      "path": "./packages/interfaces"
+    },
+    {
+      "path": "./packages/mock-data"
+    }
   ]
 }

@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    // "incremental": false,
+    "rootDir": "./src/",
+    "declaration": true,
+    "outDir": "./lib",
+    "noEmit": false,
+    "sourceMap": true
+  },
+  "include": ["./src/*", "./src/generated/*"],
+  "exclude": ["./lib/*", "node_modules/*"],
+  "references": [{ "path": "../interfaces" }, { "path": "../mock-data" }]
+}

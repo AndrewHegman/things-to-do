@@ -1,0 +1,16 @@
+{
+  "name": "@ttd/mock-data",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "typings": "dist/index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.json"
+  },
+  "dependencies": {
+    "@ttd/interfaces": "1.0.0"
+  }
+}

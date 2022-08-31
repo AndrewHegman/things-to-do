@@ -1,0 +1,14 @@
+query GetCategories {
+  categories {
+    id
+    name
+    things {
+      id
+      name
+      tags {
+        id
+        name
+      }
+    }
+  }
+}
