@@ -18,33 +18,33 @@ export type Scalars = {
 
 export type Category = {
   __typename?: 'Category';
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  things?: Maybe<Array<Maybe<Thing>>>;
+  id: Scalars['String'];
+  name: Scalars['String'];
+  things: Array<Thing>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  categories?: Maybe<Array<Maybe<Category>>>;
+  categories: Array<Category>;
 };
 
 export type Tag = {
   __typename?: 'Tag';
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  name: Scalars['String'];
 };
 
 export type Thing = {
   __typename?: 'Thing';
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  tags?: Maybe<Array<Maybe<Tag>>>;
+  id: Scalars['String'];
+  name: Scalars['String'];
+  tags: Array<Tag>;
 };
 
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCategoriesQuery = { __typename?: 'Query', categories?: Array<{ __typename?: 'Category', id?: string | null, name?: string | null, things?: Array<{ __typename?: 'Thing', id?: string | null, name?: string | null, tags?: Array<{ __typename?: 'Tag', id?: string | null, name?: string | null } | null> | null } | null> | null } | null> | null };
+export type GetCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string, things: Array<{ __typename?: 'Thing', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> }> };
 
 
 
@@ -134,26 +134,26 @@ export type ResolversParentTypes = {
 };
 
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  things?: Resolver<Maybe<Array<Maybe<ResolversTypes['Thing']>>>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  things?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  categories?: Resolver<Maybe<Array<Maybe<ResolversTypes['Category']>>>, ParentType, ContextType>;
+  categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
 };
 
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = {
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ThingResolvers<ContextType = any, ParentType extends ResolversParentTypes['Thing'] = ResolversParentTypes['Thing']> = {
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -210,4 +210,4 @@ export type GetCategoriesQueryHookResult = ReturnType<typeof useGetCategoriesQue
 export type GetCategoriesLazyQueryHookResult = ReturnType<typeof useGetCategoriesLazyQuery>;
 export type GetCategoriesQueryResult = Apollo.QueryResult<GetCategoriesQuery, GetCategoriesQueryVariables>;
 
-  export const typeDefs = gql`schema{query:Query}type Category{id:String name:String things:[Thing]}type Query{categories:[Category]}type Tag{id:String name:String}type Thing{id:String name:String tags:[Tag]}`;
+  export const typeDefs = gql`schema{query:Query}type Category{id:String!name:String!things:[Thing!]!}type Query{categories:[Category!]!}type Tag{id:String!name:String!}type Thing{id:String!name:String!tags:[Tag!]!}`;

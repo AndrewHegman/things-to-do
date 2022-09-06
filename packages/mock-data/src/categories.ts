@@ -6,3 +6,9 @@ export const Restaurants: Category = {
   name: "Restaurants",
   things: [Vida, Juniper, FatDans, TheWineVault],
 };
+
+export const Movies: Category = {
+  id: "1b",
+  name: "Movies",
+  things: [],
+};

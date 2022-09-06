@@ -28,3 +28,4 @@ packages/**/lib/*
 apps/**/dist/*
 apps/**/lib/*
 *.tsbuildinfo
+/**/node_modules/*
