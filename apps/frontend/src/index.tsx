@@ -34,6 +34,28 @@ const theme = createTheme({
         },
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          background: "#ffffff",
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          borderRadius: "15px !important",
+        },
+        input: (props) => {
+          const { theme } = props;
+          return {
+            color: theme.palette.primary.main,
+            background: theme.palette.text.primary,
+            borderRadius: "15px",
+          };
+        },
+      },
+    },
   },
   palette: {
     primary: {
