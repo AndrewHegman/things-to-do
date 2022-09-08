@@ -8,7 +8,6 @@ generates:
       - "typescript-operations"
       - "typescript-resolvers"
       - "typescript-react-apollo"
-      - "typescript-graphql-request"
       - "src/plugins/typedefs.ts"
       # - "typescript-mongodb"
   ./graphql.schema.json:

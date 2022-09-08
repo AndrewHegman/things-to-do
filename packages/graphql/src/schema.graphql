@@ -6,6 +6,7 @@ type Tag {
 type Thing {
   id: String!
   name: String!
+  description: String!
   tags: [Tag!]!
 }
 

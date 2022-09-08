@@ -5,6 +5,7 @@ query GetCategories {
     things {
       id
       name
+      description
       tags {
         id
         name

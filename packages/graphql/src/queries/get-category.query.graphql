@@ -5,6 +5,7 @@ query GetCategory($categoryId: String!) {
     things {
       id
       name
+      description
       tags {
         id
         name

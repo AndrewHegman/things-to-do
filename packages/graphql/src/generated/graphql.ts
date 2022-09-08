@@ -1,9 +1,6 @@
 import { GraphQLResolveInfo } from 'graphql';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
-import { GraphQLClient } from 'graphql-request';
-import * as Dom from 'graphql-request/dist/types.dom';
-import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -46,6 +43,7 @@ export type Tag = {
 
 export type Thing = {
   __typename?: 'Thing';
+  description: Scalars['String'];
   id: Scalars['String'];
   name: Scalars['String'];
   tags: Array<Tag>;
@@ -54,14 +52,14 @@ export type Thing = {
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string, things: Array<{ __typename?: 'Thing', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> }> };
+export type GetCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> }> };
 
 export type GetCategoryQueryVariables = Exact<{
   categoryId: Scalars['String'];
 }>;
 
 
-export type GetCategoryQuery = { __typename?: 'Query', category: { __typename?: 'Category', id: string, name: string, things: Array<{ __typename?: 'Thing', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> } };
+export type GetCategoryQuery = { __typename?: 'Query', category: { __typename?: 'Category', id: string, name: string, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> } };
 
 
 
@@ -169,6 +167,7 @@ export type TagResolvers<ContextType = any, ParentType extends ResolversParentTy
 };
 
 export type ThingResolvers<ContextType = any, ParentType extends ResolversParentTypes['Thing'] = ResolversParentTypes['Thing']> = {
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
@@ -192,6 +191,7 @@ export const GetCategoriesDocument = gql`
     things {
       id
       name
+      description
       tags {
         id
         name
@@ -235,6 +235,7 @@ export const GetCategoryDocument = gql`
     things {
       id
       name
+      description
       tags {
         id
         name
@@ -272,54 +273,4 @@ export type GetCategoryQueryHookResult = ReturnType<typeof useGetCategoryQuery>;
 export type GetCategoryLazyQueryHookResult = ReturnType<typeof useGetCategoryLazyQuery>;
 export type GetCategoryQueryResult = Apollo.QueryResult<GetCategoryQuery, GetCategoryQueryVariables>;
 
-export const GetCategoriesDocument = gql`
-    query GetCategories {
-  categories {
-    id
-    name
-    things {
-      id
-      name
-      tags {
-        id
-        name
-      }
-    }
-  }
-}
-    `;
-export const GetCategoryDocument = gql`
-    query GetCategory($categoryId: String!) {
-  category(categoryId: $categoryId) {
-    id
-    name
-    things {
-      id
-      name
-      tags {
-        id
-        name
-      }
-    }
-  }
-}
-    `;
-
-export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
-
-
-const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType) => action();
-
-export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
-  return {
-    GetCategories(variables?: GetCategoriesQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetCategoriesQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetCategoriesQuery>(GetCategoriesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetCategories', 'query');
-    },
-    GetCategory(variables: GetCategoryQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetCategoryQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetCategoryQuery>(GetCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetCategory', 'query');
-    }
-  };
-}
-export type Sdk = ReturnType<typeof getSdk>;
-
-  export const typeDefs = gql`schema{query:Query}type Category{id:String!name:String!things:[Thing!]!}type Query{categories:[Category!]!category(categoryId:String!):Category!}type Tag{id:String!name:String!}type Thing{id:String!name:String!tags:[Tag!]!}`;
+  export const typeDefs = gql`schema{query:Query}type Category{id:String!name:String!things:[Thing!]!}type Query{categories:[Category!]!category(categoryId:String!):Category!}type Tag{id:String!name:String!}type Thing{description:String!id:String!name:String!tags:[Tag!]!}`;

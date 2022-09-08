@@ -19,7 +19,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@ttd/mock-data": "1.0.0",
+    "@ttd/interfaces": "workspace:^",
+    "@ttd/mock-data": "workspace:^",
     "graphql": "^16.6.0"
   },
   "devDependencies": {
