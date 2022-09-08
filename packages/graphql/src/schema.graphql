@@ -17,6 +17,7 @@ type Category {
 
 type Query {
   categories: [Category!]!
+  category(categoryId: String!): Category!
 }
 
 schema {

@@ -5,13 +5,14 @@ import { Categories } from "./pages/Categories";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-
-const client = new ApolloClient({
-  uri: "http://localhost:4000/",
-  cache: new InMemoryCache(),
-});
+import { CategoryPage } from "./pages/Category";
+import { NotFound } from "./pages/NotFound";
+import { client } from "./graphql";
+import { useStore } from "./store";
+import { useGetCategoriesQuery } from "@ttd/graphql";
+import { Modal } from "./store/modals";
 
 const theme = createTheme({
   typography: {
@@ -39,7 +40,7 @@ const theme = createTheme({
       main: "#5a5a5a",
     },
     secondary: {
-      main: "#f50057",
+      main: "#FF005C",
     },
     background: {
       default: "#303030",
@@ -51,18 +52,46 @@ const theme = createTheme({
   },
 });
 
+const App = () => {
+  const { setCategories, openModal, closeModal } = useStore();
+  const { loading, error, data } = useGetCategoriesQuery();
+
+  React.useEffect(() => {
+    if (loading) {
+      openModal(Modal.Loading);
+    }
+    if (!loading && data && !error) {
+      setCategories(data.categories);
+      closeModal(Modal.Loading);
+    }
+  }, [loading, data, setCategories, openModal, closeModal, error]);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Categories />}></Route>
+          <Route path="category/:categoryId" element={<CategoryPage />}></Route>
+          <Route path="/error/not-found" element={<NotFound />}></Route>
+          <Route path="*" element={<NotFound />}></Route>
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
+  );
+};
+
+// const LoadingWrapper = () => {
+//   return (
+//       <App />
+//   );
+// };
+
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Categories />}></Route>
-          </Routes>
-        </BrowserRouter>
-      </ThemeProvider>
+      <App />
     </ApolloProvider>
   </React.StrictMode>
 );

@@ -2,6 +2,7 @@ import { Avatar, Box, Typography } from "@mui/material";
 import { RadioButtonUnchecked } from "@mui/icons-material";
 import React from "react";
 import { Category } from "@ttd/graphql";
+import { useNavigate } from "react-router";
 
 interface ICategoryItemProps {
   category: Category;
@@ -9,9 +10,15 @@ interface ICategoryItemProps {
 
 export const CategoryItem: React.FC<ICategoryItemProps> = (props) => {
   const { category } = props;
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`category/${category.id}`, { state: { category } });
+  };
+
   return (
-    <Box sx={{ display: "flex", alignItems: "center", margin: "2% 5% 2% 5%" }}>
-      <RadioButtonUnchecked />
+    <Box sx={{ display: "flex", alignItems: "center", margin: "2% 5% 2% 5%" }} onClick={handleClick}>
+      <RadioButtonUnchecked sx={{ color: "primary.main", width: "30px", height: "30px", marginRight: "10px" }} />
       <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
         <Typography fontSize="24px" height="100%">
           {category.name}
