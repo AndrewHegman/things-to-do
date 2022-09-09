@@ -3,6 +3,7 @@ import { RadioButtonUnchecked } from "@mui/icons-material";
 import React from "react";
 import { Category } from "@ttd/graphql";
 import { useNavigate } from "react-router";
+import { useStore } from "../store";
 
 interface ICategoryItemProps {
   category: Category;
@@ -11,8 +12,10 @@ interface ICategoryItemProps {
 export const CategoryItem: React.FC<ICategoryItemProps> = (props) => {
   const { category } = props;
   const navigate = useNavigate();
+  const { setCurrentCategory } = useStore();
 
   const handleClick = () => {
+    setCurrentCategory(category);
     navigate(`category/${category.id}`, { state: { category } });
   };
 

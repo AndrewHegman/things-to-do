@@ -13,6 +13,7 @@ import { client } from "./graphql";
 import { useStore } from "./store";
 import { useGetCategoriesQuery } from "@ttd/graphql";
 import { Modal } from "./store/modals";
+import { CreateThing } from "./pages/CreateThing";
 
 const theme = createTheme({
   typography: {
@@ -94,7 +95,14 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Categories />}></Route>
-          <Route path="category/:categoryId" element={<CategoryPage />}></Route>
+          <Route path="category">
+            <Route index element={<Categories />} />
+            <Route path=":categoryId">
+              <Route element={<CategoryPage />} index />
+              <Route path="create" element={<CreateThing />} />
+            </Route>
+          </Route>
+
           <Route path="/error/not-found" element={<NotFound />}></Route>
           <Route path="*" element={<NotFound />}></Route>
         </Routes>

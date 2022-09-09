@@ -8,18 +8,13 @@ import { useStore } from "../store";
 
 interface ICategoriesProps {}
 
-const Offset = styled("div")(({ theme }) => theme.mixins.toolbar);
-
 export const Categories: React.FC<ICategoriesProps> = (props) => {
-  const { categories, setCategories } = useStore();
+  const { categories } = useStore();
 
   return (
     <PageWrapper>
-      <AppBar>
-        <Typography sx={{ width: "100%", display: "flex", justifyContent: "center" }} fontSize={28}>
-          Things to Do
-        </Typography>
-      </AppBar>
+      <AppBar />
+
       <Typography sx={{ marginLeft: "5px" }} fontSize={32}>
         Categories
       </Typography>
