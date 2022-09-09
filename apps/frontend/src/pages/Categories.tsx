@@ -12,13 +12,6 @@ const Offset = styled("div")(({ theme }) => theme.mixins.toolbar);
 
 export const Categories: React.FC<ICategoriesProps> = (props) => {
   const { categories, setCategories } = useStore();
-  // const { loading, error, data } = useGetCategoriesQuery();
-
-  // React.useEffect(() => {
-  //   if (!loading && data) {
-  //     setCategories(data.categories);
-  //   }
-  // }, [loading, data, setCategories]);
 
   return (
     <PageWrapper>
@@ -27,7 +20,7 @@ export const Categories: React.FC<ICategoriesProps> = (props) => {
           Things to Do
         </Typography>
       </AppBar>
-      <Typography sx={{ marginLeft: "5px" }} fontSize={"32px"}>
+      <Typography sx={{ marginLeft: "5px" }} fontSize={32}>
         Categories
       </Typography>
       {categories.map((category, idx) => (

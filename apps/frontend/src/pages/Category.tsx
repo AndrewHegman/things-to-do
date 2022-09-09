@@ -10,43 +10,41 @@ import { Thing } from "../components/Thing";
 import { Modal } from "../store/modals";
 import { PageWrapper } from "../components/PageWrapper";
 import { Tag } from "../components/Tag";
+import { Search } from "@mui/icons-material";
 
 interface ICategoryProps {}
 
 const Offset = styled("div")(({ theme }) => theme.mixins.toolbar);
 
 export const CategoryPage: React.FC<ICategoryProps> = (props) => {
+  const { categoryId } = useParams();
+  const { categories, openModal } = useStore();
+
   const [searchText, setSearchText] = React.useState("");
   const [selectedTags, setSelectedTags] = React.useState<TagType[]>([]);
   const [searchBoxFocused, setSearchBoxFocused] = React.useState(false);
 
-  const { categoryId } = useParams();
-  const navigate = useNavigate();
-  const { categories, openModal } = useStore();
-  const [getCategory, { loading, error, data, called }] = useGetCategoryLazyQuery({ variables: { categoryId: categoryId! } });
+  const [category, setCategory] = React.useState(categories.find((category) => category.id === categoryId));
 
-  const category = React.useRef<Category | undefined>(categories.find((category) => category.id === categoryId));
+  const navigate = useNavigate();
+  const [getCategory, { loading, data, called, error }] = useGetCategoryLazyQuery({ variables: { categoryId: categoryId! } });
+
   const tags = React.useRef<TagType[] | undefined>();
-  const selectableTags = React.useRef<TagType[] | undefined>();
   const searchBoxRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    // TODO: Consider making GQL do this BS
-    if (category.current) {
-      tags.current = category.current?.things
+    if (category) {
+      tags.current = category.things
         .map((thing) => thing.tags)
         .reduce((arr, tags) => {
           tags.forEach((tag) => !arr.find((_tag) => _tag.id === tag.id) && arr.push(tag));
           return arr;
         }, []);
-      selectableTags.current = tags.current;
     }
-  }, [category, category.current]);
+  }, [category]);
 
   React.useEffect(() => {
-    console.log("here");
-
-    if (!called && (!category || !category.current)) {
+    if (!called && !category) {
       getCategory();
     }
 
@@ -58,37 +56,39 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
 
       // Request made, received data
       if (!loading && data) {
-        category.current = data.category;
+        setCategory(data.category);
       }
 
       // Request made, got error or no data
       if (!loading && (error || !data)) {
-        console.log(error);
-        // navigate("/error/not-found");
+        navigate("/error/not-found");
       }
     }
   }, [category, called, loading, error, data]);
 
-  // React.useEffect(() => {
-  //   setSearchBoxFocused(document.activeElement === searchBoxRef.current);
-  // }, [document.activeElement]);
+  const getSelectableTags = () => {
+    return tags.current?.filter((tag) => selectedTags.findIndex((selectedTag) => selectedTag.id === tag.id) < 0) || [];
+  };
 
   const onTagClick = (tag: TagType) => {
-    const tagIdx = selectableTags.current?.findIndex((_tag) => _tag.id === tag.id);
-
-    selectableTags.current = [...selectableTags.current!.slice(0, tagIdx), ...selectableTags.current!.slice(tagIdx! + 1)];
-
     setSelectedTags([...selectedTags, tag]);
     setSearchText("");
   };
 
   const getFilteredThings = (): ThingType[] => {
-    console.log("here");
+    // category?.things.filter((thing) => selectedTags.every((selectedTag) => thing.tags.findIndex((tag) => tag.id === selectedTag.id)));
+
     return selectedTags.length > 0
-      ? category.current?.things.filter((thing) =>
-          thing.tags.some((tag) => selectedTags.find((selectedTag) => selectedTag.id === tag.id))
+      ? category?.things.filter((thing) =>
+          selectedTags.every((selectedTag) => thing.tags.findIndex((tag) => tag.id === selectedTag.id) >= 0)
         ) || []
-      : category.current?.things || [];
+      : category?.things || [];
+  };
+
+  const removeSelectedTag = (tag: TagType) => {
+    const tagIdx = selectedTags.findIndex((_tag) => _tag.id === tag.id);
+
+    setSelectedTags([...selectedTags.slice(0, tagIdx), ...selectedTags.slice(tagIdx! + 1)]);
   };
 
   return (
@@ -118,7 +118,14 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
           onChange={(e) => setSearchText(e.target.value)}
           onFocus={() => setSearchBoxFocused(true)}
           InputProps={{
-            startAdornment: selectedTags.map((tag) => <Tag key={tag.id} tag={tag} sx={{ color: "primary.main" }} />),
+            startAdornment: (
+              <>
+                <Search sx={{ color: "primary.main" }} />
+                {selectedTags.map((tag) => (
+                  <Tag key={tag.id} tag={tag} sx={{ color: "primary.main" }} onClose={removeSelectedTag} />
+                ))}
+              </>
+            ),
           }}
           ref={searchBoxRef}
         />
@@ -127,15 +134,15 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
           getFilteredThings().map((thing, idx) => (
             <div key={thing.id} style={{ marginBottom: "10px" }}>
               <Thing thing={thing} />
-              {category.current?.things!.length! > 1 && idx < category.current?.things!.length! - 1 ? (
+              {category?.things.length! > 1 && idx < category?.things!.length! - 1 ? (
                 <Divider sx={{ marginRight: "20px" }} />
               ) : null}
             </div>
           ))}
 
         {searchBoxFocused &&
-          selectableTags.current
-            ?.filter((tag) => tag.name.toLowerCase().includes(searchText.toLowerCase()))
+          getSelectableTags()
+            .filter((tag) => tag.name.toLowerCase().includes(searchText.toLowerCase()))
             .map((tag, idx) => (
               <div key={tag.name} style={{ marginBottom: "10px" }} onClick={() => onTagClick(tag)}>
                 <Typography>{tag.name}</Typography>

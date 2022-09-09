@@ -20,7 +20,7 @@ export const Thing: React.FC<IThingProps> = (props) => {
       <Typography>{thing.description}</Typography>
       <div style={{ display: "flex", gap: "10px" }}>
         {thing.tags.map((tag) => (
-          <Tag tag={tag} />
+          <Tag key={tag.id} tag={tag} />
         ))}
       </div>
     </div>
