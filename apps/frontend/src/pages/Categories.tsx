@@ -6,7 +6,9 @@ import { CategoryItem } from "../components/CategoryItem";
 import { PageWrapper } from "../components/PageWrapper";
 import { useStore } from "../store";
 
-interface ICategoriesProps {}
+interface ICategoriesProps {
+  loading: boolean;
+}
 
 export const Categories: React.FC<ICategoriesProps> = (props) => {
   const { categories } = useStore();

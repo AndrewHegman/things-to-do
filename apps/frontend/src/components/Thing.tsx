@@ -12,7 +12,7 @@ export const Thing: React.FC<IThingProps> = (props) => {
   const { thing } = props;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", marginBottom: "10px" }}>
+    <div style={{ display: "flex", flexDirection: "column", marginBottom: "10px", position: "relative" }} draggable>
       <div style={{ display: "flex", alignItems: "center" }}>
         <RadioButtonUnchecked sx={{ color: "primary.main", width: "30px", height: "30px", marginRight: "10px" }} />
         <Typography fontSize={24}>{thing.name}</Typography>

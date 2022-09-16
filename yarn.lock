@@ -3725,7 +3725,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ttd/graphql@1.0.0, @ttd/graphql@workspace:^, @ttd/graphql@workspace:packages/graphql":
+"@ttd/graphql@workspace:^, @ttd/graphql@workspace:packages/graphql":
   version: 0.0.0-use.local
   resolution: "@ttd/graphql@workspace:packages/graphql"
   dependencies:
@@ -3761,7 +3761,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ttd/server@workspace:apps/backend"
   dependencies:
-    "@ttd/graphql": 1.0.0
+    "@ttd/graphql": "workspace:^"
     apollo-server: ^3.10.1
     body-parser: ^1.19.0
     cookie-parser: ~1.4.4

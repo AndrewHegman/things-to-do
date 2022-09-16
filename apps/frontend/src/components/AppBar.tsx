@@ -5,27 +5,29 @@ interface IAppBarProps {
   title?: string;
   disableGutters?: boolean;
   toolbarSx?: SxProps<Theme>;
-  onBackClicked?: () => void;
-  onDoneClicked?: () => void;
+  leftLinkTitle?: string;
+  onLeftLinkClick?: () => void;
+  rightLinkTitle?: string;
+  onRightLinkClick?: () => void;
 }
 
 const Offset = styled("div")(({ theme }) => theme.mixins.toolbar);
 
 export const AppBar: React.FC<React.PropsWithChildren<IAppBarProps>> = (props) => {
-  const { toolbarSx, onBackClicked, onDoneClicked, title } = props;
+  const { toolbarSx, onLeftLinkClick, leftLinkTitle, onRightLinkClick, rightLinkTitle, title } = props;
   return (
     <>
       <MuiAppBar>
         <Toolbar sx={{ justifyContent: "center", ...toolbarSx }} disableGutters>
-          {onBackClicked && (
-            <Typography sx={{ position: "absolute", left: "10px" }} onClick={onBackClicked}>
-              Back
+          {onLeftLinkClick && (
+            <Typography sx={{ position: "absolute", left: "10px" }} onClick={onLeftLinkClick}>
+              {leftLinkTitle}
             </Typography>
           )}
           <Typography fontSize={28}>{title || "Things to Do"}</Typography>
-          {onDoneClicked && (
-            <Typography sx={{ position: "absolute", right: "10px" }} onClick={onDoneClicked}>
-              Done
+          {onRightLinkClick && (
+            <Typography sx={{ position: "absolute", right: "10px" }} onClick={onRightLinkClick}>
+              {rightLinkTitle}
             </Typography>
           )}
         </Toolbar>

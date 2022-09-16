@@ -11,7 +11,7 @@ import { CategoryPage } from "./pages/Category";
 import { NotFound } from "./pages/NotFound";
 import { client } from "./graphql";
 import { useStore } from "./store";
-import { useGetCategoriesQuery } from "@ttd/graphql";
+import { Category, useGetCategoriesQuery } from "@ttd/graphql";
 import { Modal } from "./store/modals";
 import { CreateThing } from "./pages/CreateThing";
 
@@ -37,23 +37,37 @@ const theme = createTheme({
     },
     MuiTextField: {
       styleOverrides: {
-        root: {
-          background: "#ffffff",
+        root: ({ ownerState, theme }) => {
+          const styles = {
+            border: `1px solid ${theme.palette.primary.main}`,
+          };
+          if (ownerState.variant === "outlined" && !ownerState.error) {
+            return !ownerState.multiline ? { ...styles, background: "#ffffff" } : styles;
+          }
         },
       },
     },
-    MuiInputBase: {
+    MuiOutlinedInput: {
+      styleOverrides: {
+        notchedOutline: {
+          border: "none",
+        },
+        root: ({ theme }) => ({
+          "&.Mui-error": {
+            border: `1px solid ${theme.palette.error.main}`,
+          },
+        }),
+      },
+    },
+    MuiInput: {
       styleOverrides: {
         root: {
           borderRadius: "15px !important",
         },
-        input: (props) => {
-          const { theme } = props;
-          return {
-            color: theme.palette.primary.main,
-            background: theme.palette.text.primary,
-            borderRadius: "15px",
-          };
+        underline: {
+          "::before": {
+            borderBottom: "1px solid #5a5a5a",
+          },
         },
       },
     },
@@ -64,6 +78,9 @@ const theme = createTheme({
     },
     secondary: {
       main: "#FF005C",
+    },
+    error: {
+      main: "#FF4D4D",
     },
     background: {
       default: "#303030",
@@ -78,14 +95,13 @@ const theme = createTheme({
 const App = () => {
   const { setCategories, openModal, closeModal } = useStore();
   const { loading, error, data } = useGetCategoriesQuery();
+  const [loadingCategories, setLoadingCategories] = React.useState(loading);
 
   React.useEffect(() => {
-    if (loading) {
-      openModal(Modal.Loading);
-    }
     if (!loading && data && !error) {
       setCategories(data.categories);
-      closeModal(Modal.Loading);
+      console.log(data.categories);
+      setLoadingCategories(false);
     }
   }, [loading, data, setCategories, openModal, closeModal, error]);
 
@@ -94,11 +110,11 @@ const App = () => {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Categories />}></Route>
+          <Route path="/" element={<Categories loading={loadingCategories} />}></Route>
           <Route path="category">
-            <Route index element={<Categories />} />
+            <Route index element={<Categories loading={loadingCategories} />} />
             <Route path=":categoryId">
-              <Route element={<CategoryPage />} index />
+              <Route element={<CategoryPage loading={loadingCategories} />} index />
               <Route path="create" element={<CreateThing />} />
             </Route>
           </Route>

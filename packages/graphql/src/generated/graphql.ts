@@ -21,6 +21,7 @@ export type Category = {
   __typename?: 'Category';
   id: Scalars['String'];
   name: Scalars['String'];
+  tags: Array<Tag>;
   things: Array<Thing>;
 };
 
@@ -52,14 +53,14 @@ export type Thing = {
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> }> };
+export type GetCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> }> };
 
 export type GetCategoryQueryVariables = Exact<{
   categoryId: Scalars['String'];
 }>;
 
 
-export type GetCategoryQuery = { __typename?: 'Query', category: { __typename?: 'Category', id: string, name: string, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> } };
+export type GetCategoryQuery = { __typename?: 'Query', category: { __typename?: 'Category', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> } };
 
 
 
@@ -151,6 +152,7 @@ export type ResolversParentTypes = {
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
   things?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -188,6 +190,10 @@ export const GetCategoriesDocument = gql`
   categories {
     id
     name
+    tags {
+      id
+      name
+    }
     things {
       id
       name
@@ -232,6 +238,10 @@ export const GetCategoryDocument = gql`
   category(categoryId: $categoryId) {
     id
     name
+    tags {
+      id
+      name
+    }
     things {
       id
       name
@@ -273,4 +283,4 @@ export type GetCategoryQueryHookResult = ReturnType<typeof useGetCategoryQuery>;
 export type GetCategoryLazyQueryHookResult = ReturnType<typeof useGetCategoryLazyQuery>;
 export type GetCategoryQueryResult = Apollo.QueryResult<GetCategoryQuery, GetCategoryQueryVariables>;
 
-  export const typeDefs = gql`schema{query:Query}type Category{id:String!name:String!things:[Thing!]!}type Query{categories:[Category!]!category(categoryId:String!):Category!}type Tag{id:String!name:String!}type Thing{description:String!id:String!name:String!tags:[Tag!]!}`;
+  export const typeDefs = gql`schema{query:Query}type Category{id:String!name:String!tags:[Tag!]!things:[Thing!]!}type Query{categories:[Category!]!category(categoryId:String!):Category!}type Tag{id:String!name:String!}type Thing{description:String!id:String!name:String!tags:[Tag!]!}`;
