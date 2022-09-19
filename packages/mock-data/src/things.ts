@@ -28,3 +28,5 @@ export const TheWineVault: Thing = {
   tags: [SmallPlates, Westfield, Wine, TakeParentsTo],
   description: "Upscale wine bar",
 };
+
+export const allThings = [Vida, Juniper, FatDans, TheWineVault];

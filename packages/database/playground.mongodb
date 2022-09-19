@@ -1,0 +1,29 @@
+// MongoDB Playground
+// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
+
+// The current database to use.
+use('Things-To-Do');
+
+// Search for documents in the current collection.
+// console.log(db.getCollection('categories').find());
+db.categories.aggregate([
+  {$match: { _id: ObjectId("620fdc9940094eded41014db")}},
+  {
+    $lookup: {
+      from: 'things',
+      localField: 'things',
+      foreignField: '_id',
+      as: 'things',
+      pipeline: [
+        {
+          $lookup: {
+            from: 'tags',
+            localField: 'tags',
+            foreignField: '_id',
+            as: 'tags'
+          }
+        }
+      ]
+    },
+  }
+]);

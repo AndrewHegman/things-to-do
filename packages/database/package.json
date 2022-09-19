@@ -1,0 +1,23 @@
+{
+  "name": "@ttd/database",
+  "version": "1.0.0",
+  "packageManager": "yarn@3.2.3",
+  "main": "dist/index.js",
+  "files": [
+    "dist/index.js"
+  ],
+  "module": "./dist/index.js",
+  "typings": "dist/index.d.ts",
+  "publishConfig": {
+    "directory": "dist"
+  },
+  "dependencies": {
+    "@ttd/interfaces": "workspace:^",
+    "dotenv": "^16.0.2",
+    "mongodb": "^4.9.1",
+    "mongoose": "^6.6.1"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.json"
+  }
+}

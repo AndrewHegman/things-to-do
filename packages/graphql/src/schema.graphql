@@ -1,20 +1,19 @@
 type Tag {
-  id: String!
+  _id: String!
   name: String!
 }
 
 type Thing {
-  id: String!
+  _id: String!
   name: String!
   description: String!
   tags: [Tag!]!
 }
 
 type Category {
-  id: String!
+  _id: String!
   name: String!
   things: [Thing!]!
-  tags: [Tag!]!
 }
 
 type Query {
@@ -22,6 +21,11 @@ type Query {
   category(categoryId: String!): Category!
 }
 
+type Mutation {
+  createTag(categoryId: String!, name: String!): Tag!
+}
+
 schema {
   query: Query
+  mutation: Mutation
 }

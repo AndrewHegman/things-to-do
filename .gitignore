@@ -29,3 +29,4 @@ apps/**/dist/*
 apps/**/lib/*
 *.tsbuildinfo
 /**/node_modules/*
+.env

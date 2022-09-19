@@ -1,4 +1,4 @@
-import { Divider, Fab, styled, TextField, Typography } from "@mui/material";
+import { Divider, Drawer, Fab, List, ListItem, ListItemButton, ListItemText, styled, TextField, Typography } from "@mui/material";
 import { Tag as TagType, Thing as ThingType, useGetCategoryLazyQuery } from "@ttd/graphql";
 import React from "react";
 import { useNavigate, useParams } from "react-router";
@@ -22,11 +22,13 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
   const [searchText, setSearchText] = React.useState("");
   const [selectedTags, setSelectedTags] = React.useState<TagType[]>([]);
   const [searchBoxFocused, setSearchBoxFocused] = React.useState(false);
+  const [showMoreDrawer, setShowMoreDrawer] = React.useState(false);
 
   const navigate = useNavigate();
 
   const tags = React.useRef<TagType[] | undefined>();
   const searchBoxRef = React.useRef<HTMLDivElement>(null);
+  const selectedThingRef = React.useRef<string>();
 
   React.useEffect(() => {
     if (loading) {
@@ -47,41 +49,6 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
       }
     }
   }, [categories, categoryId, loading]);
-
-  // React.useEffect(() => {
-  //   if (category) {
-  //     tags.current = category.things
-  //       .map((thing) => thing.tags)
-  //       .reduce((arr, tags) => {
-  //         tags.forEach((tag) => !arr.find((_tag) => _tag.id === tag.id) && arr.push(tag));
-  //         return arr;
-  //       }, []);
-  //   }
-  // }, [category]);
-
-  // React.useEffect(() => {
-  //   if (!called && !category) {
-  //     getCategory();
-  //   }
-
-  //   if (called) {
-  //     // Request made, waiting for data
-  //     if (loading) {
-  //       openModal(Modal.Loading);
-  //     }
-
-  //     // Request made, received data
-  //     if (!loading && data) {
-  //       setCategory(data.category);
-  //       setCurrentCategory(data.category);
-  //     }
-
-  //     // Request made, got error or no data
-  //     if (!loading && (error || !data)) {
-  //       navigate("/error/not-found");
-  //     }
-  //   }
-  // }, [category, called, loading, error, data]);
 
   const getSelectableTags = () => {
     return tags.current?.filter((tag) => selectedTags.findIndex((selectedTag) => selectedTag.id === tag.id) < 0) || [];
@@ -104,6 +71,11 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
     const tagIdx = selectedTags.findIndex((_tag) => _tag.id === tag.id);
 
     setSelectedTags([...selectedTags.slice(0, tagIdx), ...selectedTags.slice(tagIdx! + 1)]);
+  };
+
+  const onClickMore = (thingId: string) => {
+    selectedThingRef.current = thingId;
+    setShowMoreDrawer(true);
   };
 
   return (
@@ -139,7 +111,7 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
         {!searchBoxFocused &&
           getFilteredThings().map((thing, idx) => (
             <div key={thing.id} style={{ marginBottom: "10px" }}>
-              <Thing thing={thing} />
+              <Thing thing={thing} onClickMore={() => onClickMore(thing.id)} />
               {currentCategory?.things.length! > 1 && idx < currentCategory?.things!.length! - 1 ? (
                 <Divider sx={{ marginRight: "20px" }} />
               ) : null}
@@ -156,6 +128,17 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
               </div>
             ))}
       </div>
+      <Drawer open={showMoreDrawer} anchor={"bottom"} onClose={() => setShowMoreDrawer(false)}>
+        <List>
+          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
       <Fab color="secondary" sx={{ position: "absolute", right: "10px", bottom: "10px" }} onClick={() => navigate("create")}>
         <Add />
       </Fab>

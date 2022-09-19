@@ -36,3 +36,5 @@ export const Wine: Tag = {
   id: "9c",
   name: "Wine",
 };
+
+export const allTags = [American, Expensive, Carmel, Southern, TakeParentsTo, ChicagoStyle, SmallPlates, Westfield, Wine];

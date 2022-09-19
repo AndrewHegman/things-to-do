@@ -1,46 +1,13 @@
 import { Tag } from "@ttd/interfaces";
-import { Movies, Restaurants } from "@ttd/mock-data";
-
-const mapTagsToCategory = (categoryId: string | undefined) => {
-  return categoryId
-    ? [Restaurants, Movies]
-        .find((category) => category.id === categoryId)
-        ?.things.map((thing) => thing.tags)
-        .reduce((arr, tags) => {
-          tags.forEach((tag) => !arr.find((_tag) => _tag.id === tag.id) && arr.push(tag));
-          return arr;
-        }, []) || []
-    : [];
-};
+import { mockDatabase } from "@ttd/mock-data";
+import { Things, Categories } from "@ttd/database";
 
 export const resolvers = {
   Query: {
-    categories: () => {
-      return [Restaurants, Movies].map((category) => ({ ...category, tags: mapTagsToCategory(category.id) }));
-    },
-    category: (_: any, args: any) =>
-      mapTagsToCategory([Restaurants, Movies].find((category) => category.id === args.categoryId)?.id),
-    // tagsByCategory: (_: any, args: any): Tag[] =>
-    //   [Restaurants, Movies]
-    //     .find((category) => category.id === args.categoryId)
-    //     ?.things.map((thing) => thing.tags)
-    //     .reduce((arr, tags) => {
-    //       tags.forEach((tag) => !arr.find((_tag) => _tag.id === tag.id) && arr.push(tag));
-    //       return arr;
-    //     }, []) || [],
+    categories: async () => await Categories.getInstance().getAll(),
+    category: async (_: any, args: any) => await Categories.getInstance().getById(args.categoryId),
+  },
+  Mutation: {
+    createTag: (_: any, args: any) => mockDatabase.createTag(args),
   },
 };
-
-/*
-     return [Restaurants, Movies].reduce(
-        (a, v) => ({
-          ...a,
-          [v.id]: v.things
-            .map((thing) => thing.tags)
-            .reduce((arr, tags) => {
-              tags.forEach((tag) => !arr.find((_tag) => _tag.id === tag.id) && arr.push(tag));
-              return arr;
-            }, []),
-        }),
-        {}
-      ); */

@@ -1,6 +1,7 @@
 import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
 import { ApolloServer } from "apollo-server";
 import { resolvers, typeDefs } from "@ttd/graphql";
+import { Things } from "@ttd/database";
 // import typeDefs from "@ttd/graphql/src/schema.graphql";
 // const typeDefs = require("@ttd/graphql/src/schema.graphql");
 

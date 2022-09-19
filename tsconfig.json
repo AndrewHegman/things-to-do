@@ -28,6 +28,9 @@
     },
     {
       "path": "./packages/mock-data"
+    },
+    {
+      "path": "./packages/database"
     }
   ]
 }
