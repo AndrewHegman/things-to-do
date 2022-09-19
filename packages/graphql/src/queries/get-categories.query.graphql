@@ -1,14 +1,15 @@
 query GetCategories {
   categories {
     id: _id
-    newName: name
+    name
     things {
       id: _id
       name
       description
       tags {
         id: _id
-        newName: name
+        name
+        category
       }
     }
   }

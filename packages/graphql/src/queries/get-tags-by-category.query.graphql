@@ -1,0 +1,7 @@
+query TagsByCategory($categoryId: String!) {
+  tagsByCategory(categoryId: $categoryId) {
+    id: _id
+    name
+    category
+  }
+}

@@ -1,6 +1,7 @@
-mutation CreateTag($categoryId: String!, $name: String!) {
-  createTag(categoryId: $categoryId, name: $name) {
-    name
+mutation CreateTag($category: String!, $name: String!) {
+  createTag(category: $category, name: $name) {
     id: _id
+    name
+    category
   }
 }

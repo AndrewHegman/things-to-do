@@ -7,7 +7,6 @@ export const getThingLookup = (localField: string) => {
       localField,
       foreignField: ThingFields.ID,
       as: "test",
-      // pipeline: [{ $project: { [UsersFields.Password]: 0 } }],
     },
   };
 };

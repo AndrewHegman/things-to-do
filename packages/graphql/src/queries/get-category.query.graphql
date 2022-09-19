@@ -9,6 +9,7 @@ query GetCategory($categoryId: String!) {
       tags {
         id: _id
         name
+        category
       }
     }
   }

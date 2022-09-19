@@ -1,0 +1,15 @@
+{
+  "ignore": [
+    "*.test.ts",
+    "fixtures/*"
+  ],
+  "ext": "ts",
+  "watch": [
+    "src/"
+  ],
+  "exec": "swc ./src -d ./dist -C module.type=commonjs && node dist/server.js",
+  "events": {
+    "restart": "kill-port 4000",
+    "crash": "kill-port 4000"
+  }
+}

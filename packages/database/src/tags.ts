@@ -1,6 +1,6 @@
 import { connection } from "./conn";
 import { Collection, Document, ObjectId } from "mongodb";
-import { Collections } from "./collections";
+import { Collections, TagFields } from "./collections";
 import { Category, Tag } from "@ttd/interfaces";
 
 export class Tags {
@@ -33,15 +33,23 @@ export class Tags {
     }
   }
 
-  async getById(_id: ObjectId) {
+  async getById(_id: string) {
     try {
-      return (await this.getDb()).findOne({ _id });
+      return (await this.getDb()).findOne({ _id: new ObjectId(_id) });
     } catch (err) {
       throw new Error(`Error when fetching Tag. ${err}`);
     }
   }
 
-  async update(_id: ObjectId, updatedTag: Omit<Tag, "_id">) {
+  async getByCategoryId(_id: string) {
+    try {
+      return (await this.getDb()).find({ [TagFields.Category]: new ObjectId(_id) }).toArray();
+    } catch (err) {
+      throw new Error(`Error when fetching Tags by Category. ${err}`);
+    }
+  }
+
+  async update(_id: string, updatedTag: Omit<Tag, "_id">) {
     try {
       await (await this.getDb()).findOneAndUpdate({ _id }, { $set: updatedTag }, { upsert: false });
       return this.getAll();
@@ -52,13 +60,16 @@ export class Tags {
 
   async create(tag: Omit<Tag, "_id">) {
     try {
-      return (await this.getDb()).insertOne(tag);
+      const insertAttempt = await (await this.getDb()).insertOne({ ...tag, category: new ObjectId(tag.category) }, {});
+      if (insertAttempt.acknowledged) {
+        return this.getById(insertAttempt.insertedId.toString());
+      }
     } catch (err) {
       throw new Error(`Error when creating new Tag. ${err}`);
     }
   }
 
-  async delete(_id: ObjectId) {
+  async delete(_id: string) {
     try {
       await (await this.getDb()).deleteOne({ _id });
       return (await this.getDb()).find({}).toArray();

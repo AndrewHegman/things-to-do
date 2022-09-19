@@ -12,7 +12,7 @@
     "directory": "dist"
   },
   "scripts": {
-    "build-only": "tsc -p ./tsconfig.json",
+    "start:dev": "nodemon --config nodemon.json",
     "build": "yarn codegen && tsc -p ./tsconfig.json",
     "codegen": "graphql-codegen --config codegen.yml"
   },
@@ -20,6 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@swc/cli": "^0.1.57",
+    "@swc/core": "^1.3.2",
     "@ttd/database": "workspace:^",
     "@ttd/interfaces": "workspace:^",
     "@ttd/mock-data": "workspace:^",
@@ -33,6 +35,8 @@
     "@graphql-codegen/typescript-mongodb": "2.4.3",
     "@graphql-codegen/typescript-operations": "2.5.3",
     "@graphql-codegen/typescript-react-apollo": "3.3.3",
-    "@graphql-codegen/typescript-resolvers": "2.7.3"
+    "@graphql-codegen/typescript-resolvers": "2.7.3",
+    "@swc-node/register": "^1.5.1",
+    "nodemon": "^2.0.20"
   }
 }
