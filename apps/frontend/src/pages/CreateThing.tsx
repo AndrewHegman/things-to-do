@@ -1,17 +1,20 @@
 import { TextField, Typography } from "@mui/material";
-import { Tag as TagType } from "@ttd/graphql";
-import React from "react";
+import { Tag as TagType, useCreateTagMutation } from "@ttd/graphql";
+import React, { useMemo } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { AppBar } from "../components/AppBar";
 import { PageWrapper } from "../components/PageWrapper";
 import { Tag } from "../components/Tag";
 import { useStore } from "../store";
+import { Modal } from "../store/modals";
 import { removeFromArray } from "../utils";
 
 export const CreateThing: React.FC = () => {
   const navigate = useNavigate();
   const { categoryId } = useParams();
-  const { currentCategory } = useStore();
+  const { currentCategory, tags, setTags, openModal, closeModal } = useStore();
+  const [createTag, { data, loading, error, called, reset }] = useCreateTagMutation();
+
   const [description, setDescription] = React.useState("");
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   const [createNewTag, setCreateNewTag] = React.useState(false);
@@ -20,6 +23,24 @@ export const CreateThing: React.FC = () => {
   // if (!currentCategory) {
   //   return <Navigate to={`/category/${categoryId}`} />;
   // }
+
+  const categoryTags = useMemo(
+    () => (!tags || !currentCategory ? [] : tags.filter((tag) => tag.category === currentCategory.id)),
+    [currentCategory, tags]
+  );
+
+  React.useEffect(() => {
+    if (!loading) {
+      if (data && called) {
+        setTags([...tags, data.createTag]);
+        setSelectedTags([...selectedTags, data.createTag.id]);
+        reset();
+      }
+      closeModal(Modal.Loading);
+    } else {
+      openModal(Modal.Loading);
+    }
+  }, [loading, openModal, closeModal, setTags, setSelectedTags, called, data, reset]);
 
   const onTagClick = (tag: TagType) => {
     const idx = selectedTags.findIndex((tagId) => tagId === tag.id);
@@ -31,6 +52,9 @@ export const CreateThing: React.FC = () => {
   };
 
   const onNewTagBlur = (newTagName: string) => {
+    if (newTagName) {
+      createTag({ variables: { category: currentCategory!.id, name: newTagName } });
+    }
     console.log(newTagName);
     setCreateNewTag(false);
   };
@@ -65,7 +89,7 @@ export const CreateThing: React.FC = () => {
           </Typography>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {currentCategory?.tags.map((tag) => (
+          {categoryTags.map((tag) => (
             <Tag
               sx={{ marginLeft: "3px", marginRight: "3px", marginBottom: "5px" }}
               tag={tag}

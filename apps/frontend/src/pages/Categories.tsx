@@ -1,5 +1,4 @@
 import { Divider, styled, Typography } from "@mui/material";
-import { useGetCategoriesQuery } from "@ttd/graphql";
 import React from "react";
 import { AppBar } from "../components/AppBar";
 import { CategoryItem } from "../components/CategoryItem";

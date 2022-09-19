@@ -2,27 +2,10 @@ import { connection } from "./conn";
 import { Collection, Document, ObjectId } from "mongodb";
 import { Collections, ThingFields, CategoryFields, TagFields } from "./collections";
 import { Category } from "@ttd/interfaces";
-import { getThingLookup } from "./utils";
+import { CategoryLookup, ReplaceIdField, ThingLookup } from "./aggregations";
 
 export class Categories {
-  private readonly categoryQuery: Document = {
-    $lookup: {
-      from: Collections.Things,
-      localField: CategoryFields.Things,
-      foreignField: ThingFields.ID,
-      as: CategoryFields.Things,
-      pipeline: [
-        {
-          $lookup: {
-            from: Collections.Tags,
-            localField: ThingFields.Tags,
-            foreignField: ThingFields.ID,
-            as: ThingFields.Tags,
-          },
-        },
-      ],
-    },
-  };
+  private readonly categoryQuery: Document[] = [...CategoryLookup, ...ThingLookup];
 
   private static instance: Categories;
   private db: Collection<Document> | null;
@@ -46,8 +29,9 @@ export class Categories {
   }
 
   async getAll() {
+    console.log("new new new stuff");
     try {
-      return (await this.getDb()).aggregate([this.categoryQuery]).toArray();
+      return (await this.getDb()).aggregate(this.categoryQuery).toArray();
     } catch (err) {
       console.error(`Error when fetching Categories. ${err}`);
     }
@@ -55,7 +39,7 @@ export class Categories {
 
   async getById(_id: string) {
     try {
-      return (await this.getDb()).aggregate([{ $match: { _id: new ObjectId(_id) } }, this.categoryQuery]).next();
+      return (await this.getDb()).aggregate([{ $match: { _id: new ObjectId(_id) } }, ...this.categoryQuery]).next();
     } catch (err) {
       throw new Error(`Error when fetching Category. ${err}`);
     }

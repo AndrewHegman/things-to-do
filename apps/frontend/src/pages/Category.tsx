@@ -17,7 +17,7 @@ interface ICategoryProps {
 export const CategoryPage: React.FC<ICategoryProps> = (props) => {
   const { loading } = props;
   const { categoryId } = useParams();
-  const { categories, openModal, currentCategory, setCurrentCategory, closeModal } = useStore();
+  const { categories, openModal, currentCategory, setCurrentCategory, closeModal, tags } = useStore();
 
   const [searchText, setSearchText] = React.useState("");
   const [selectedTags, setSelectedTags] = React.useState<TagType[]>([]);
@@ -26,9 +26,13 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
 
   const navigate = useNavigate();
 
-  const tags = React.useRef<TagType[] | undefined>();
   const searchBoxRef = React.useRef<HTMLDivElement>(null);
   const selectedThingRef = React.useRef<string>();
+
+  const categoryTags = React.useMemo(
+    () => (!tags || !currentCategory ? [] : tags.filter((tag) => currentCategory?.id === tag.id)),
+    [tags, currentCategory]
+  );
 
   React.useEffect(() => {
     if (loading) {
@@ -45,13 +49,12 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
         navigate("/error/not-found");
       } else {
         setCurrentCategory(_currentCategory);
-        tags.current = _currentCategory.tags;
       }
     }
   }, [categories, categoryId, loading]);
 
   const getSelectableTags = () => {
-    return tags.current?.filter((tag) => selectedTags.findIndex((selectedTag) => selectedTag.id === tag.id) < 0) || [];
+    return categoryTags.filter((tag) => selectedTags.findIndex((selectedTag) => selectedTag.id === tag.id) < 0) || [];
   };
 
   const onTagClick = (tag: TagType) => {
@@ -120,17 +123,17 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
 
         {searchBoxFocused &&
           getSelectableTags()
-            .filter((tag) => tag!.name!.toLowerCase().includes(searchText.toLowerCase()))
+            .filter((tag) => tag.name.toLowerCase().includes(searchText.toLowerCase()))
             .map((tag, idx) => (
               <div key={tag.name} style={{ marginBottom: "10px" }} onClick={() => onTagClick(tag)}>
                 <Typography>{tag.name}</Typography>
-                {tags.current?.length! > 1 && idx < tags.current?.length! - 1 ? <Divider sx={{ marginRight: "20px" }} /> : null}
+                {categoryTags.length > 1 && idx < categoryTags.length - 1 ? <Divider sx={{ marginRight: "20px" }} /> : null}
               </div>
             ))}
       </div>
       <Drawer open={showMoreDrawer} anchor={"bottom"} onClose={() => setShowMoreDrawer(false)}>
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+          {["Edit", "Delete"].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton>
                 <ListItemText primary={text} />

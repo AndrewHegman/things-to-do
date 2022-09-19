@@ -2,6 +2,7 @@ import { connection } from "./conn";
 import { Collection, Document, ObjectId } from "mongodb";
 import { Collections, TagFields } from "./collections";
 import { Category, Tag } from "@ttd/interfaces";
+import { ReplaceIdField } from "./aggregations";
 
 export class Tags {
   private static instance: Tags;
@@ -27,7 +28,7 @@ export class Tags {
 
   async getAll() {
     try {
-      return (await this.getDb()).find({}).toArray();
+      return (await this.getDb()).aggregate(ReplaceIdField).toArray();
     } catch (err) {
       console.error(`Error when fetching Tags. ${err}`);
     }
@@ -35,7 +36,7 @@ export class Tags {
 
   async getById(_id: string) {
     try {
-      return (await this.getDb()).findOne({ _id: new ObjectId(_id) });
+      return (await this.getDb()).aggregate([{ $match: { _id: new ObjectId(_id) } }, ...ReplaceIdField]).next();
     } catch (err) {
       throw new Error(`Error when fetching Tag. ${err}`);
     }

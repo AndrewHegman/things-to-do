@@ -1,5 +1,5 @@
-import create, { StateCreator } from "zustand";
 import { Category } from "@ttd/graphql";
+import create, { StateCreator } from "zustand";
 
 export interface CategoriesSlice {
   categories: Category[];

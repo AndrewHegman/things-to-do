@@ -17,7 +17,7 @@ export enum CategoryFields {
 }
 
 export enum TagFields {
-  ID = "id",
+  ID = "_id",
   Name = "name",
   Category = "category",
 }

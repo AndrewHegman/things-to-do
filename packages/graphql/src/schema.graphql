@@ -1,24 +1,24 @@
 type Tag {
-  _id: String!
+  id: String!
   name: String!
   category: String!
 }
 
 # fragment TagFragment on Tag {
-#   id: _id
+#   id: id
 #   name
 #   category
 # }
 
 type Thing {
-  _id: String!
+  id: String!
   name: String!
   description: String!
   tags: [Tag!]!
 }
 
 type Category {
-  _id: String!
+  id: String!
   name: String!
   things: [Thing!]!
 }
@@ -27,6 +27,7 @@ type Query {
   categories: [Category!]!
   category(categoryId: String!): Category!
   tagsByCategory(categoryId: String!): [Tag!]!
+  tags: [Tag!]!
 }
 
 type Mutation {

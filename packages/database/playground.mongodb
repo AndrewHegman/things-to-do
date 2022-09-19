@@ -2,28 +2,99 @@
 // Use Ctrl+Space inside a snippet or a string literal to trigger completions.
 
 // The current database to use.
-use('Things-To-Do');
+use("Things-To-Do");
 
-// Search for documents in the current collection.
-// console.log(db.getCollection('categories').find());
-db.categories.aggregate([
-  {$match: { _id: ObjectId("620fdc9940094eded41014db")}},
+const ReplaceIdField = [
+  {
+    $addFields: {
+      id: "$_id",
+    },
+  },
+  {
+    $project: {
+      _id: 0,
+    },
+  },
+];
+
+const ThingLookup = [
+  ...ReplaceIdField,
+  {
+    $lookup: {
+      from: 'tags',
+      localField: 'tags',
+      foreignField: '_id',
+      as: 'tags',
+      pipeline: [...ReplaceIdField],
+    },
+  },
+];
+
+const CategoryLookup = [
   {
     $lookup: {
       from: 'things',
       localField: 'things',
       foreignField: '_id',
       as: 'things',
-      pipeline: [
-        {
-          $lookup: {
-            from: 'tags',
-            localField: 'tags',
-            foreignField: '_id',
-            as: 'tags'
-          }
-        }
-      ]
+      pipeline: [...ThingLookup],
     },
-  }
-]);
+  },
+];
+
+// Search for documents in the current collection.
+// console.log(db.getCollection('categories').find());
+db.categories.aggregate([...CategoryLookup, ...ThingLookup]);
+// db.categories.aggregate([
+//   { $match: { _id: ObjectId("620fdc9940094eded41014db") } },
+//   {
+//     $addFields: {
+//       id: "$_id",
+//     },
+//   },
+//   {
+//     $project: {
+//       _id: 0,
+//     },
+//   },
+//   {
+//     $lookup: {
+//       from: "things",
+//       localField: "things",
+//       foreignField: "_id",
+//       as: "things",
+//       pipeline: [
+//         {
+//           $lookup: {
+//             from: "tags",
+//             localField: "tags",
+//             foreignField: "_id",
+//             as: "tags",
+//             pipeline: [
+//               {
+//                 $addFields: {
+//                   id: "$_id",
+//                 },
+//               },
+//               {
+//                 $project: {
+//                   _id: 0,
+//                 },
+//               },
+//             ],
+//           },
+//         },
+//         {
+//           $addFields: {
+//             id: "$_id",
+//           },
+//         },
+//         {
+//           $project: {
+//             _id: 0,
+//           },
+//         },
+//       ],
+//     },
+//   },
+// ]);

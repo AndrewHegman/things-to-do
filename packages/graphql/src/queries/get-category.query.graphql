@@ -1,13 +1,13 @@
 query GetCategory($categoryId: String!) {
   category(categoryId: $categoryId) {
-    id: _id
+    id
     name
     things {
-      id: _id
+      id
       name
       description
       tags {
-        id: _id
+        id
         name
         category
       }

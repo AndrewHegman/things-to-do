@@ -24,7 +24,7 @@
         "description": null,
         "fields": [
           {
-            "name": "_id",
+            "name": "id",
             "description": null,
             "args": [],
             "type": {
@@ -208,6 +208,30 @@
             "deprecationReason": null
           },
           {
+            "name": "tags",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "Tag",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "tagsByCategory",
             "description": null,
             "args": [
@@ -270,7 +294,7 @@
         "description": null,
         "fields": [
           {
-            "name": "_id",
+            "name": "category",
             "description": null,
             "args": [],
             "type": {
@@ -286,7 +310,7 @@
             "deprecationReason": null
           },
           {
-            "name": "category",
+            "name": "id",
             "description": null,
             "args": [],
             "type": {
@@ -329,7 +353,7 @@
         "description": null,
         "fields": [
           {
-            "name": "_id",
+            "name": "description",
             "description": null,
             "args": [],
             "type": {
@@ -345,7 +369,7 @@
             "deprecationReason": null
           },
           {
-            "name": "description",
+            "name": "id",
             "description": null,
             "args": [],
             "type": {
