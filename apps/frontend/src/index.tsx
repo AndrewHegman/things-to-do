@@ -13,7 +13,7 @@ import { client } from "./graphql";
 import { useStore } from "./store";
 import { Modal } from "./store/modals";
 import { CreateThing } from "./pages/CreateThing";
-import { useGetCategoriesQuery, useGetTagsQuery } from "@ttd/graphql";
+import { useGetCategoriesQuery, useGetTagsQuery, useGetThingsTagsCategoriesQuery } from "@ttd/graphql";
 
 const theme = createTheme({
   typography: {
@@ -93,33 +93,49 @@ const theme = createTheme({
 });
 
 const App = () => {
-  const { setCategories, setTags } = useStore();
-  const { loading: categoriesLoading, error: categoriesError, data: categories } = useGetCategoriesQuery();
-  const { loading: tagsLoading, error: tagsError, data: tags } = useGetTagsQuery();
+  const { setCategories, setTags, setThings } = useStore();
+  // const { loading: categoriesLoading, error: categoriesError, data: categories } = useGetCategoriesQuery();
+  // const { loading: tagsLoading, error: tagsError, data: tags } = useGetTagsQuery();
+  const { loading, data } = useGetThingsTagsCategoriesQuery();
 
-  const [loadingData, setLoadingData] = React.useState(categoriesLoading || tagsLoading);
-
-  React.useEffect(() => {
-    if (!categoriesLoading && categories && !categoriesError) {
-      console.log(categories);
-      setCategories(categories.categories);
-    }
-    if (categoriesError) {
-      console.log(categoriesError);
-    }
-  }, [categoriesLoading, categories, categoriesError, setCategories]);
+  const [loadingData, setLoadingData] = React.useState(loading);
 
   React.useEffect(() => {
-    if (!tagsLoading && tags && !tagsError) {
-      setTags(tags.tags);
-    }
-  }, [tagsLoading, tags, tagsError, setTags]);
+    console.log(data);
+  }, [data]);
 
   React.useEffect(() => {
-    if (!tagsLoading && !categoriesLoading) {
+    if (loading) {
+      setLoadingData(true);
+    } else if (data) {
+      setCategories(data.categories);
+      setTags(data.tags);
+      setThings(data.things);
       setLoadingData(false);
     }
-  }, [tagsLoading, categoriesLoading]);
+  }, [loading, data, setCategories, setTags, setThings]);
+
+  // React.useEffect(() => {
+  //   if (!categoriesLoading && categories && !categoriesError) {
+  //     console.log(categories);
+  //     setCategories(categories.categories);
+  //   }
+  //   if (categoriesError) {
+  //     console.log(categoriesError);
+  //   }
+  // }, [categoriesLoading, categories, categoriesError, setCategories]);
+
+  // React.useEffect(() => {
+  //   if (!tagsLoading && tags && !tagsError) {
+  //     setTags(tags.tags);
+  //   }
+  // }, [tagsLoading, tags, tagsError, setTags]);
+
+  // React.useEffect(() => {
+  //   if (!tagsLoading && !categoriesLoading) {
+  //     setLoadingData(false);
+  //   }
+  // }, [tagsLoading, categoriesLoading]);
 
   return (
     <ThemeProvider theme={theme}>

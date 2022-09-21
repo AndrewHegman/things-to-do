@@ -9,7 +9,9 @@
     "noEmit": false,
     "sourceMap": true
   },
+  "files": ["src/@types/graphql.d.ts"],
   "include": ["./src/*", "./src/generated/*"],
   "exclude": ["./dist/*", "node_modules/*"],
-  "references": [{ "path": "../interfaces" }, { "path": "../mock-data" }]
+  "references": [{ "path": "../interfaces" }, { "path": "../mock-data" }],
+  "typeRoots": ["node_modules/@types", "src/@types"]
 }

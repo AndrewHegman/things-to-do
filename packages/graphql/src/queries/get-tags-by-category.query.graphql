@@ -2,6 +2,9 @@ query TagsByCategory($categoryId: String!) {
   tagsByCategory(categoryId: $categoryId) {
     id
     name
-    category
+    category {
+      id
+      name
+    }
   }
 }

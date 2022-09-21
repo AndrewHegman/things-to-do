@@ -2,15 +2,5 @@ query GetCategory($categoryId: String!) {
   category(categoryId: $categoryId) {
     id
     name
-    things {
-      id
-      name
-      description
-      tags {
-        id
-        name
-        category
-      }
-    }
   }
 }

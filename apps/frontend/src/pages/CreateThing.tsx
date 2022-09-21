@@ -1,5 +1,5 @@
 import { TextField, Typography } from "@mui/material";
-import { Tag as TagType, useCreateTagMutation } from "@ttd/graphql";
+import { Tag as TagType, useCreateTagMutation, useCreateThingMutation } from "@ttd/graphql";
 import React, { useMemo } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { AppBar } from "../components/AppBar";
@@ -13,34 +13,62 @@ export const CreateThing: React.FC = () => {
   const navigate = useNavigate();
   const { categoryId } = useParams();
   const { currentCategory, tags, setTags, openModal, closeModal } = useStore();
-  const [createTag, { data, loading, error, called, reset }] = useCreateTagMutation();
+  const [
+    createTag,
+    { data: createTagData, loading: createTagLoading, error: createTagError, called: createTagCalled, reset: createTagReset },
+  ] = useCreateTagMutation();
+  const [
+    createThing,
+    {
+      data: createThingData,
+      loading: createThingLoading,
+      error: createThingError,
+      called: createThingCalled,
+      reset: createThingReset,
+    },
+  ] = useCreateThingMutation();
 
   const [description, setDescription] = React.useState("");
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   const [createNewTag, setCreateNewTag] = React.useState(false);
-  console.log(description.length > 5);
+  const [showDuplicateTagError, setShowDuplicateTagError] = React.useState(false);
+  const [name, setName] = React.useState("");
 
   // if (!currentCategory) {
   //   return <Navigate to={`/category/${categoryId}`} />;
   // }
 
   const categoryTags = useMemo(
-    () => (!tags || !currentCategory ? [] : tags.filter((tag) => tag.category === currentCategory.id)),
+    () => (!tags || !currentCategory ? [] : tags.filter((tag) => tag.category.id === currentCategory.id)),
     [currentCategory, tags]
   );
 
   React.useEffect(() => {
-    if (!loading) {
-      if (data && called) {
-        setTags([...tags, data.createTag]);
-        setSelectedTags([...selectedTags, data.createTag.id]);
-        reset();
+    if (!createTagLoading) {
+      if (createTagData && createTagCalled) {
+        setTags([...tags, createTagData.createTag]);
+        setSelectedTags([...selectedTags, createTagData.createTag.id]);
+        setCreateNewTag(false);
+
+        createTagReset();
       }
       closeModal(Modal.Loading);
     } else {
       openModal(Modal.Loading);
     }
-  }, [loading, openModal, closeModal, setTags, setSelectedTags, called, data, reset]);
+  }, [createTagLoading, openModal, closeModal, setTags, setSelectedTags, createTagCalled, createTagData, createTagReset]);
+
+  React.useEffect(() => {
+    if (!createThingLoading) {
+      if (createThingData && createThingCalled) {
+        navigate("../");
+        createThingReset();
+      }
+      closeModal(Modal.Loading);
+    } else {
+      openModal(Modal.Loading);
+    }
+  }, [createThingLoading, openModal, closeModal, createThingCalled, createThingData, createThingReset]);
 
   const onTagClick = (tag: TagType) => {
     const idx = selectedTags.findIndex((tagId) => tagId === tag.id);
@@ -52,11 +80,18 @@ export const CreateThing: React.FC = () => {
   };
 
   const onNewTagBlur = (newTagName: string) => {
-    if (newTagName) {
+    if (categoryTags.findIndex((categoryTag) => categoryTag.name === newTagName) != -1) {
+      setShowDuplicateTagError(true);
+    } else if (newTagName && categoryTags.findIndex((categoryTag) => categoryTag.name === newTagName) === -1) {
+      setShowDuplicateTagError(false);
       createTag({ variables: { category: currentCategory!.id, name: newTagName } });
+    } else {
+      setCreateNewTag(false);
     }
-    console.log(newTagName);
-    setCreateNewTag(false);
+  };
+
+  const onSaveClicked = () => {
+    createThing({ variables: { description, name, tags: selectedTags, category: currentCategory!.id! } });
   };
 
   return (
@@ -66,10 +101,16 @@ export const CreateThing: React.FC = () => {
         onLeftLinkClick={() => navigate("../")}
         title="Create new Thing"
         rightLinkTitle="Save"
-        onRightLinkClick={() => {}}
+        onRightLinkClick={() => onSaveClicked()}
       />
       <div style={{ display: "flex", flexDirection: "column", margin: "15px 25px 0 15px" }}>
-        <TextField variant="standard" placeholder="Name" sx={{ marginBottom: "40px" }} />
+        <TextField
+          variant="standard"
+          placeholder="Name"
+          sx={{ marginBottom: "40px" }}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
         <TextField
           variant="outlined"
           placeholder="Description"
@@ -102,6 +143,7 @@ export const CreateThing: React.FC = () => {
             <Tag creating tag="" sx={{ marginLeft: "3px", marginRight: "3px", marginBottom: "5px" }} onBlur={onNewTagBlur} />
           )}
         </div>
+        {showDuplicateTagError && <Typography color={"error.main"}>Tags must be unique!</Typography>}
       </div>
     </PageWrapper>
   );

@@ -12,12 +12,14 @@ interface ICategoryItemProps {
 export const CategoryItem: React.FC<ICategoryItemProps> = (props) => {
   const { category } = props;
   const navigate = useNavigate();
-  const { setCurrentCategory } = useStore();
+  const { setCurrentCategory, things } = useStore();
 
   const handleClick = () => {
     setCurrentCategory(category);
     navigate(`category/${category.id}`, { state: { category } });
   };
+
+  const categoryThings = React.useMemo(() => things.filter((thing) => thing.category.id === category.id), [things, category]);
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", margin: "2% 5% 2% 5%" }} onClick={handleClick}>
@@ -26,7 +28,7 @@ export const CategoryItem: React.FC<ICategoryItemProps> = (props) => {
         <Typography fontSize="24px" height="100%">
           {category.name}
         </Typography>
-        <Avatar sx={{ width: "30px", height: "30px" }}>{category.things.length}</Avatar>
+        <Avatar sx={{ width: "30px", height: "30px" }}>{categoryThings.length}</Avatar>
       </div>
     </Box>
   );

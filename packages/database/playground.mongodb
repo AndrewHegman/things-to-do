@@ -17,34 +17,51 @@ const ReplaceIdField = [
   },
 ];
 
-const ThingLookup = [
-  ...ReplaceIdField,
+
+
+// const CategoryLookup = [
+//   {
+//     $lookup: {
+//       from: 'things',
+//       localField: 'things',
+//       foreignField: '_id',
+//       as: 'things',
+//       pipeline: [...ThingLookup],
+//     },
+//   },
+// ];
+
+
+
+const CategoryLookup = [
+  {
+    $lookup: {
+      from: 'categories',
+      localField: "category",
+      foreignField: '_id',
+      as: "category",
+      pipeline: [...ReplaceIdField],
+    },
+  },
+  { $unwind: "$category" }
+];
+
+const TagLookup = [
+  // ...ReplaceIdField,
   {
     $lookup: {
       from: 'tags',
       localField: 'tags',
       foreignField: '_id',
       as: 'tags',
-      pipeline: [...ReplaceIdField],
-    },
-  },
-];
-
-const CategoryLookup = [
-  {
-    $lookup: {
-      from: 'things',
-      localField: 'things',
-      foreignField: '_id',
-      as: 'things',
-      pipeline: [...ThingLookup],
+      pipeline: [...ReplaceIdField, ...CategoryLookup],
     },
   },
 ];
 
 // Search for documents in the current collection.
 // console.log(db.getCollection('categories').find());
-db.categories.aggregate([...CategoryLookup, ...ThingLookup]);
+db.things.aggregate([...ReplaceIdField, ...TagLookup, ...CategoryLookup]);
 // db.categories.aggregate([
 //   { $match: { _id: ObjectId("620fdc9940094eded41014db") } },
 //   {

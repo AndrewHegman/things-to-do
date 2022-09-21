@@ -2,6 +2,9 @@ mutation CreateTag($category: String!, $name: String!) {
   createTag(category: $category, name: $name) {
     id
     name
-    category
+    category {
+      id
+      name
+    }
   }
 }

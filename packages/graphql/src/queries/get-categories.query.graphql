@@ -2,15 +2,5 @@ query GetCategories {
   categories {
     id
     name
-    things {
-      id
-      name
-      description
-      tags {
-        id
-        name
-        category
-      }
-    }
   }
 }

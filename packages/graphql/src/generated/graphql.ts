@@ -21,12 +21,12 @@ export type Category = {
   __typename?: 'Category';
   id: Scalars['String'];
   name: Scalars['String'];
-  things: Array<Thing>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   createTag: Tag;
+  createThing: Thing;
 };
 
 
@@ -35,12 +35,21 @@ export type MutationCreateTagArgs = {
   name: Scalars['String'];
 };
 
+
+export type MutationCreateThingArgs = {
+  category: Scalars['String'];
+  description: Scalars['String'];
+  name: Scalars['String'];
+  tags: Array<Scalars['String']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   categories: Array<Category>;
   category: Category;
   tags: Array<Tag>;
   tagsByCategory: Array<Tag>;
+  things: Array<Thing>;
 };
 
 
@@ -55,13 +64,14 @@ export type QueryTagsByCategoryArgs = {
 
 export type Tag = {
   __typename?: 'Tag';
-  category: Scalars['String'];
+  category: Category;
   id: Scalars['String'];
   name: Scalars['String'];
 };
 
 export type Thing = {
   __typename?: 'Thing';
+  category: Category;
   description: Scalars['String'];
   id: Scalars['String'];
   name: Scalars['String'];
@@ -74,31 +84,46 @@ export type CreateTagMutationVariables = Exact<{
 }>;
 
 
-export type CreateTagMutation = { __typename?: 'Mutation', createTag: { __typename?: 'Tag', id: string, name: string, category: string } };
+export type CreateTagMutation = { __typename?: 'Mutation', createTag: { __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } } };
+
+export type CreateThingMutationVariables = Exact<{
+  name: Scalars['String'];
+  description: Scalars['String'];
+  tags: Array<Scalars['String']> | Scalars['String'];
+  category: Scalars['String'];
+}>;
+
+
+export type CreateThingMutation = { __typename?: 'Mutation', createThing: { __typename?: 'Thing', id: string, name: string, description: string, category: { __typename?: 'Category', id: string, name: string }, tags: Array<{ __typename?: 'Tag', id: string, name: string }> } };
 
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: string }> }> }> };
+export type GetCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string }> };
 
 export type GetCategoryQueryVariables = Exact<{
   categoryId: Scalars['String'];
 }>;
 
 
-export type GetCategoryQuery = { __typename?: 'Query', category: { __typename?: 'Category', id: string, name: string, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: string }> }> } };
+export type GetCategoryQuery = { __typename?: 'Query', category: { __typename?: 'Category', id: string, name: string } };
 
 export type TagsByCategoryQueryVariables = Exact<{
   categoryId: Scalars['String'];
 }>;
 
 
-export type TagsByCategoryQuery = { __typename?: 'Query', tagsByCategory: Array<{ __typename?: 'Tag', id: string, name: string, category: string }> };
+export type TagsByCategoryQuery = { __typename?: 'Query', tagsByCategory: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }> };
 
 export type GetTagsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTagsQuery = { __typename?: 'Query', tags: Array<{ __typename?: 'Tag', id: string, name: string, category: string }> };
+export type GetTagsQuery = { __typename?: 'Query', tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }> };
+
+export type GetThingsTagsCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetThingsTagsCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }>, category: { __typename?: 'Category', id: string, name: string } }> };
 
 
 
@@ -192,12 +217,12 @@ export type ResolversParentTypes = {
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  things?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationCreateTagArgs, 'category' | 'name'>>;
+  createThing?: Resolver<ResolversTypes['Thing'], ParentType, ContextType, RequireFields<MutationCreateThingArgs, 'category' | 'description' | 'name' | 'tags'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -205,16 +230,18 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   category?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryArgs, 'categoryId'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
   tagsByCategory?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsByCategoryArgs, 'categoryId'>>;
+  things?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType>;
 };
 
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = {
-  category?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  category?: Resolver<ResolversTypes['Category'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ThingResolvers<ContextType = any, ParentType extends ResolversParentTypes['Thing'] = ResolversParentTypes['Thing']> = {
+  category?: Resolver<ResolversTypes['Category'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -237,7 +264,10 @@ export const CreateTagDocument = gql`
   createTag(category: $category, name: $name) {
     id
     name
-    category
+    category {
+      id
+      name
+    }
   }
 }
     `;
@@ -268,21 +298,62 @@ export function useCreateTagMutation(baseOptions?: Apollo.MutationHookOptions<Cr
 export type CreateTagMutationHookResult = ReturnType<typeof useCreateTagMutation>;
 export type CreateTagMutationResult = Apollo.MutationResult<CreateTagMutation>;
 export type CreateTagMutationOptions = Apollo.BaseMutationOptions<CreateTagMutation, CreateTagMutationVariables>;
+export const CreateThingDocument = gql`
+    mutation CreateThing($name: String!, $description: String!, $tags: [String!]!, $category: String!) {
+  createThing(
+    name: $name
+    description: $description
+    tags: $tags
+    category: $category
+  ) {
+    id
+    name
+    description
+    category {
+      id
+      name
+    }
+    tags {
+      id
+      name
+    }
+  }
+}
+    `;
+export type CreateThingMutationFn = Apollo.MutationFunction<CreateThingMutation, CreateThingMutationVariables>;
+
+/**
+ * __useCreateThingMutation__
+ *
+ * To run a mutation, you first call `useCreateThingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateThingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createThingMutation, { data, loading, error }] = useCreateThingMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      tags: // value for 'tags'
+ *      category: // value for 'category'
+ *   },
+ * });
+ */
+export function useCreateThingMutation(baseOptions?: Apollo.MutationHookOptions<CreateThingMutation, CreateThingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateThingMutation, CreateThingMutationVariables>(CreateThingDocument, options);
+      }
+export type CreateThingMutationHookResult = ReturnType<typeof useCreateThingMutation>;
+export type CreateThingMutationResult = Apollo.MutationResult<CreateThingMutation>;
+export type CreateThingMutationOptions = Apollo.BaseMutationOptions<CreateThingMutation, CreateThingMutationVariables>;
 export const GetCategoriesDocument = gql`
     query GetCategories {
   categories {
     id
     name
-    things {
-      id
-      name
-      description
-      tags {
-        id
-        name
-        category
-      }
-    }
   }
 }
     `;
@@ -318,16 +389,6 @@ export const GetCategoryDocument = gql`
   category(categoryId: $categoryId) {
     id
     name
-    things {
-      id
-      name
-      description
-      tags {
-        id
-        name
-        category
-      }
-    }
   }
 }
     `;
@@ -364,7 +425,10 @@ export const TagsByCategoryDocument = gql`
   tagsByCategory(categoryId: $categoryId) {
     id
     name
-    category
+    category {
+      id
+      name
+    }
   }
 }
     `;
@@ -401,7 +465,10 @@ export const GetTagsDocument = gql`
   tags {
     id
     name
-    category
+    category {
+      id
+      name
+    }
   }
 }
     `;
@@ -432,5 +499,65 @@ export function useGetTagsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Ge
 export type GetTagsQueryHookResult = ReturnType<typeof useGetTagsQuery>;
 export type GetTagsLazyQueryHookResult = ReturnType<typeof useGetTagsLazyQuery>;
 export type GetTagsQueryResult = Apollo.QueryResult<GetTagsQuery, GetTagsQueryVariables>;
+export const GetThingsTagsCategoriesDocument = gql`
+    query GetThingsTagsCategories {
+  categories {
+    id
+    name
+  }
+  tags {
+    id
+    name
+    category {
+      id
+      name
+    }
+  }
+  things {
+    id
+    name
+    description
+    tags {
+      id
+      name
+      category {
+        id
+        name
+      }
+    }
+    category {
+      id
+      name
+    }
+  }
+}
+    `;
 
-  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{id:String!name:String!things:[Thing!]!}type Mutation{createTag(category:String!name:String!):Tag!}type Query{categories:[Category!]!category(categoryId:String!):Category!tags:[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!}type Tag{category:String!id:String!name:String!}type Thing{description:String!id:String!name:String!tags:[Tag!]!}`;
+/**
+ * __useGetThingsTagsCategoriesQuery__
+ *
+ * To run a query within a React component, call `useGetThingsTagsCategoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetThingsTagsCategoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetThingsTagsCategoriesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetThingsTagsCategoriesQuery(baseOptions?: Apollo.QueryHookOptions<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>(GetThingsTagsCategoriesDocument, options);
+      }
+export function useGetThingsTagsCategoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>(GetThingsTagsCategoriesDocument, options);
+        }
+export type GetThingsTagsCategoriesQueryHookResult = ReturnType<typeof useGetThingsTagsCategoriesQuery>;
+export type GetThingsTagsCategoriesLazyQueryHookResult = ReturnType<typeof useGetThingsTagsCategoriesLazyQuery>;
+export type GetThingsTagsCategoriesQueryResult = Apollo.QueryResult<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>;
+
+  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{id:String!name:String!}type Mutation{createTag(category:String!name:String!):Tag!createThing(category:String!description:String!name:String!tags:[String!]!):Thing!}type Query{categories:[Category!]!category(categoryId:String!):Category!tags:[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!things:[Thing!]!}type Tag{category:Category!id:String!name:String!}type Thing{category:Category!description:String!id:String!name:String!tags:[Tag!]!}`;

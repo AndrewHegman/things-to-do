@@ -2,11 +2,6 @@ import { Tag } from "@ttd/interfaces";
 import { mockDatabase } from "@ttd/mock-data";
 import { Things, Categories, Tags } from "@ttd/database";
 
-const replaceIdField = (data: { _id: string; [key: string]: any }) => {
-  const { _id, ...rest } = data;
-  return { ...rest, id: _id };
-};
-
 export const resolvers = {
   Query: {
     categories: async () => {
@@ -20,11 +15,23 @@ export const resolvers = {
       console.log(res);
       return res;
     },
-    tags: async () => await Tags.getInstance().getAll(),
+    tags: async () => {
+      const res = await Tags.getInstance().getAll();
+      console.log(res?.map((r) => r.category));
+      return res;
+    },
+    things: async () => {
+      const res = await Things.getInstance().getAll();
+      // console.log(res?.map((r) => r.tags));
+      console.log(res[0]);
+
+      return res;
+    },
   },
   Mutation: {
-    createTag: async (_: any, args: any) => {
-      const res = await Tags.getInstance().create(args);
+    createTag: async (_: any, args: any) => await Tags.getInstance().create(args),
+    createThing: async (_: any, args: any) => {
+      const res = await Things.getInstance().create(args);
       console.log(res);
       return res;
     },

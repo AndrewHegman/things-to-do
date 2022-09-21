@@ -5,4 +5,5 @@ export interface Thing {
   name: string;
   description: string;
   tags: Tag[];
+  category: string;
 }

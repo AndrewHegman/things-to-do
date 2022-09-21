@@ -2,6 +2,9 @@ query GetTags {
   tags {
     id
     name
-    category
+    category {
+      id
+      name
+    }
   }
 }

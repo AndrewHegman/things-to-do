@@ -17,7 +17,7 @@ interface ICategoryProps {
 export const CategoryPage: React.FC<ICategoryProps> = (props) => {
   const { loading } = props;
   const { categoryId } = useParams();
-  const { categories, openModal, currentCategory, setCurrentCategory, closeModal, tags } = useStore();
+  const { categories, openModal, currentCategory, setCurrentCategory, closeModal, tags, things } = useStore();
 
   const [searchText, setSearchText] = React.useState("");
   const [selectedTags, setSelectedTags] = React.useState<TagType[]>([]);
@@ -32,6 +32,11 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
   const categoryTags = React.useMemo(
     () => (!tags || !currentCategory ? [] : tags.filter((tag) => currentCategory?.id === tag.id)),
     [tags, currentCategory]
+  );
+
+  const categoryThings = React.useMemo(
+    () => (!things || !currentCategory ? [] : things.filter((thing) => currentCategory.id === thing.category.id)),
+    [things, currentCategory]
   );
 
   React.useEffect(() => {
@@ -64,10 +69,10 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
 
   const getFilteredThings = (): ThingType[] => {
     return selectedTags.length > 0
-      ? currentCategory?.things.filter((thing) =>
+      ? categoryThings.filter((thing) =>
           selectedTags.every((selectedTag) => thing.tags.findIndex((tag) => tag.id === selectedTag.id) >= 0)
         ) || []
-      : currentCategory?.things || [];
+      : categoryThings || [];
   };
 
   const removeSelectedTag = (tag: TagType) => {
@@ -115,9 +120,7 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
           getFilteredThings().map((thing, idx) => (
             <div key={thing.id} style={{ marginBottom: "10px" }}>
               <Thing thing={thing} onClickMore={() => onClickMore(thing.id)} />
-              {currentCategory?.things.length! > 1 && idx < currentCategory?.things!.length! - 1 ? (
-                <Divider sx={{ marginRight: "20px" }} />
-              ) : null}
+              {categoryThings.length! > 1 && idx < categoryThings!.length! - 1 ? <Divider sx={{ marginRight: "20px" }} /> : null}
             </div>
           ))}
 
@@ -142,7 +145,7 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
           ))}
         </List>
       </Drawer>
-      <Fab color="secondary" sx={{ position: "absolute", right: "10px", bottom: "10px" }} onClick={() => navigate("create")}>
+      <Fab color="secondary" sx={{ position: "fixed", right: "10px", bottom: "10px" }} onClick={() => navigate("create")}>
         <Add />
       </Fab>
     </PageWrapper>

@@ -1,0 +1,33 @@
+query GetThingsTagsCategories {
+  categories {
+    id
+    name
+  }
+
+  tags {
+    id
+    name
+    category {
+      id
+      name
+    }
+  }
+
+  things {
+    id
+    name
+    description
+    tags {
+      id
+      name
+      category {
+        id
+        name
+      }
+    }
+    category {
+      id
+      name
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { connection } from "./conn";
 import { Collection, Document, ObjectId } from "mongodb";
 import { Collections } from "./collections";
 import { Thing } from "@ttd/interfaces";
+import { CategoryLookup, ReplaceIdField, TagLookup, ThingLookup } from "./aggregations";
 
 export class Things {
   private static instance: Things;
@@ -25,23 +26,27 @@ export class Things {
     return this.db;
   }
 
-  async getAll(category?: ObjectId) {
+  async getAll(category?: string) {
+    if (category) {
+      throw new Error(`Error -- fetching Things by category has not been implemented!`);
+    }
+
     try {
-      return (await this.getDb()).find(category ? { category } : {}).toArray();
+      return (await this.getDb()).aggregate([...ReplaceIdField, ...TagLookup(CategoryLookup()), ...CategoryLookup()]).toArray();
     } catch (err) {
-      console.error(`Error when fetching Things. ${err}`);
+      throw new Error(`Error when fetching Things. ${err}`);
     }
   }
 
-  async getById(_id: ObjectId) {
+  async getById(_id: string) {
     try {
-      return (await this.getDb()).findOne({ _id });
+      return (await this.getDb()).aggregate([{ $match: { _id: new ObjectId(_id) } }, ...CategoryLookup(), ...TagLookup()]).next();
     } catch (err) {
       throw new Error(`Error when fetching Thing. ${err}`);
     }
   }
 
-  async update(_id: ObjectId, updatedThing: Omit<Thing, "_id">) {
+  async update(_id: string, updatedThing: Omit<Thing, "_id">) {
     try {
       await (await this.getDb()).findOneAndUpdate({ _id }, { $set: updatedThing }, { upsert: false });
       return this.getAll();
@@ -50,9 +55,14 @@ export class Things {
     }
   }
 
-  async create(thing: Omit<Thing, "_id">) {
+  async create(thing: Omit<Thing, "_id" | "tags" | "category"> & { tags: string[]; category: string }) {
     try {
-      return (await this.getDb()).insertOne(thing);
+      const insertAttempt = await (
+        await this.getDb()
+      ).insertOne({ ...thing, tags: thing.tags.map((tag) => new ObjectId(tag)), category: new ObjectId(thing.category) });
+      if (insertAttempt.acknowledged) {
+        return this.getById(insertAttempt.insertedId.toString());
+      }
     } catch (err) {
       throw new Error(`Error when creating new Thing. ${err}`);
     }

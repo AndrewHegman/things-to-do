@@ -1,11 +1,11 @@
 import { connection } from "./conn";
 import { Collection, Document, ObjectId } from "mongodb";
-import { Collections, ThingFields, CategoryFields, TagFields } from "./collections";
+import { Collections } from "./collections";
 import { Category } from "@ttd/interfaces";
-import { CategoryLookup, ReplaceIdField, ThingLookup } from "./aggregations";
+import { ReplaceIdField, ThingLookup } from "./aggregations";
 
 export class Categories {
-  private readonly categoryQuery: Document[] = [...CategoryLookup, ...ThingLookup];
+  private readonly categoryQuery: Document[] = [...ReplaceIdField, ...ThingLookup()];
 
   private static instance: Categories;
   private db: Collection<Document> | null;
@@ -29,7 +29,6 @@ export class Categories {
   }
 
   async getAll() {
-    console.log("new new new stuff");
     try {
       return (await this.getDb()).aggregate(this.categoryQuery).toArray();
     } catch (err) {

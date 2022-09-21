@@ -1,7 +1,12 @@
+type Category {
+  id: String!
+  name: String!
+}
+
 type Tag {
   id: String!
   name: String!
-  category: String!
+  category: Category!
 }
 
 # fragment TagFragment on Tag {
@@ -15,12 +20,7 @@ type Thing {
   name: String!
   description: String!
   tags: [Tag!]!
-}
-
-type Category {
-  id: String!
-  name: String!
-  things: [Thing!]!
+  category: Category!
 }
 
 type Query {
@@ -28,10 +28,12 @@ type Query {
   category(categoryId: String!): Category!
   tagsByCategory(categoryId: String!): [Tag!]!
   tags: [Tag!]!
+  things: [Thing!]!
 }
 
 type Mutation {
   createTag(category: String!, name: String!): Tag!
+  createThing(name: String!, description: String!, tags: [String!]!, category: String!): Thing!
 }
 
 schema {
