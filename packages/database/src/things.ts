@@ -3,6 +3,7 @@ import { Collection, Document, ObjectId } from "mongodb";
 import { Collections } from "./collections";
 import { Thing } from "@ttd/interfaces";
 import { CategoryLookup, ReplaceIdField, TagLookup, ThingLookup } from "./aggregations";
+import { UpdateThingDAI, CreateThingDAI } from "./interfaces";
 
 export class Things {
   private static instance: Things;
@@ -40,22 +41,40 @@ export class Things {
 
   async getById(_id: string) {
     try {
-      return (await this.getDb()).aggregate([{ $match: { _id: new ObjectId(_id) } }, ...CategoryLookup(), ...TagLookup()]).next();
+      return (await this.getDb())
+        .aggregate([{ $match: { _id: new ObjectId(_id) } }, ...ReplaceIdField, ...CategoryLookup(), ...TagLookup()])
+        .next();
     } catch (err) {
       throw new Error(`Error when fetching Thing. ${err}`);
     }
   }
 
-  async update(_id: string, updatedThing: Omit<Thing, "_id">) {
+  async update(_id: string, updatedThing: UpdateThingDAI) {
     try {
-      await (await this.getDb()).findOneAndUpdate({ _id }, { $set: updatedThing }, { upsert: false });
-      return this.getAll();
+      const updateAttempt = await (
+        await this.getDb()
+      ).findOneAndUpdate(
+        { _id: new ObjectId(_id) },
+        {
+          $set: {
+            ...updatedThing,
+            tags: updatedThing.tags.map((tag) => new ObjectId(tag)),
+            category: new ObjectId(updatedThing.category),
+          },
+        },
+        { upsert: false }
+      );
+
+      if (updateAttempt.ok) {
+        return this.getById(_id);
+      }
+      throw updateAttempt.lastErrorObject;
     } catch (err) {
       throw new Error(`Error when updating Thing. ${err}`);
     }
   }
 
-  async create(thing: Omit<Thing, "_id" | "tags" | "category"> & { tags: string[]; category: string }) {
+  async create(thing: CreateThingDAI) {
     try {
       const insertAttempt = await (
         await this.getDb()

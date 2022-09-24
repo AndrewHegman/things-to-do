@@ -12,7 +12,7 @@ import { NotFound } from "./pages/NotFound";
 import { client } from "./graphql";
 import { useStore } from "./store";
 import { Modal } from "./store/modals";
-import { CreateThing } from "./pages/CreateThing";
+import { ThingPage } from "./pages/Thing";
 import { useGetCategoriesQuery, useGetTagsQuery, useGetThingsTagsCategoriesQuery } from "@ttd/graphql";
 
 const theme = createTheme({
@@ -93,9 +93,7 @@ const theme = createTheme({
 });
 
 const App = () => {
-  const { setCategories, setTags, setThings } = useStore();
-  // const { loading: categoriesLoading, error: categoriesError, data: categories } = useGetCategoriesQuery();
-  // const { loading: tagsLoading, error: tagsError, data: tags } = useGetTagsQuery();
+  const { setCategories, setTags, setThings, currentThing } = useStore();
   const { loading, data } = useGetThingsTagsCategoriesQuery();
 
   const [loadingData, setLoadingData] = React.useState(loading);
@@ -115,28 +113,6 @@ const App = () => {
     }
   }, [loading, data, setCategories, setTags, setThings]);
 
-  // React.useEffect(() => {
-  //   if (!categoriesLoading && categories && !categoriesError) {
-  //     console.log(categories);
-  //     setCategories(categories.categories);
-  //   }
-  //   if (categoriesError) {
-  //     console.log(categoriesError);
-  //   }
-  // }, [categoriesLoading, categories, categoriesError, setCategories]);
-
-  // React.useEffect(() => {
-  //   if (!tagsLoading && tags && !tagsError) {
-  //     setTags(tags.tags);
-  //   }
-  // }, [tagsLoading, tags, tagsError, setTags]);
-
-  // React.useEffect(() => {
-  //   if (!tagsLoading && !categoriesLoading) {
-  //     setLoadingData(false);
-  //   }
-  // }, [tagsLoading, categoriesLoading]);
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -147,7 +123,7 @@ const App = () => {
             <Route index element={<Categories loading={loadingData} />} />
             <Route path=":categoryId">
               <Route element={<CategoryPage loading={loadingData} />} index />
-              <Route path="create" element={<CreateThing />} />
+              <Route path="create" element={<ThingPage thing={currentThing || undefined} />} />
             </Route>
           </Route>
 

@@ -25,5 +25,8 @@
       "react-app",
       "react-app/jest"
     ]
+  },
+  "dependencies": {
+    "react-scripts": "^4"
   }
 }

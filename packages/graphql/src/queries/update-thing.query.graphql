@@ -1,0 +1,15 @@
+mutation UpdateThing($id: String!, $name: String!, $description: String!, $tags: [String!]!, $category: String!) {
+  updateThing(id: $id, name: $name, description: $description, tags: $tags, category: $category) {
+    id
+    name
+    description
+    category {
+      id
+      name
+    }
+    tags {
+      id
+      name
+    }
+  }
+}

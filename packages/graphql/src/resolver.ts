@@ -1,5 +1,3 @@
-import { Tag } from "@ttd/interfaces";
-import { mockDatabase } from "@ttd/mock-data";
 import { Things, Categories, Tags } from "@ttd/database";
 
 export const resolvers = {
@@ -32,6 +30,12 @@ export const resolvers = {
     createTag: async (_: any, args: any) => await Tags.getInstance().create(args),
     createThing: async (_: any, args: any) => {
       const res = await Things.getInstance().create(args);
+      console.log(res);
+      return res;
+    },
+    updateThing: async (_: any, args: any) => {
+      const { id, ...updatedThing } = args;
+      const res = await Things.getInstance().update(id, args);
       console.log(res);
       return res;
     },

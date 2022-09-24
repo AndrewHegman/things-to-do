@@ -6499,10 +6499,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30000981, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001125, caniuse-lite@npm:^1.0.30001400":
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001400":
   version: 1.0.30001406
   resolution: "caniuse-lite@npm:1.0.30001406"
   checksum: 1ae9701f0c58462f93add1236ed88f51ce3d7939f57afcde720763d1b18f78aa9afb0bfda620d47a32f5e14661e506037835e441ca4437cb821f4bba7bd7bcf8
+  languageName: node
+  linkType: hard
+
+"caniuse-lite@npm:^1.0.30000981, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001125":
+  version: 1.0.30001409
+  resolution: "caniuse-lite@npm:1.0.30001409"
+  checksum: d8581693491295ad8716db7ad6dccf74de970fc3ef4723b38bbc03b972862d363a9710c2a7582abcb741e1619164ddceca1df4dcf3d53d550e74829a9cb5ca82
   languageName: node
   linkType: hard
 
@@ -8225,10 +8232,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-to-chromium@npm:^1.3.564, electron-to-chromium@npm:^1.4.251":
-  version: 1.4.254
-  resolution: "electron-to-chromium@npm:1.4.254"
-  checksum: 32f0ecb621db44d37fc93017f742a2b1da7302c778b4d6c0fa122cc662f9c50e6576d214048dcac5c9baf835340c954c624f09f2e02c6dea9049c4a839e862e2
+"electron-to-chromium@npm:^1.3.564":
+  version: 1.4.257
+  resolution: "electron-to-chromium@npm:1.4.257"
+  checksum: 0e15301c7420acbe5cdf8497026156144acfe5bedaba11bf0f837d4ed6d388d6f65a796a1b0569130c254066eea3062e50a4c452466ce9864b2bd9313181076e
   languageName: node
   linkType: hard
 
@@ -8236,6 +8243,13 @@ __metadata:
   version: 1.4.246
   resolution: "electron-to-chromium@npm:1.4.246"
   checksum: 0e616e657d97de9d250a2415e5bded0ee8085345c652a30c08bf4e93398aca303ce69743c72f244400f679539e5f89f283875118b88299703539ccace071f450
+  languageName: node
+  linkType: hard
+
+"electron-to-chromium@npm:^1.4.251":
+  version: 1.4.254
+  resolution: "electron-to-chromium@npm:1.4.254"
+  checksum: 32f0ecb621db44d37fc93017f742a2b1da7302c778b4d6c0fa122cc662f9c50e6576d214048dcac5c9baf835340c954c624f09f2e02c6dea9049c4a839e862e2
   languageName: node
   linkType: hard
 
@@ -17686,6 +17700,7 @@ __metadata:
   dependencies:
     eslint-config-custom: "*"
     prettier: latest
+    react-scripts: ^4
     typescript: ^4.8.2
   languageName: unknown
   linkType: soft
