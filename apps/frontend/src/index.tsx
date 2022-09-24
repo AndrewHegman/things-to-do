@@ -42,7 +42,7 @@ const theme = createTheme({
             border: `1px solid ${theme.palette.primary.main}`,
           };
           if (ownerState.variant === "outlined" && !ownerState.error) {
-            return !ownerState.multiline ? { ...styles, background: "#ffffff" } : styles;
+            return !ownerState.multiline ? { ...styles, background: "#ffffff", color: theme.palette.primary.main } : styles;
           }
         },
       },
@@ -147,4 +147,4 @@ root.render(
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// reportWebVitals();

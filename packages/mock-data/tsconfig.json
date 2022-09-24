@@ -3,9 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": "./src/",
-    "declaration": true,
-    "outDir": "./dist",
-    "noEmit": false
+    "outDir": "./dist"
   },
   "include": ["./src/*"],
   "exclude": ["node_modules/*", "./dist/*"],

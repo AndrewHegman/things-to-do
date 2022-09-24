@@ -2,18 +2,17 @@
   "name": "@ttd/graphql",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/mjs/index.js",
   "files": [
     "dist/index.js"
   ],
-  "module": "./dist/index.js",
-  "typings": "dist/index.d.ts",
+  "typings": "dist/mjs/index.d.ts",
   "publishConfig": {
     "directory": "dist"
   },
   "scripts": {
-    "start:dev": "nodemon --config nodemon.json",
-    "build": "yarn codegen && tsc -p ./tsconfig.json",
+    "build": "yarn codegen && tsc -p ./tsconfig.json --module commonjs --outDir dist/cjs && tsc -p ./tsconfig.json --module es6 --outDir dist/mjs",
     "codegen": "graphql-codegen --config codegen.yml"
   },
   "keywords": [],
@@ -22,7 +21,6 @@
   "dependencies": {
     "@swc/cli": "^0.1.57",
     "@swc/core": "^1.3.2",
-    "@ttd/database": "workspace:^",
     "@ttd/interfaces": "workspace:^",
     "@ttd/mock-data": "workspace:^",
     "graphql": "^16.6.0"

@@ -7,14 +7,20 @@
     "packages/*"
   ],
   "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
     "start:app:watch": "yarn workspace @ttd/app start",
     "start:server:watch": "yarn workspace @ttd/server start:dev",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@ttd/app": "workspace:^",
     "eslint-config-custom": "*",
+    "path": "^0.12.7",
     "prettier": "latest",
-    "typescript": "^4.8.2"
+    "turborepo": "^0.0.1",
+    "typescript": "^4.8.2",
+    "workspace": "^0.0.1-preview.1"
   },
   "engines": {
     "node": "16.13.1",
@@ -27,6 +33,8 @@
     ]
   },
   "dependencies": {
-    "react-scripts": "^4"
-  }
+    "react-scripts": "^4",
+    "vite": "2.9.12"
+  },
+  "packageManager": "yarn@3.2.3"
 }

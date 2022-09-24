@@ -1,6 +1,7 @@
 import { Db, MongoClient } from "mongodb";
 import dotenv from "dotenv";
 
+console.log(__dirname);
 dotenv.config({ path: `${process.cwd()}/../../.env` });
 
 class Connection {

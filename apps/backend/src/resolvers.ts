@@ -22,7 +22,6 @@ export const resolvers = {
       const res = await Things.getInstance().getAll();
       // console.log(res?.map((r) => r.tags));
       console.log(res[0]);
-
       return res;
     },
   },

@@ -1,9 +1,7 @@
 import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
 import { ApolloServer } from "apollo-server";
-import { resolvers, typeDefs } from "@ttd/graphql";
-import { Things } from "@ttd/database";
-// import typeDefs from "@ttd/graphql/src/schema.graphql";
-// const typeDefs = require("@ttd/graphql/src/schema.graphql");
+import { typeDefs } from "@ttd/graphql";
+import { resolvers } from "./resolvers";
 
 // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.

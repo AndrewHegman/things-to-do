@@ -6,6 +6,7 @@ export const Vida: Thing = {
   id: "1",
   tags: [American, Expensive],
   description: "Upscale restaurant",
+  category: "1a",
 };
 
 export const Juniper: Thing = {
@@ -13,6 +14,7 @@ export const Juniper: Thing = {
   id: "2b",
   tags: [American, Carmel, Southern, TakeParentsTo],
   description: "Southern food place",
+  category: "1a",
 };
 
 export const FatDans: Thing = {
@@ -20,6 +22,7 @@ export const FatDans: Thing = {
   id: "3b",
   tags: [American, Carmel, ChicagoStyle, TakeParentsTo],
   description: "Chicago style deli",
+  category: "1a",
 };
 
 export const TheWineVault: Thing = {
@@ -27,6 +30,7 @@ export const TheWineVault: Thing = {
   id: "4b",
   tags: [SmallPlates, Westfield, Wine, TakeParentsTo],
   description: "Upscale wine bar",
+  category: "1a",
 };
 
 export const allThings = [Vida, Juniper, FatDans, TheWineVault];

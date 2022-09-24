@@ -30,3 +30,5 @@ apps/**/lib/*
 *.tsbuildinfo
 /**/node_modules/*
 .env
+
+.turbo

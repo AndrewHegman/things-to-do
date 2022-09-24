@@ -29,7 +29,7 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
   const searchBoxRef = React.useRef<HTMLDivElement>(null);
 
   const categoryTags = React.useMemo(
-    () => (!tags || !currentCategory ? [] : tags.filter((tag) => currentCategory?.id === tag.id)),
+    () => (!tags || !currentCategory ? [] : tags.filter((tag) => currentCategory?.id === tag.category.id)),
     [tags, currentCategory]
   );
 
@@ -98,7 +98,7 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
         <TextField
           variant="outlined"
           size="small"
-          sx={{ margin: "0 10px 15px 0", borderRadius: "15px" }}
+          sx={{ margin: "0 10px 15px 0", borderRadius: "15px", color: "primary.main" }}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           onFocus={() => setSearchBoxFocused(true)}
