@@ -4,13 +4,7 @@
   "description": "",
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
-  "files": [
-    "dist/index.js"
-  ],
   "typings": "dist/mjs/index.d.ts",
-  "publishConfig": {
-    "directory": "dist"
-  },
   "scripts": {
     "build": "yarn codegen && tsc -p ./tsconfig.json --module commonjs --outDir dist/cjs && tsc -p ./tsconfig.json --module es6 --outDir dist/mjs",
     "codegen": "graphql-codegen --config codegen.yml"

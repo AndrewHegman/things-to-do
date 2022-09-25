@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "vite build --debug"
+    "build": "vite build"
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
