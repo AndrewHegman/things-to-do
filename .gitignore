@@ -32,3 +32,4 @@ apps/**/lib/*
 .env
 
 .turbo
+.vercel
