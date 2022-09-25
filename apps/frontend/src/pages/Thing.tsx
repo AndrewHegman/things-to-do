@@ -20,6 +20,8 @@ interface IThingPageProps {
   thing?: Thing;
 }
 
+const MAX_DESC_LEN = 20;
+
 export const ThingPage: React.FC<IThingPageProps> = (props) => {
   const navigate = useNavigate();
   const { categoryId } = useParams();
@@ -58,10 +60,6 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
   const [createNewTag, setCreateNewTag] = React.useState(false);
   const [showDuplicateTagError, setShowDuplicateTagError] = React.useState(false);
   const [name, setName] = React.useState(thing?.name || "");
-
-  // if (!currentCategory) {
-  //   return <Navigate to={`/category/${categoryId}`} />;
-  // }
 
   const categoryTags = useMemo(
     () => (!tags || !currentCategory ? [] : tags.filter((tag) => tag.category.id === currentCategory.id)),
@@ -115,12 +113,21 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
     }
   };
 
+  const onBackClicked = () => {
+    setCurrentThing(null);
+    navigate("../");
+  };
+
+  if (!currentCategory) {
+    return <Navigate to={`/category/${categoryId}`} />;
+  }
+
   const onNewTagBlur = (newTagName: string) => {
     if (categoryTags.findIndex((categoryTag) => categoryTag.name === newTagName) != -1) {
       setShowDuplicateTagError(true);
     } else if (newTagName && categoryTags.findIndex((categoryTag) => categoryTag.name === newTagName) === -1) {
       setShowDuplicateTagError(false);
-      createTag({ variables: { category: currentCategory!.id, name: newTagName } });
+      createTag({ variables: { category: currentCategory.id, name: newTagName } });
     } else {
       setCreateNewTag(false);
     }
@@ -134,12 +141,12 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
           description: description || thing.description,
           name: name || thing.name,
           tags: selectedTags || thing.tags.map((tag) => tag.id),
-          category: currentCategory!.id!,
+          category: currentCategory.id!,
         },
       });
     } else {
       createThing({
-        variables: { description, name, tags: selectedTags, category: currentCategory!.id! },
+        variables: { description, name, tags: selectedTags, category: currentCategory.id! },
         update: (cache, { data }) => {
           cache.modify({
             fields: {
@@ -155,11 +162,6 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
         },
       });
     }
-  };
-
-  const onBackClicked = () => {
-    setCurrentThing(null);
-    navigate("../");
   };
 
   return (
@@ -186,11 +188,14 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
           sx={{ borderRadius: "6px" }}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          error={description.length > 255}
+          error={description.length > MAX_DESC_LEN}
         />
-        <Typography
-          sx={{ alignSelf: "flex-end", color: description.length > 255 ? "error.main" : "primary.main" }}
-        >{`${description.length} / 255`}</Typography>
+        <div style={{ display: "flex", justifyContent: description.length > MAX_DESC_LEN ? "space-between" : "flex-end" }}>
+          {description.length > MAX_DESC_LEN && <Typography sx={{ color: "error.main" }}>This is error text?</Typography>}
+          <Typography
+            sx={{ color: description.length > MAX_DESC_LEN ? "error.main" : "primary.main" }}
+          >{`${description.length} / ${MAX_DESC_LEN}`}</Typography>
+        </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <Typography fontSize={24}>Tags</Typography>
           <Typography fontSize={20} onClick={() => setCreateNewTag(true)}>

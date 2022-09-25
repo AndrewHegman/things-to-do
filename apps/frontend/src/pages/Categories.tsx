@@ -4,6 +4,7 @@ import { AppBar } from "../components/AppBar";
 import { CategoryItem } from "../components/CategoryItem";
 import { PageWrapper } from "../components/PageWrapper";
 import { useStore } from "../store";
+import { Modal } from "../store/modals";
 
 interface ICategoriesProps {
   loading: boolean;
@@ -11,6 +12,7 @@ interface ICategoriesProps {
 
 export const Categories: React.FC<ICategoriesProps> = (props) => {
   const { categories } = useStore();
+  const { loading } = props;
 
   return (
     <PageWrapper>

@@ -42,7 +42,7 @@ const theme = createTheme({
             border: `1px solid ${theme.palette.primary.main}`,
           };
           if (ownerState.variant === "outlined" && !ownerState.error) {
-            return !ownerState.multiline ? { ...styles, background: "#ffffff", color: theme.palette.primary.main } : styles;
+            return !ownerState.multiline ? { ...styles, background: "#ffffff" } : styles;
           }
         },
       },
@@ -93,7 +93,7 @@ const theme = createTheme({
 });
 
 const App = () => {
-  const { setCategories, setTags, setThings, currentThing } = useStore();
+  const { setCategories, setTags, setThings, currentThing, openModal, closeModal } = useStore();
   const { loading, data } = useGetThingsTagsCategoriesQuery();
 
   const [loadingData, setLoadingData] = React.useState(loading);
@@ -103,13 +103,12 @@ const App = () => {
   }, [data]);
 
   React.useEffect(() => {
-    if (loading) {
-      setLoadingData(true);
-    } else if (data) {
+    loading ? openModal(Modal.Loading) : closeModal(Modal.Loading);
+    setLoadingData(loading);
+    if (data) {
       setCategories(data.categories);
       setTags(data.tags);
       setThings(data.things);
-      setLoadingData(false);
     }
   }, [loading, data, setCategories, setTags, setThings]);
 

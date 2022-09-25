@@ -17,7 +17,7 @@ interface ICategoryProps {
 export const CategoryPage: React.FC<ICategoryProps> = (props) => {
   const { loading } = props;
   const { categoryId } = useParams();
-  const { categories, openModal, currentCategory, setCurrentCategory, closeModal, tags, things, setCurrentThing } = useStore();
+  const { categories, currentCategory, setCurrentCategory, tags, things, setCurrentThing } = useStore();
 
   const [searchText, setSearchText] = React.useState("");
   const [selectedTags, setSelectedTags] = React.useState<TagType[]>([]);
@@ -37,14 +37,6 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
     () => (!things || !currentCategory ? [] : things.filter((thing) => currentCategory.id === thing.category.id)),
     [things, currentCategory]
   );
-
-  React.useEffect(() => {
-    if (loading) {
-      openModal(Modal.Loading);
-    } else {
-      closeModal(Modal.Loading);
-    }
-  }, [loading]);
 
   React.useEffect(() => {
     if (categories && !loading) {
@@ -103,11 +95,12 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
           onChange={(e) => setSearchText(e.target.value)}
           onFocus={() => setSearchBoxFocused(true)}
           InputProps={{
+            sx: { color: "primary.main" },
             startAdornment: (
               <>
                 <Search sx={{ color: "primary.main" }} />
                 {selectedTags.map((tag) => (
-                  <Tag key={tag.id} tag={tag} sx={{ color: "primary.main" }} onClose={removeSelectedTag} />
+                  <Tag key={tag.id} tag={tag} color="primary.main" onClose={removeSelectedTag} />
                 ))}
               </>
             ),
@@ -127,7 +120,7 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
           getSelectableTags()
             .filter((tag) => tag.name.toLowerCase().includes(searchText.toLowerCase()))
             .map((tag, idx) => (
-              <div key={tag.name} style={{ marginBottom: "10px" }} onClick={() => onTagClick(tag)}>
+              <div key={tag.id} style={{ marginBottom: "10px" }} onClick={() => onTagClick(tag)}>
                 <Typography>{tag.name}</Typography>
                 {categoryTags.length > 1 && idx < categoryTags.length - 1 ? <Divider sx={{ marginRight: "20px" }} /> : null}
               </div>

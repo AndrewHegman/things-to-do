@@ -5,6 +5,7 @@ import React from "react";
 
 type TagProps = {
   sx?: SxProps<Theme>;
+  color?: string;
   onClose?: (tag: TagType) => void;
   onClick?: () => void;
   active?: boolean;
@@ -23,7 +24,7 @@ type OptionalTagProps =
     };
 
 export const Tag: React.FC<TagProps & OptionalTagProps> = (props) => {
-  const { tag, sx, onClose, active, onClick, creating, onBlur } = props;
+  const { tag, sx, color, onClose, active, onClick, creating, onBlur } = props;
   const newTagRef = React.useRef<HTMLSpanElement | null>(null);
   const [newTagName, setNewTagName] = React.useState("");
 
@@ -33,6 +34,25 @@ export const Tag: React.FC<TagProps & OptionalTagProps> = (props) => {
     }
   }, [newTagRef]);
 
+  const getBoxColor = () => {
+    if (color) {
+      return color;
+    }
+    return active || creating ? "secondary.main" : "primary.main";
+  };
+
+  const getTextColor = () => {
+    if (color) {
+      return color;
+    }
+    return !creating && !active ? "text.primary" : "secondary.main";
+
+    // NOT creating, NOT active --> text.primary
+    // NOT creating, active --> secondary.main
+    // creating, NOT active --> secondary.main
+    // creating, active --> secondary.main
+  };
+
   return (
     <Box
       fontSize={14}
@@ -40,17 +60,16 @@ export const Tag: React.FC<TagProps & OptionalTagProps> = (props) => {
       sx={{
         borderWidth: "2px",
         borderStyle: "solid",
-        borderColor: active || creating ? "secondary.main" : "primary.main",
+        borderColor: getBoxColor(),
         display: "flex",
         padding: "0px 5px 0px 5px",
         borderRadius: "8px",
         ...sx,
       }}
     >
-      {/* Since undefined is falsy and 'creating' is optional, we have to explicitly check against false */}
       {!creating ? (
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-          <Typography sx={{ whiteSpace: "nowrap" }} color={active ? "secondary.main" : "text.primary"}>
+          <Typography sx={{ whiteSpace: "nowrap" }} color={getTextColor()}>
             {tag.name}
           </Typography>
           {onClose && <HighlightOff onClick={() => onClose(tag)} />}
@@ -59,7 +78,7 @@ export const Tag: React.FC<TagProps & OptionalTagProps> = (props) => {
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
           <Typography
             sx={{ whiteSpace: "nowrap" }}
-            color="secondary.main"
+            color={getTextColor()}
             suppressContentEditableWarning
             contentEditable
             ref={newTagRef}
