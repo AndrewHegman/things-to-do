@@ -2375,6 +2375,7 @@ __metadata:
     "@mui/icons-material": ^5.10.3
     "@mui/material": ^5.10.6
     "@rollup/plugin-replace": ^4.0.0
+    "@ttd/graphql": "workspace:^"
     "@types/node": ^18.7.14
     "@types/react": ^18.0.18
     "@types/react-dom": ^18.0.6
