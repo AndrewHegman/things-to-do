@@ -29,7 +29,6 @@
     ]
   },
   "dependencies": {
-    "react-scripts": "^4",
     "vite": "2.9.12"
   },
   "packageManager": "yarn@3.2.3"
