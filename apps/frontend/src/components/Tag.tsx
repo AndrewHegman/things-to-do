@@ -26,7 +26,6 @@ type OptionalTagProps =
 export const Tag: React.FC<TagProps & OptionalTagProps> = (props) => {
   const { tag, sx, color, onClose, active, onClick, creating, onBlur } = props;
   const newTagRef = React.useRef<HTMLSpanElement | null>(null);
-  const [newTagName, setNewTagName] = React.useState("");
 
   React.useEffect(() => {
     if (newTagRef.current) {

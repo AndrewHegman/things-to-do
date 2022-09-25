@@ -6,20 +6,12 @@ import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfil
 import replace from "@rollup/plugin-replace";
 import path from "path";
 
-console.log(path.resolve(__dirname));
-
 export default defineConfig({
   root: "./",
   define: {
     "process.env.DATABASE_PW": process.env.DATABASE_PW,
-    "process.pid": undefined,
   },
-  plugins: [
-    react(),
-    // replace({
-    //   "process.env": "import.meta.env",
-    // }),
-  ],
+  plugins: [react()],
   build: {
     sourcemap: true,
     rollupOptions: {

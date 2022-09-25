@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
+import dotenv from "dotenv";
 
 export const client = new ApolloClient({
-  uri: "http://192.168.4.42:4000",
+  uri: import.meta.env.VITE_BACKEND_ENDPOINT,
   cache: new InMemoryCache(),
 });

@@ -34,6 +34,7 @@ type Query {
 type Mutation {
   createTag(category: String!, name: String!): Tag!
   createThing(name: String!, description: String!, tags: [String!]!, category: String!): Thing!
+  createCategory(name: String!): Category!
   updateThing(id: String!, name: String!, description: String!, tags: [String!]!, category: String!): Thing!
 }
 

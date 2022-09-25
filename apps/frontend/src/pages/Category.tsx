@@ -78,7 +78,7 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper onFabClick={() => navigate("create")}>
       <AppBar
         onLeftLinkClick={() => (searchBoxFocused ? setSearchBoxFocused(false) : navigate("/"))}
         leftLinkTitle="Back"
@@ -140,9 +140,6 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
           </ListItem>
         </List>
       </Drawer>
-      <Fab color="secondary" sx={{ position: "fixed", right: "10px", bottom: "10px" }} onClick={() => navigate("create")}>
-        <Add />
-      </Fab>
     </PageWrapper>
   );
 };

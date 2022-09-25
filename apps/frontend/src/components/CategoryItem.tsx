@@ -9,26 +9,62 @@ interface ICategoryItemProps {
   category: Category;
 }
 
-export const CategoryItem: React.FC<ICategoryItemProps> = (props) => {
-  const { category } = props;
+type CategoryItemProps =
+  | {
+      category: Category;
+      creating?: false | undefined;
+      onBlur?: never;
+    }
+  | {
+      category?: never;
+      creating: true;
+      onBlur?: (categoryName: string) => void;
+    };
+
+export const CategoryItem: React.FC<CategoryItemProps> = (props) => {
+  const { category, creating, onBlur } = props;
   const navigate = useNavigate();
   const { setCurrentCategory, things } = useStore();
+  const newCategoryRef = React.useRef<HTMLSpanElement | null>(null);
+
+  React.useEffect(() => {
+    if (newCategoryRef.current) {
+      newCategoryRef.current.focus();
+    }
+  }, [newCategoryRef]);
 
   const handleClick = () => {
-    setCurrentCategory(category);
-    navigate(`category/${category.id}`, { state: { category } });
+    if (!creating) {
+      setCurrentCategory(category);
+      navigate(`category/${category.id}`, { state: { category } });
+    }
   };
-
-  const categoryThings = React.useMemo(() => things.filter((thing) => thing.category.id === category.id), [things, category]);
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", margin: "2% 5% 2% 5%" }} onClick={handleClick}>
       <RadioButtonUnchecked sx={{ color: "primary.main", width: "30px", height: "30px", marginRight: "10px" }} />
       <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
-        <Typography fontSize="24px" height="100%">
-          {category.name}
-        </Typography>
-        <Avatar sx={{ width: "30px", height: "30px" }}>{categoryThings.length}</Avatar>
+        {!creating && (
+          <>
+            <Typography fontSize="24px" height="100%">
+              {category.name}
+            </Typography>
+            <Avatar sx={{ width: "30px", height: "30px" }}>
+              {things.filter((thing) => thing.category.id === category.id).length}
+            </Avatar>
+          </>
+        )}
+        {creating && (
+          <Typography
+            fontSize="24px"
+            height="100%"
+            sx={{ whiteSpace: "nowrap" }}
+            ref={newCategoryRef}
+            suppressContentEditableWarning
+            contentEditable
+            onBlur={(e) => onBlur && onBlur(newCategoryRef.current!.textContent || "")}
+          ></Typography>
+        )}
       </div>
     </Box>
   );

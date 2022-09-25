@@ -25,9 +25,15 @@ export type Category = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createCategory: Category;
   createTag: Tag;
   createThing: Thing;
   updateThing: Thing;
+};
+
+
+export type MutationCreateCategoryArgs = {
+  name: Scalars['String'];
 };
 
 
@@ -87,6 +93,13 @@ export type Thing = {
   name: Scalars['String'];
   tags: Array<Tag>;
 };
+
+export type CreateCategoryMutationVariables = Exact<{
+  name: Scalars['String'];
+}>;
+
+
+export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', id: string, name: string } };
 
 export type CreateTagMutationVariables = Exact<{
   category: Scalars['String'];
@@ -242,6 +255,7 @@ export type CategoryResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'name'>>;
   createTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationCreateTagArgs, 'category' | 'name'>>;
   createThing?: Resolver<ResolversTypes['Thing'], ParentType, ContextType, RequireFields<MutationCreateThingArgs, 'category' | 'description' | 'name' | 'tags'>>;
   updateThing?: Resolver<ResolversTypes['Thing'], ParentType, ContextType, RequireFields<MutationUpdateThingArgs, 'category' | 'description' | 'id' | 'name' | 'tags'>>;
@@ -281,6 +295,40 @@ export type Resolvers<ContextType = any> = {
 
 
 
+export const CreateCategoryDocument = gql`
+    mutation CreateCategory($name: String!) {
+  createCategory(name: $name) {
+    id
+    name
+  }
+}
+    `;
+export type CreateCategoryMutationFn = Apollo.MutationFunction<CreateCategoryMutation, CreateCategoryMutationVariables>;
+
+/**
+ * __useCreateCategoryMutation__
+ *
+ * To run a mutation, you first call `useCreateCategoryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCategoryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCategoryMutation, { data, loading, error }] = useCreateCategoryMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useCreateCategoryMutation(baseOptions?: Apollo.MutationHookOptions<CreateCategoryMutation, CreateCategoryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCategoryMutation, CreateCategoryMutationVariables>(CreateCategoryDocument, options);
+      }
+export type CreateCategoryMutationHookResult = ReturnType<typeof useCreateCategoryMutation>;
+export type CreateCategoryMutationResult = Apollo.MutationResult<CreateCategoryMutation>;
+export type CreateCategoryMutationOptions = Apollo.BaseMutationOptions<CreateCategoryMutation, CreateCategoryMutationVariables>;
 export const CreateTagDocument = gql`
     mutation CreateTag($category: String!, $name: String!) {
   createTag(category: $category, name: $name) {
@@ -635,4 +683,4 @@ export type UpdateThingMutationHookResult = ReturnType<typeof useUpdateThingMuta
 export type UpdateThingMutationResult = Apollo.MutationResult<UpdateThingMutation>;
 export type UpdateThingMutationOptions = Apollo.BaseMutationOptions<UpdateThingMutation, UpdateThingMutationVariables>;
 
-  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{id:String!name:String!}type Mutation{createTag(category:String!name:String!):Tag!createThing(category:String!description:String!name:String!tags:[String!]!):Thing!updateThing(category:String!description:String!id:String!name:String!tags:[String!]!):Thing!}type Query{categories:[Category!]!category(categoryId:String!):Category!tags:[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!things:[Thing!]!}type Tag{category:Category!id:String!name:String!}type Thing{category:Category!description:String!id:String!name:String!tags:[Tag!]!}`;
+  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{id:String!name:String!}type Mutation{createCategory(name:String!):Category!createTag(category:String!name:String!):Tag!createThing(category:String!description:String!name:String!tags:[String!]!):Thing!updateThing(category:String!description:String!id:String!name:String!tags:[String!]!):Thing!}type Query{categories:[Category!]!category(categoryId:String!):Category!tags:[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!things:[Thing!]!}type Tag{category:Category!id:String!name:String!}type Thing{category:Category!description:String!id:String!name:String!tags:[Tag!]!}`;

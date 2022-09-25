@@ -1,14 +1,23 @@
+import { Add } from "@mui/icons-material";
+import { Fab } from "@mui/material";
 import React from "react";
-import { useStore } from "../store";
 import { LoadingModal } from "./LoadingModal";
 
-export const PageWrapper: React.FC<React.PropsWithChildren> = (props) => {
-  const { modals, closeModal } = useStore();
+interface IPageWrapperProps {
+  onFabClick?: () => void;
+}
 
+export const PageWrapper: React.FC<React.PropsWithChildren<IPageWrapperProps>> = (props) => {
+  const { onFabClick, children } = props;
   return (
     <>
       <LoadingModal />
       {props.children}
+      {onFabClick && (
+        <Fab color="secondary" sx={{ position: "fixed", right: "10px", bottom: "10px" }} onClick={() => onFabClick()}>
+          <Add />
+        </Fab>
+      )}
     </>
   );
 };

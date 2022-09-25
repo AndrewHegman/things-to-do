@@ -5,9 +5,8 @@
     "rootDir": "./src/",
     "outDir": "./dist"
   },
-  "files": ["src/@types/graphql.d.ts"],
   "include": ["./src/*", "./src/generated/*"],
   "exclude": ["./dist/*", "node_modules/*"],
   "references": [{ "path": "../interfaces" }, { "path": "../mock-data" }],
-  "typeRoots": ["node_modules/@types", "src/@types"]
+  "typeRoots": ["node_modules/@types"]
 }

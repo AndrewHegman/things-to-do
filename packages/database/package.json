@@ -4,13 +4,7 @@
   "packageManager": "yarn@3.2.3",
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
-  "files": [
-    "dist/index.js"
-  ],
-  "typings": "dist/index.d.ts",
-  "publishConfig": {
-    "directory": "dist"
-  },
+  "typings": "dist/mjs/index.d.ts",
   "dependencies": {
     "@ttd/interfaces": "workspace:^",
     "dotenv": "^16.0.2",
