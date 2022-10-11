@@ -33,3 +33,4 @@ apps/**/lib/*
 
 .turbo
 .vercel
+dist/

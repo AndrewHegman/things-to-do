@@ -27,12 +27,11 @@ export const Categories: React.FC<ICategoriesProps> = (props) => {
         update: (cache, { data }) => {
           cache.modify({
             fields: {
-              things(existingThings = []) {
-                const newThing = data?.createCategory;
-                console.log(data);
+              things(existingCategories = []) {
+                const newCategory = data?.createCategory;
                 cache.writeQuery({
                   query: CreateCategoryDocument,
-                  data: { newThing, ...existingThings },
+                  data: { newCategory, ...existingCategories },
                 });
               },
             },

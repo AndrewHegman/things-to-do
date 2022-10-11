@@ -4,6 +4,6 @@ export interface Thing {
   id: string;
   name: string;
   description: string;
-  tags: Tag[];
+  tags: string[];
   category: string;
 }

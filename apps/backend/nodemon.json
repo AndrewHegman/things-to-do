@@ -7,7 +7,7 @@
   "watch": [
     "src/"
   ],
-  "exec": "swc ./src -d ./dist -C module.type=commonjs && node dist/index.js",
+  "exec": "yarn build && node dist/index.js",
   "events": {
     "restart": "kill-port 4000",
     "crash": "kill-port 4000"

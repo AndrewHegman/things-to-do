@@ -29,6 +29,8 @@
     ]
   },
   "dependencies": {
+    "@ttd/server": "workspace:^",
+    "mongoose-lean-virtuals": "^0.9.1",
     "vite": "2.9.12"
   },
   "packageManager": "yarn@3.2.3"
