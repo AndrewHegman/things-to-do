@@ -1,9 +1,10 @@
-import { Categories as CategoriesData } from "./data";
+import { Data } from "./data";
 import { CategoryModel } from "../models";
 import { connect, disconnect } from "mongoose";
 import { resolvers } from "../../resolvers";
 import { GetCategoriesDocument, GetCategoryDocument, typeDefs, CreateCategoryDocument } from "@ttd/graphql";
 import { ApolloServer } from "apollo-server-express";
+import { hydrateDatabase, tearDownDatabase } from "./setup";
 
 describe("Categories", () => {
   let server: ApolloServer;
@@ -13,16 +14,11 @@ describe("Categories", () => {
       typeDefs,
       resolvers,
     });
-    await connect("mongodb://localhost:27017/Things-To-Do");
-    try {
-      await CategoryModel.create(CategoriesData.map((category) => ({ _id: category.id, ...category })));
-    } catch (e) {
-      console.error(e);
-    }
+    await hydrateDatabase();
   });
 
   afterAll(async () => {
-    await CategoryModel.collection.deleteMany({});
+    await tearDownDatabase();
     await disconnect();
   });
 
@@ -32,17 +28,17 @@ describe("Categories", () => {
     });
 
     expect(res.errors).toBeUndefined();
-    expect(new Set(res.data?.categories)).toEqual(new Set(CategoriesData));
+    expect(new Set(res.data?.categories)).toEqual(new Set(Data.Expect.Categories));
   });
 
   it("should fetch a single category by id", async () => {
     const res = await server.executeOperation({
       query: GetCategoryDocument,
-      variables: { categoryId: CategoriesData[0].id },
+      variables: { categoryId: Data.Raw.Categories[0].id },
     });
 
     expect(res.errors).toBeUndefined();
-    expect(res.data?.category).toEqual(CategoriesData[0]);
+    expect(res.data?.category).toEqual(Data.Raw.Categories[0]);
   });
 
   it("should create a new category", async () => {
@@ -50,7 +46,6 @@ describe("Categories", () => {
       query: CreateCategoryDocument,
       variables: { name: "new name" },
     });
-    console.log(res);
     expect(res.errors).toBeUndefined();
     expect(res.data?.createCategory).toEqual(expect.objectContaining({ id: expect.any(String), name: "new name" }));
   });

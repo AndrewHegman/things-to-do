@@ -28,6 +28,7 @@ export type Mutation = {
   createCategory: Category;
   createTag: Tag;
   createThing: Thing;
+  deleteThing: Scalars['String'];
   updateThing: Thing;
 };
 
@@ -48,6 +49,11 @@ export type MutationCreateThingArgs = {
   description: Scalars['String'];
   name: Scalars['String'];
   tags: Array<Scalars['String']>;
+};
+
+
+export type MutationDeleteThingArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -117,7 +123,25 @@ export type CreateThingMutationVariables = Exact<{
 }>;
 
 
-export type CreateThingMutation = { __typename?: 'Mutation', createThing: { __typename?: 'Thing', id: string, name: string, description: string, category: { __typename?: 'Category', id: string, name: string }, tags: Array<{ __typename?: 'Tag', id: string, name: string }> } };
+export type CreateThingMutation = { __typename?: 'Mutation', createThing: { __typename?: 'Thing', id: string, name: string, description: string, category: { __typename?: 'Category', id: string, name: string }, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }> } };
+
+export type UpdateThingMutationVariables = Exact<{
+  id: Scalars['String'];
+  name: Scalars['String'];
+  description: Scalars['String'];
+  tags: Array<Scalars['String']> | Scalars['String'];
+  category: Scalars['String'];
+}>;
+
+
+export type UpdateThingMutation = { __typename?: 'Mutation', updateThing: { __typename?: 'Thing', id: string, name: string, description: string, category: { __typename?: 'Category', id: string, name: string }, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }> } };
+
+export type DeleteThingMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteThingMutation = { __typename?: 'Mutation', deleteThing: string };
 
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -147,17 +171,6 @@ export type GetThingsTagsCategoriesQueryVariables = Exact<{ [key: string]: never
 
 
 export type GetThingsTagsCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }>, category: { __typename?: 'Category', id: string, name: string } }> };
-
-export type UpdateThingMutationVariables = Exact<{
-  id: Scalars['String'];
-  name: Scalars['String'];
-  description: Scalars['String'];
-  tags: Array<Scalars['String']> | Scalars['String'];
-  category: Scalars['String'];
-}>;
-
-
-export type UpdateThingMutation = { __typename?: 'Mutation', updateThing: { __typename?: 'Thing', id: string, name: string, description: string, category: { __typename?: 'Category', id: string, name: string }, tags: Array<{ __typename?: 'Tag', id: string, name: string }> } };
 
 
 
@@ -258,6 +271,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'name'>>;
   createTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationCreateTagArgs, 'category' | 'name'>>;
   createThing?: Resolver<ResolversTypes['Thing'], ParentType, ContextType, RequireFields<MutationCreateThingArgs, 'category' | 'description' | 'name' | 'tags'>>;
+  deleteThing?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationDeleteThingArgs, 'id'>>;
   updateThing?: Resolver<ResolversTypes['Thing'], ParentType, ContextType, RequireFields<MutationUpdateThingArgs, 'category' | 'description' | 'id' | 'name' | 'tags'>>;
 };
 
@@ -386,6 +400,10 @@ export const CreateThingDocument = gql`
     tags {
       id
       name
+      category {
+        id
+        name
+      }
     }
   }
 }
@@ -419,6 +437,94 @@ export function useCreateThingMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateThingMutationHookResult = ReturnType<typeof useCreateThingMutation>;
 export type CreateThingMutationResult = Apollo.MutationResult<CreateThingMutation>;
 export type CreateThingMutationOptions = Apollo.BaseMutationOptions<CreateThingMutation, CreateThingMutationVariables>;
+export const UpdateThingDocument = gql`
+    mutation UpdateThing($id: String!, $name: String!, $description: String!, $tags: [String!]!, $category: String!) {
+  updateThing(
+    id: $id
+    name: $name
+    description: $description
+    tags: $tags
+    category: $category
+  ) {
+    id
+    name
+    description
+    category {
+      id
+      name
+    }
+    tags {
+      id
+      name
+      category {
+        id
+        name
+      }
+    }
+  }
+}
+    `;
+export type UpdateThingMutationFn = Apollo.MutationFunction<UpdateThingMutation, UpdateThingMutationVariables>;
+
+/**
+ * __useUpdateThingMutation__
+ *
+ * To run a mutation, you first call `useUpdateThingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateThingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateThingMutation, { data, loading, error }] = useUpdateThingMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      tags: // value for 'tags'
+ *      category: // value for 'category'
+ *   },
+ * });
+ */
+export function useUpdateThingMutation(baseOptions?: Apollo.MutationHookOptions<UpdateThingMutation, UpdateThingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateThingMutation, UpdateThingMutationVariables>(UpdateThingDocument, options);
+      }
+export type UpdateThingMutationHookResult = ReturnType<typeof useUpdateThingMutation>;
+export type UpdateThingMutationResult = Apollo.MutationResult<UpdateThingMutation>;
+export type UpdateThingMutationOptions = Apollo.BaseMutationOptions<UpdateThingMutation, UpdateThingMutationVariables>;
+export const DeleteThingDocument = gql`
+    mutation DeleteThing($id: String!) {
+  deleteThing(id: $id)
+}
+    `;
+export type DeleteThingMutationFn = Apollo.MutationFunction<DeleteThingMutation, DeleteThingMutationVariables>;
+
+/**
+ * __useDeleteThingMutation__
+ *
+ * To run a mutation, you first call `useDeleteThingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteThingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteThingMutation, { data, loading, error }] = useDeleteThingMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteThingMutation(baseOptions?: Apollo.MutationHookOptions<DeleteThingMutation, DeleteThingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteThingMutation, DeleteThingMutationVariables>(DeleteThingDocument, options);
+      }
+export type DeleteThingMutationHookResult = ReturnType<typeof useDeleteThingMutation>;
+export type DeleteThingMutationResult = Apollo.MutationResult<DeleteThingMutation>;
+export type DeleteThingMutationOptions = Apollo.BaseMutationOptions<DeleteThingMutation, DeleteThingMutationVariables>;
 export const GetCategoriesDocument = gql`
     query GetCategories {
   categories {
@@ -629,58 +735,5 @@ export function useGetThingsTagsCategoriesLazyQuery(baseOptions?: Apollo.LazyQue
 export type GetThingsTagsCategoriesQueryHookResult = ReturnType<typeof useGetThingsTagsCategoriesQuery>;
 export type GetThingsTagsCategoriesLazyQueryHookResult = ReturnType<typeof useGetThingsTagsCategoriesLazyQuery>;
 export type GetThingsTagsCategoriesQueryResult = Apollo.QueryResult<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>;
-export const UpdateThingDocument = gql`
-    mutation UpdateThing($id: String!, $name: String!, $description: String!, $tags: [String!]!, $category: String!) {
-  updateThing(
-    id: $id
-    name: $name
-    description: $description
-    tags: $tags
-    category: $category
-  ) {
-    id
-    name
-    description
-    category {
-      id
-      name
-    }
-    tags {
-      id
-      name
-    }
-  }
-}
-    `;
-export type UpdateThingMutationFn = Apollo.MutationFunction<UpdateThingMutation, UpdateThingMutationVariables>;
 
-/**
- * __useUpdateThingMutation__
- *
- * To run a mutation, you first call `useUpdateThingMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateThingMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateThingMutation, { data, loading, error }] = useUpdateThingMutation({
- *   variables: {
- *      id: // value for 'id'
- *      name: // value for 'name'
- *      description: // value for 'description'
- *      tags: // value for 'tags'
- *      category: // value for 'category'
- *   },
- * });
- */
-export function useUpdateThingMutation(baseOptions?: Apollo.MutationHookOptions<UpdateThingMutation, UpdateThingMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateThingMutation, UpdateThingMutationVariables>(UpdateThingDocument, options);
-      }
-export type UpdateThingMutationHookResult = ReturnType<typeof useUpdateThingMutation>;
-export type UpdateThingMutationResult = Apollo.MutationResult<UpdateThingMutation>;
-export type UpdateThingMutationOptions = Apollo.BaseMutationOptions<UpdateThingMutation, UpdateThingMutationVariables>;
-
-  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{id:String!name:String!}type Mutation{createCategory(name:String!):Category!createTag(category:String!name:String!):Tag!createThing(category:String!description:String!name:String!tags:[String!]!):Thing!updateThing(category:String!description:String!id:String!name:String!tags:[String!]!):Thing!}type Query{categories:[Category!]!category(categoryId:String!):Category!tags:[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!things:[Thing!]!}type Tag{category:Category!id:String!name:String!}type Thing{category:Category!description:String!id:String!name:String!tags:[Tag!]!}`;
+  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{id:String!name:String!}type Mutation{createCategory(name:String!):Category!createTag(category:String!name:String!):Tag!createThing(category:String!description:String!name:String!tags:[String!]!):Thing!deleteThing(id:String!):String!updateThing(category:String!description:String!id:String!name:String!tags:[String!]!):Thing!}type Query{categories:[Category!]!category(categoryId:String!):Category!tags:[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!things:[Thing!]!}type Tag{category:Category!id:String!name:String!}type Thing{category:Category!description:String!id:String!name:String!tags:[Tag!]!}`;

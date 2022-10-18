@@ -36,6 +36,7 @@ type Mutation {
   createThing(name: String!, description: String!, tags: [String!]!, category: String!): Thing!
   createCategory(name: String!): Category!
   updateThing(id: String!, name: String!, description: String!, tags: [String!]!, category: String!): Thing!
+  deleteThing(id: String!): String!
 }
 
 schema {

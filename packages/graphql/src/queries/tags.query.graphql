@@ -8,3 +8,14 @@ query TagsByCategory($categoryId: String!) {
     }
   }
 }
+
+query GetTags {
+  tags {
+    id
+    name
+    category {
+      id
+      name
+    }
+  }
+}

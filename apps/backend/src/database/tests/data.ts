@@ -89,8 +89,36 @@ const TheWineVault: Thing = {
   category: Restaurants.id,
 };
 
-export const Things = [Vida, Juniper, FatDans, TheWineVault];
+const Things = [Vida, Juniper, FatDans, TheWineVault];
 
-export const Tags = [American, Expensive, Carmel, Southern, TakeParentsTo, ChicagoStyle, SmallPlates, Westfield, Wine];
+const Tags = [American, Expensive, Carmel, Southern, TakeParentsTo, ChicagoStyle, SmallPlates, Westfield, Wine];
 
-export const Categories = [Restaurants, Movies];
+const Categories = [Restaurants, Movies];
+
+export const Data = {
+  Database: {
+    Categories: Categories.map((category) => ({ _id: category.id, ...category })),
+    Tags: Tags.map((tag) => ({ _id: tag.id, ...tag })),
+    Things: Things.map((thing) => ({ _id: thing.id, ...thing })),
+  },
+  Raw: {
+    Things,
+    Tags,
+    Categories,
+  },
+  Expect: {
+    Categories,
+    Things: Things.map((thing) => ({
+      ...thing,
+      tags: thing.tags.map((tag) => {
+        const hydratedTag = Tags.find((Tag) => Tag.id === tag);
+        return { ...hydratedTag, category: Categories.find((Category) => hydratedTag?.category === Category.id) };
+      }),
+      category: Categories.find((Category) => Category.id === thing.category),
+    })),
+    Tags: Tags.map((tag) => ({
+      ...tag,
+      category: Categories.find((Category) => Category.id === tag.category),
+    })),
+  },
+};

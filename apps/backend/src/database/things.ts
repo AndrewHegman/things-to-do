@@ -19,7 +19,6 @@ class Things {
     if (category) {
       throw new Error(`Error -- fetching Things by category has not been implemented!`);
     }
-    console.log(await ThingModel.find({}, ThingSelect).populate(PopulateCategory).populate(PopulateTag).lean());
     return await ThingModel.find({}, ThingSelect).populate(PopulateCategory).populate(PopulateTag).lean();
   }
 
@@ -28,34 +27,10 @@ class Things {
   }
 
   async update(_id: string, updatedThing: UpdateThingDAI) {
-    return await ThingModel.findOneAndUpdate({ _id: new ObjectId(_id) }, updatedThing, {
-      lean: true,
-      projection: [PopulateTag, PopulateCategory],
-    })
+    return await ThingModel.findByIdAndUpdate(_id, updatedThing, { projection: ThingSelect, returnDocument: "after" })
       .populate(PopulateCategory)
+      .populate(PopulateTag)
       .lean();
-    // try {
-    //   const updateAttempt = await (
-    //     await this.getDb()
-    //   ).findOneAndUpdate(
-    //     { _id: new ObjectId(_id) },
-    //     {
-    //       $set: {
-    //         ...updatedThing,
-    //         tags: updatedThing.tags.map((tag) => new ObjectId(tag)),
-    //         category: new ObjectId(updatedThing.category),
-    //       },
-    //     },
-    //     { upsert: false }
-    //   );
-
-    //   if (updateAttempt.ok) {
-    //     return this.getById(_id);
-    //   }
-    //   throw updateAttempt.lastErrorObject;
-    // } catch (err) {
-    //   throw new Error(`Error when updating Thing. ${err}`);
-    // }
   }
 
   async create(thing: CreateThingDAI) {
@@ -63,27 +38,14 @@ class Things {
     if (insertedAttempt.id) {
       return await this.getById(insertedAttempt.id);
     }
-    // try {
-    //   const insertAttempt = await (
-    //     await this.getDb()
-    //   ).insertOne({ ...thing, tags: thing.tags.map((tag) => new ObjectId(tag)), category: new ObjectId(thing.category) });
-    //   if (insertAttempt.acknowledged) {
-    //     return this.getById(insertAttempt.insertedId.toString());
-    //   }
-    // } catch (err) {
-    //   throw new Error(`Error when creating new Thing. ${err}`);
-    // }
   }
 
   async delete(_id: ObjectId) {
-    return await ThingModel.deleteOne({ _id: new ObjectId(_id) });
-
-    // try {
-    //   await (await this.getDb()).deleteOne({ _id });
-    //   return (await this.getDb()).find({}).toArray();
-    // } catch (err) {
-    //   throw new Error(`Error when deleting Thing. ${err}`);
-    // }
+    const deleteAttempt = await ThingModel.deleteOne({ _id: new ObjectId(_id) });
+    console.log(deleteAttempt);
+    if (deleteAttempt.acknowledged) {
+      return _id;
+    }
   }
 }
 
