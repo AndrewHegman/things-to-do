@@ -28,32 +28,10 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
   const { thing } = props;
 
   const { currentCategory, tags, setTags, openModal, closeModal, setCurrentThing } = useStore();
-  const [
-    createTag,
-    { data: createTagData, loading: createTagLoading, error: createTagError, called: createTagCalled, reset: createTagReset },
-  ] = useCreateTagMutation();
 
-  const [
-    createThing,
-    {
-      data: createThingData,
-      loading: createThingLoading,
-      error: createThingError,
-      called: createThingCalled,
-      reset: createThingReset,
-    },
-  ] = useCreateThingMutation();
-
-  const [
-    updateThing,
-    {
-      data: updateThingData,
-      loading: updateThingLoading,
-      error: updateThingError,
-      called: updateThingCalled,
-      reset: updateThingReset,
-    },
-  ] = useUpdateThingMutation();
+  const [createTag, createTagReq] = useCreateTagMutation();
+  const [createThing, createThingReq] = useCreateThingMutation();
+  const [updateThing, updateThingReq] = useUpdateThingMutation();
 
   const [description, setDescription] = React.useState(thing?.description || "");
   const [selectedTags, setSelectedTags] = React.useState<string[]>(thing?.tags.map((tag) => tag.id) || []);
@@ -67,42 +45,42 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
   );
 
   React.useEffect(() => {
-    if (!createTagLoading && !createThingLoading && !updateThingLoading) {
+    if (!createTagReq.loading && !createThingReq.loading && !updateThingReq.loading) {
       closeModal(Modal.Loading);
     } else {
       openModal(Modal.Loading);
     }
-  }, [createTagLoading, updateThingLoading, createThingLoading, closeModal, openModal]);
+  }, [createTagReq.loading, updateThingReq.loading, createThingReq.loading, closeModal, openModal]);
 
   React.useEffect(() => {
-    if (!createTagLoading) {
-      if (createTagData && createTagCalled) {
-        setTags([...tags, createTagData.createTag]);
-        setSelectedTags([...selectedTags, createTagData.createTag.id]);
+    if (!createTagReq.loading) {
+      if (createTagReq.data && createTagReq.called) {
+        setTags([...tags, createTagReq.data.createTag]);
+        setSelectedTags([...selectedTags, createTagReq.data.createTag.id]);
         setCreateNewTag(false);
 
-        createTagReset();
+        createTagReq.reset();
       }
     }
-  }, [createTagLoading, setTags, setSelectedTags, createTagCalled, createTagData, createTagReset]);
+  }, [createTagReq.loading, setTags, setSelectedTags, createTagReq.called, createTagReq.data, createTagReq.reset]);
 
   React.useEffect(() => {
-    if (!createThingLoading) {
-      if (createThingData && createThingCalled) {
+    if (!createThingReq.loading) {
+      if (createThingReq.data && createThingReq.called) {
         navigate("../");
-        createThingReset();
+        createThingReq.reset();
       }
     }
-  }, [createThingLoading, createThingCalled, createThingData, createThingReset, navigate]);
+  }, [createThingReq.loading, createThingReq.called, createThingReq.data, createThingReq.reset, navigate]);
 
   React.useEffect(() => {
-    if (!updateThingLoading) {
-      if (updateThingData && updateThingCalled) {
+    if (!updateThingReq.loading) {
+      if (updateThingReq.data && updateThingReq.called) {
         navigate("../");
-        updateThingReset();
+        updateThingReq.reset();
       }
     }
-  });
+  }, [updateThingReq.loading, updateThingReq.called, updateThingReq.data, updateThingReq.reset, navigate]);
 
   const onTagClick = (tag: TagType) => {
     const idx = selectedTags.findIndex((tagId) => tagId === tag.id);

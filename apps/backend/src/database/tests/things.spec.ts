@@ -108,7 +108,7 @@ describe("Tags", () => {
     const res = await server.executeOperation({
       query: DeleteThingDocument,
       variables: {
-        id: "123412341234",
+        id: Data.Raw.Things[0].id,
       },
     });
 
