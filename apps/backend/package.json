@@ -36,11 +36,5 @@
     "./bin/*",
     "./lib/*"
   ],
-  "typings": "./lib/index.d.ts",
-  "config": {
-    "mongodbMemoryServer": {
-      "debug": "1",
-      "version": "latest"
-    }
-  }
+  "typings": "./lib/index.d.ts"
 }
