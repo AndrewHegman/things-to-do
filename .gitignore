@@ -21,7 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.yarn
 
 packages/**/dist/*
 packages/**/lib/*
@@ -34,3 +33,10 @@ apps/**/lib/*
 .turbo
 .vercel
 dist/
+
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
