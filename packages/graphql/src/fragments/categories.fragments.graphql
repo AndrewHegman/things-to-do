@@ -1,4 +1,10 @@
 fragment CategoryFragment on Category {
   id
   name
+  tags {
+    ...TagFragment
+  }
+  things {
+    ...ThingFragment
+  }
 }

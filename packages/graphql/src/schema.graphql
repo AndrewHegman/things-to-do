@@ -1,26 +1,20 @@
-type Category {
-  id: String!
-  name: String!
-}
-
 type Tag {
   id: String!
   name: String!
-  category: Category!
 }
-
-# fragment TagFragment on Tag {
-#   id: id
-#   name
-#   category
-# }
 
 type Thing {
   id: String!
   name: String!
   description: String!
   tags: [Tag!]!
-  category: Category!
+}
+
+type Category {
+  id: String!
+  name: String!
+  tags: [Tag!]!
+  things: [Thing!]!
 }
 
 type Query {
@@ -34,10 +28,10 @@ type Query {
 }
 
 type Mutation {
-  createTag(category: String!, name: String!): Tag!
+  createTag(thing: String!, name: String!): Tag!
   createThing(name: String!, description: String!, tags: [String!]!, category: String!): Thing!
   createCategory(name: String!): Category!
-  updateThing(id: String!, name: String!, description: String!, tags: [String!]!, category: String!): Thing!
+  updateThing(id: String!, name: String!, description: String!, tags: [String!]!): Thing!
   deleteThing(id: String!): String!
 }
 

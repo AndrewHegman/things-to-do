@@ -2,9 +2,6 @@ fragment ThingFragment on Thing {
   id
   name
   description
-  category {
-    ...CategoryFragment
-  }
   tags {
     ...TagFragment
   }
