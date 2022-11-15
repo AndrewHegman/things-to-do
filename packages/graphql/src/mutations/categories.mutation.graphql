@@ -1,6 +1,5 @@
 mutation CreateCategory($name: String!) {
   createCategory(name: $name) {
-    id
-    name
+    ...CategoryFragment
   }
 }

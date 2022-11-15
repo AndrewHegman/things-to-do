@@ -1,10 +1,5 @@
 mutation CreateTag($category: String!, $name: String!) {
   createTag(category: $category, name: $name) {
-    id
-    name
-    category {
-      id
-      name
-    }
+    ...TagFragment
   }
 }

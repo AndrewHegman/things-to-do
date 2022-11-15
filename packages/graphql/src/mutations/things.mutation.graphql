@@ -1,40 +1,12 @@
 mutation CreateThing($name: String!, $description: String!, $tags: [String!]!, $category: String!) {
   createThing(name: $name, description: $description, tags: $tags, category: $category) {
-    id
-    name
-    description
-    category {
-      id
-      name
-    }
-    tags {
-      id
-      name
-      category {
-        id
-        name
-      }
-    }
+    ...ThingFragment
   }
 }
 
 mutation UpdateThing($id: String!, $name: String!, $description: String!, $tags: [String!]!, $category: String!) {
   updateThing(id: $id, name: $name, description: $description, tags: $tags, category: $category) {
-    id
-    name
-    description
-    category {
-      id
-      name
-    }
-    tags {
-      id
-      name
-      category {
-        id
-        name
-      }
-    }
+    ...ThingFragment
   }
 }
 

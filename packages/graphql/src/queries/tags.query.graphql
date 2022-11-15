@@ -1,21 +1,11 @@
 query TagsByCategory($categoryId: String!) {
   tagsByCategory(categoryId: $categoryId) {
-    id
-    name
-    category {
-      id
-      name
-    }
+    ...TagFragment
   }
 }
 
 query GetTags {
   tags {
-    id
-    name
-    category {
-      id
-      name
-    }
+    ...TagFragment
   }
 }

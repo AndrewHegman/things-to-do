@@ -1,6 +1,8 @@
+import { useMutation } from "@apollo/client";
 import { TextField, Typography } from "@mui/material";
 import {
   CreateThingDocument,
+  GetThingsDocument,
   Tag as TagType,
   Thing,
   useCreateTagMutation,
@@ -27,12 +29,26 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
   const { categoryId } = useParams();
   const { thing } = props;
 
-  const { currentCategory, tags, setTags, openModal, closeModal, setCurrentThing } = useStore();
+  const { currentCategory, tags, setTags, setThings, openModal, closeModal, setCurrentThing } = useStore();
 
   const [createTag, createTagReq] = useCreateTagMutation();
-  const [createThing, createThingReq] = useCreateThingMutation();
   const [updateThing, updateThingReq] = useUpdateThingMutation();
+  const [createThing, createThingReq] = useMutation(CreateThingDocument, {
+    update: (store, { data }) => {
+      if (data) {
+        const currentData = store.readQuery<{ things: Thing[] }>({
+          query: GetThingsDocument,
+        }) || { things: [] };
 
+        const newData = [...currentData.things, data.createThing];
+        store.writeQuery({
+          query: GetThingsDocument,
+          data: { ...currentData, things: newData },
+        });
+        setThings(newData);
+      }
+    },
+  });
   const [description, setDescription] = React.useState(thing?.description || "");
   const [selectedTags, setSelectedTags] = React.useState<string[]>(thing?.tags.map((tag) => tag.id) || []);
   const [createNewTag, setCreateNewTag] = React.useState(false);
@@ -76,6 +92,7 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
   React.useEffect(() => {
     if (!updateThingReq.loading) {
       if (updateThingReq.data && updateThingReq.called) {
+        setCurrentThing(null);
         navigate("../");
         updateThingReq.reset();
       }
@@ -121,24 +138,13 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
           tags: selectedTags || thing.tags.map((tag) => tag.id),
           category: currentCategory.id!,
         },
-      });
-    } else {
-      createThing({
-        variables: { description, name, tags: selectedTags, category: currentCategory.id! },
-        update: (cache, { data }) => {
-          cache.modify({
-            fields: {
-              things(existingThings = []) {
-                const newThing = data?.createThing;
-                cache.writeQuery({
-                  query: CreateThingDocument,
-                  data: { newThing, ...existingThings },
-                });
-              },
-            },
-          });
+        update: (store, { data }) => {
+          console.log(data);
         },
       });
+    } else {
+      const variables = { description, name, tags: selectedTags, category: currentCategory.id! };
+      createThing({ variables });
     }
   };
 

@@ -1,13 +1,11 @@
 query GetCategories {
   categories {
-    id
-    name
+    ...CategoryFragment
   }
 }
 
 query GetCategory($categoryId: String!) {
   category(categoryId: $categoryId) {
-    id
-    name
+    ...CategoryFragment
   }
 }

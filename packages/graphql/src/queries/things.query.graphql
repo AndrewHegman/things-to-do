@@ -1,33 +1,30 @@
 query GetThingsTagsCategories {
   categories {
-    id
-    name
+    ...CategoryFragment
   }
 
   tags {
-    id
-    name
-    category {
-      id
-      name
-    }
+    ...TagFragment
   }
-
   things {
-    id
-    name
-    description
-    tags {
-      id
-      name
-      category {
-        id
-        name
-      }
-    }
-    category {
-      id
-      name
-    }
+    ...ThingFragment
+  }
+}
+
+query GetThingsByCategory($categoryId: String!) {
+  thingsByCategory(categoryId: $categoryId) {
+    ...ThingFragment
+  }
+}
+
+query GetThingsByCategories($categoryIds: [String!]!) {
+  thingsByCategories(categoryIds: $categoryIds) {
+    ...ThingFragment
+  }
+}
+
+query GetThings {
+  things {
+    ...ThingFragment
   }
 }

@@ -1,5 +1,5 @@
 import { Divider, Drawer, Fab, List, ListItem, ListItemButton, ListItemText, styled, TextField, Typography } from "@mui/material";
-import { Tag as TagType, Thing as ThingType, useGetCategoryLazyQuery } from "@ttd/graphql";
+import { Tag as TagType, Thing as ThingType } from "@ttd/graphql";
 import React from "react";
 import { useNavigate, useParams } from "react-router";
 import { useStore } from "../store";

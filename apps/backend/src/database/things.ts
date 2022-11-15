@@ -17,7 +17,7 @@ class Things {
 
   async getAll(category?: string) {
     if (category) {
-      throw new Error(`Error -- fetching Things by category has not been implemented!`);
+      return await ThingModel.find({ category }, ThingSelect).populate(PopulateCategory).populate(PopulateTag).lean();
     }
     return await ThingModel.find({}, ThingSelect).populate(PopulateCategory).populate(PopulateTag).lean();
   }

@@ -72,6 +72,8 @@ export type Query = {
   tags: Array<Tag>;
   tagsByCategory: Array<Tag>;
   things: Array<Thing>;
+  thingsByCategories: Array<Thing>;
+  thingsByCategory: Array<Thing>;
 };
 
 
@@ -81,6 +83,16 @@ export type QueryCategoryArgs = {
 
 
 export type QueryTagsByCategoryArgs = {
+  categoryId: Scalars['String'];
+};
+
+
+export type QueryThingsByCategoriesArgs = {
+  categoryIds: Array<Scalars['String']>;
+};
+
+
+export type QueryThingsByCategoryArgs = {
   categoryId: Scalars['String'];
 };
 
@@ -99,6 +111,12 @@ export type Thing = {
   name: Scalars['String'];
   tags: Array<Tag>;
 };
+
+export type CategoryFragmentFragment = { __typename?: 'Category', id: string, name: string };
+
+export type TagFragmentFragment = { __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } };
+
+export type ThingFragmentFragment = { __typename?: 'Thing', id: string, name: string, description: string, category: { __typename?: 'Category', id: string, name: string }, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }> };
 
 export type CreateCategoryMutationVariables = Exact<{
   name: Scalars['String'];
@@ -170,7 +188,26 @@ export type GetTagsQuery = { __typename?: 'Query', tags: Array<{ __typename?: 'T
 export type GetThingsTagsCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetThingsTagsCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }>, category: { __typename?: 'Category', id: string, name: string } }> };
+export type GetThingsTagsCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, category: { __typename?: 'Category', id: string, name: string }, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }> }> };
+
+export type GetThingsByCategoryQueryVariables = Exact<{
+  categoryId: Scalars['String'];
+}>;
+
+
+export type GetThingsByCategoryQuery = { __typename?: 'Query', thingsByCategory: Array<{ __typename?: 'Thing', id: string, name: string, description: string, category: { __typename?: 'Category', id: string, name: string }, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }> }> };
+
+export type GetThingsByCategoriesQueryVariables = Exact<{
+  categoryIds: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type GetThingsByCategoriesQuery = { __typename?: 'Query', thingsByCategories: Array<{ __typename?: 'Thing', id: string, name: string, description: string, category: { __typename?: 'Category', id: string, name: string }, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }> }> };
+
+export type GetThingsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetThingsQuery = { __typename?: 'Query', things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, category: { __typename?: 'Category', id: string, name: string }, tags: Array<{ __typename?: 'Tag', id: string, name: string, category: { __typename?: 'Category', id: string, name: string } }> }> };
 
 
 
@@ -281,6 +318,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
   tagsByCategory?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsByCategoryArgs, 'categoryId'>>;
   things?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType>;
+  thingsByCategories?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType, RequireFields<QueryThingsByCategoriesArgs, 'categoryIds'>>;
+  thingsByCategory?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType, RequireFields<QueryThingsByCategoryArgs, 'categoryId'>>;
 };
 
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = {
@@ -308,15 +347,42 @@ export type Resolvers<ContextType = any> = {
 };
 
 
-
+export const CategoryFragmentFragmentDoc = gql`
+    fragment CategoryFragment on Category {
+  id
+  name
+}
+    `;
+export const TagFragmentFragmentDoc = gql`
+    fragment TagFragment on Tag {
+  id
+  name
+  category {
+    ...CategoryFragment
+  }
+}
+    ${CategoryFragmentFragmentDoc}`;
+export const ThingFragmentFragmentDoc = gql`
+    fragment ThingFragment on Thing {
+  id
+  name
+  description
+  category {
+    ...CategoryFragment
+  }
+  tags {
+    ...TagFragment
+  }
+}
+    ${CategoryFragmentFragmentDoc}
+${TagFragmentFragmentDoc}`;
 export const CreateCategoryDocument = gql`
     mutation CreateCategory($name: String!) {
   createCategory(name: $name) {
-    id
-    name
+    ...CategoryFragment
   }
 }
-    `;
+    ${CategoryFragmentFragmentDoc}`;
 export type CreateCategoryMutationFn = Apollo.MutationFunction<CreateCategoryMutation, CreateCategoryMutationVariables>;
 
 /**
@@ -346,15 +412,10 @@ export type CreateCategoryMutationOptions = Apollo.BaseMutationOptions<CreateCat
 export const CreateTagDocument = gql`
     mutation CreateTag($category: String!, $name: String!) {
   createTag(category: $category, name: $name) {
-    id
-    name
-    category {
-      id
-      name
-    }
+    ...TagFragment
   }
 }
-    `;
+    ${TagFragmentFragmentDoc}`;
 export type CreateTagMutationFn = Apollo.MutationFunction<CreateTagMutation, CreateTagMutationVariables>;
 
 /**
@@ -390,24 +451,10 @@ export const CreateThingDocument = gql`
     tags: $tags
     category: $category
   ) {
-    id
-    name
-    description
-    category {
-      id
-      name
-    }
-    tags {
-      id
-      name
-      category {
-        id
-        name
-      }
-    }
+    ...ThingFragment
   }
 }
-    `;
+    ${ThingFragmentFragmentDoc}`;
 export type CreateThingMutationFn = Apollo.MutationFunction<CreateThingMutation, CreateThingMutationVariables>;
 
 /**
@@ -446,24 +493,10 @@ export const UpdateThingDocument = gql`
     tags: $tags
     category: $category
   ) {
-    id
-    name
-    description
-    category {
-      id
-      name
-    }
-    tags {
-      id
-      name
-      category {
-        id
-        name
-      }
-    }
+    ...ThingFragment
   }
 }
-    `;
+    ${ThingFragmentFragmentDoc}`;
 export type UpdateThingMutationFn = Apollo.MutationFunction<UpdateThingMutation, UpdateThingMutationVariables>;
 
 /**
@@ -528,11 +561,10 @@ export type DeleteThingMutationOptions = Apollo.BaseMutationOptions<DeleteThingM
 export const GetCategoriesDocument = gql`
     query GetCategories {
   categories {
-    id
-    name
+    ...CategoryFragment
   }
 }
-    `;
+    ${CategoryFragmentFragmentDoc}`;
 
 /**
  * __useGetCategoriesQuery__
@@ -563,11 +595,10 @@ export type GetCategoriesQueryResult = Apollo.QueryResult<GetCategoriesQuery, Ge
 export const GetCategoryDocument = gql`
     query GetCategory($categoryId: String!) {
   category(categoryId: $categoryId) {
-    id
-    name
+    ...CategoryFragment
   }
 }
-    `;
+    ${CategoryFragmentFragmentDoc}`;
 
 /**
  * __useGetCategoryQuery__
@@ -599,15 +630,10 @@ export type GetCategoryQueryResult = Apollo.QueryResult<GetCategoryQuery, GetCat
 export const TagsByCategoryDocument = gql`
     query TagsByCategory($categoryId: String!) {
   tagsByCategory(categoryId: $categoryId) {
-    id
-    name
-    category {
-      id
-      name
-    }
+    ...TagFragment
   }
 }
-    `;
+    ${TagFragmentFragmentDoc}`;
 
 /**
  * __useTagsByCategoryQuery__
@@ -639,15 +665,10 @@ export type TagsByCategoryQueryResult = Apollo.QueryResult<TagsByCategoryQuery, 
 export const GetTagsDocument = gql`
     query GetTags {
   tags {
-    id
-    name
-    category {
-      id
-      name
-    }
+    ...TagFragment
   }
 }
-    `;
+    ${TagFragmentFragmentDoc}`;
 
 /**
  * __useGetTagsQuery__
@@ -678,36 +699,18 @@ export type GetTagsQueryResult = Apollo.QueryResult<GetTagsQuery, GetTagsQueryVa
 export const GetThingsTagsCategoriesDocument = gql`
     query GetThingsTagsCategories {
   categories {
-    id
-    name
+    ...CategoryFragment
   }
   tags {
-    id
-    name
-    category {
-      id
-      name
-    }
+    ...TagFragment
   }
   things {
-    id
-    name
-    description
-    tags {
-      id
-      name
-      category {
-        id
-        name
-      }
-    }
-    category {
-      id
-      name
-    }
+    ...ThingFragment
   }
 }
-    `;
+    ${CategoryFragmentFragmentDoc}
+${TagFragmentFragmentDoc}
+${ThingFragmentFragmentDoc}`;
 
 /**
  * __useGetThingsTagsCategoriesQuery__
@@ -735,5 +738,109 @@ export function useGetThingsTagsCategoriesLazyQuery(baseOptions?: Apollo.LazyQue
 export type GetThingsTagsCategoriesQueryHookResult = ReturnType<typeof useGetThingsTagsCategoriesQuery>;
 export type GetThingsTagsCategoriesLazyQueryHookResult = ReturnType<typeof useGetThingsTagsCategoriesLazyQuery>;
 export type GetThingsTagsCategoriesQueryResult = Apollo.QueryResult<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>;
+export const GetThingsByCategoryDocument = gql`
+    query GetThingsByCategory($categoryId: String!) {
+  thingsByCategory(categoryId: $categoryId) {
+    ...ThingFragment
+  }
+}
+    ${ThingFragmentFragmentDoc}`;
 
-  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{id:String!name:String!}type Mutation{createCategory(name:String!):Category!createTag(category:String!name:String!):Tag!createThing(category:String!description:String!name:String!tags:[String!]!):Thing!deleteThing(id:String!):String!updateThing(category:String!description:String!id:String!name:String!tags:[String!]!):Thing!}type Query{categories:[Category!]!category(categoryId:String!):Category!tags:[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!things:[Thing!]!}type Tag{category:Category!id:String!name:String!}type Thing{category:Category!description:String!id:String!name:String!tags:[Tag!]!}`;
+/**
+ * __useGetThingsByCategoryQuery__
+ *
+ * To run a query within a React component, call `useGetThingsByCategoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetThingsByCategoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetThingsByCategoryQuery({
+ *   variables: {
+ *      categoryId: // value for 'categoryId'
+ *   },
+ * });
+ */
+export function useGetThingsByCategoryQuery(baseOptions: Apollo.QueryHookOptions<GetThingsByCategoryQuery, GetThingsByCategoryQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetThingsByCategoryQuery, GetThingsByCategoryQueryVariables>(GetThingsByCategoryDocument, options);
+      }
+export function useGetThingsByCategoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetThingsByCategoryQuery, GetThingsByCategoryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetThingsByCategoryQuery, GetThingsByCategoryQueryVariables>(GetThingsByCategoryDocument, options);
+        }
+export type GetThingsByCategoryQueryHookResult = ReturnType<typeof useGetThingsByCategoryQuery>;
+export type GetThingsByCategoryLazyQueryHookResult = ReturnType<typeof useGetThingsByCategoryLazyQuery>;
+export type GetThingsByCategoryQueryResult = Apollo.QueryResult<GetThingsByCategoryQuery, GetThingsByCategoryQueryVariables>;
+export const GetThingsByCategoriesDocument = gql`
+    query GetThingsByCategories($categoryIds: [String!]!) {
+  thingsByCategories(categoryIds: $categoryIds) {
+    ...ThingFragment
+  }
+}
+    ${ThingFragmentFragmentDoc}`;
+
+/**
+ * __useGetThingsByCategoriesQuery__
+ *
+ * To run a query within a React component, call `useGetThingsByCategoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetThingsByCategoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetThingsByCategoriesQuery({
+ *   variables: {
+ *      categoryIds: // value for 'categoryIds'
+ *   },
+ * });
+ */
+export function useGetThingsByCategoriesQuery(baseOptions: Apollo.QueryHookOptions<GetThingsByCategoriesQuery, GetThingsByCategoriesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetThingsByCategoriesQuery, GetThingsByCategoriesQueryVariables>(GetThingsByCategoriesDocument, options);
+      }
+export function useGetThingsByCategoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetThingsByCategoriesQuery, GetThingsByCategoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetThingsByCategoriesQuery, GetThingsByCategoriesQueryVariables>(GetThingsByCategoriesDocument, options);
+        }
+export type GetThingsByCategoriesQueryHookResult = ReturnType<typeof useGetThingsByCategoriesQuery>;
+export type GetThingsByCategoriesLazyQueryHookResult = ReturnType<typeof useGetThingsByCategoriesLazyQuery>;
+export type GetThingsByCategoriesQueryResult = Apollo.QueryResult<GetThingsByCategoriesQuery, GetThingsByCategoriesQueryVariables>;
+export const GetThingsDocument = gql`
+    query GetThings {
+  things {
+    ...ThingFragment
+  }
+}
+    ${ThingFragmentFragmentDoc}`;
+
+/**
+ * __useGetThingsQuery__
+ *
+ * To run a query within a React component, call `useGetThingsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetThingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetThingsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetThingsQuery(baseOptions?: Apollo.QueryHookOptions<GetThingsQuery, GetThingsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetThingsQuery, GetThingsQueryVariables>(GetThingsDocument, options);
+      }
+export function useGetThingsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetThingsQuery, GetThingsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetThingsQuery, GetThingsQueryVariables>(GetThingsDocument, options);
+        }
+export type GetThingsQueryHookResult = ReturnType<typeof useGetThingsQuery>;
+export type GetThingsLazyQueryHookResult = ReturnType<typeof useGetThingsLazyQuery>;
+export type GetThingsQueryResult = Apollo.QueryResult<GetThingsQuery, GetThingsQueryVariables>;
+
+  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{id:String!name:String!}type Mutation{createCategory(name:String!):Category!createTag(category:String!name:String!):Tag!createThing(category:String!description:String!name:String!tags:[String!]!):Thing!deleteThing(id:String!):String!updateThing(category:String!description:String!id:String!name:String!tags:[String!]!):Thing!}type Query{categories:[Category!]!category(categoryId:String!):Category!tags:[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!things:[Thing!]!thingsByCategories(categoryIds:[String!]!):[Thing!]!thingsByCategory(categoryId:String!):[Thing!]!}type Tag{category:Category!id:String!name:String!}type Thing{category:Category!description:String!id:String!name:String!tags:[Tag!]!}`;

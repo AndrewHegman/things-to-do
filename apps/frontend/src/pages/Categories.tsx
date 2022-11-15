@@ -22,7 +22,8 @@ export const Categories: React.FC<ICategoriesProps> = (props) => {
     if (!newCategoryName) {
       setIsCreatingCategory(false);
     } else {
-      createCategory({
+      /**
+       * createCategory({
         variables: { name: newCategoryName },
         update: (cache, { data }) => {
           cache.modify({
@@ -35,6 +36,18 @@ export const Categories: React.FC<ICategoriesProps> = (props) => {
                 });
               },
             },
+          });
+        },
+      });
+       */
+      const variables = { name: newCategoryName };
+      createCategory({
+        variables,
+        update: (store, { data }) => {
+          console.log(data);
+          store.writeQuery({
+            query: CreateCategoryDocument,
+            data,
           });
         },
       });

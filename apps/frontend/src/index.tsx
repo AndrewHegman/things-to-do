@@ -13,7 +13,7 @@ import { client } from "./graphql";
 import { useStore } from "./store";
 import { Modal } from "./store/modals";
 import { ThingPage } from "./pages/Thing";
-import { useGetCategoriesQuery, useGetTagsQuery, useGetThingsTagsCategoriesQuery } from "@ttd/graphql";
+import { GetThingsDocument, useGetCategoriesQuery, useGetThingsQuery } from "@ttd/graphql";
 
 const theme = createTheme({
   typography: {
@@ -93,24 +93,26 @@ const theme = createTheme({
 });
 
 const App = () => {
-  const { setCategories, setTags, setThings, currentThing, openModal, closeModal } = useStore();
-  const { loading, data } = useGetThingsTagsCategoriesQuery();
+  console.log(client.cache.readQuery({ query: GetThingsDocument }));
 
-  const [loadingData, setLoadingData] = React.useState(loading);
+  const getCategories = useGetCategoriesQuery();
+  const getThings = useGetThingsQuery();
+
+  const { setCategories, setThings, currentThing, openModal, closeModal } = useStore();
+  const [loadingData, setLoadingData] = React.useState(getCategories.loading || getThings.loading);
 
   React.useEffect(() => {
-    console.log(data);
-  }, [data]);
+    openModal(Modal.Loading);
+  }, []);
 
   React.useEffect(() => {
-    loading ? openModal(Modal.Loading) : closeModal(Modal.Loading);
-    setLoadingData(loading);
-    if (data) {
-      setCategories(data.categories);
-      setTags(data.tags);
-      setThings(data.things);
+    if (!getCategories.loading && getCategories.data && !getThings.loading && getThings.data) {
+      setCategories(getCategories.data.categories);
+      setThings(getThings.data.things);
+      closeModal(Modal.Loading);
+      setLoadingData(false);
     }
-  }, [loading, data, setCategories, setTags, setThings]);
+  }, [getCategories.loading, getThings.loading]);
 
   return (
     <ThemeProvider theme={theme}>

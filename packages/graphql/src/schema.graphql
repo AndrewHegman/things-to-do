@@ -29,6 +29,8 @@ type Query {
   tagsByCategory(categoryId: String!): [Tag!]!
   tags: [Tag!]!
   things: [Thing!]!
+  thingsByCategory(categoryId: String!): [Thing!]!
+  thingsByCategories(categoryIds: [String!]!): [Thing!]!
 }
 
 type Mutation {

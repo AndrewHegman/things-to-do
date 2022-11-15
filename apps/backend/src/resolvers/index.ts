@@ -1,4 +1,4 @@
-import { categories, category, tagsByCategory, tags, things } from "./queries";
+import { categories, category, tagsByCategory, tags, things, thingsByCategory, thingsByCategories } from "./queries";
 import { createTag, createThing, createCategory, updateThing, deleteThing } from "./mutations";
 
 export const resolvers = {
@@ -8,6 +8,8 @@ export const resolvers = {
     tagsByCategory,
     tags,
     things,
+    thingsByCategory,
+    thingsByCategories,
   },
   Mutation: {
     createTag,

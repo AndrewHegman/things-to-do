@@ -5,7 +5,7 @@
   "scripts": {
     "build": "swc ./src -d ./dist -C module.type=commonjs",
     "start": "yarn build && node dist/index.js",
-    "dev": "yarn build && node dist/index.js",
+    "dev": "nodemon --config nodemon.json",
     "start:dev": "nodemon --config nodemon.json",
     "test": "jest"
   },
