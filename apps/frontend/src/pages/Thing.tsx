@@ -6,7 +6,7 @@ import {
   Tag as TagType,
   Thing,
   useCreateTagMutation,
-  useCreateThingMutation,
+  useGetThingsByCategoryQuery,
   useUpdateThingMutation,
 } from "@ttd/graphql";
 import React, { useMemo } from "react";
@@ -29,10 +29,11 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
   const { categoryId } = useParams();
   const { thing } = props;
 
-  const { currentCategory, tags, setTags, setThings, openModal, closeModal, setCurrentThing } = useStore();
+  const { currentCategory, tags, setTags, setThings, openModal, closeModal, setCurrentThing, currentThing } = useStore();
 
   const [createTag, createTagReq] = useCreateTagMutation();
   const [updateThing, updateThingReq] = useUpdateThingMutation();
+
   const [createThing, createThingReq] = useMutation(CreateThingDocument, {
     update: (store, { data }) => {
       if (data) {
@@ -49,16 +50,17 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
       }
     },
   });
+
   const [description, setDescription] = React.useState(thing?.description || "");
   const [selectedTags, setSelectedTags] = React.useState<string[]>(thing?.tags.map((tag) => tag.id) || []);
   const [createNewTag, setCreateNewTag] = React.useState(false);
   const [showDuplicateTagError, setShowDuplicateTagError] = React.useState(false);
   const [name, setName] = React.useState(thing?.name || "");
 
-  const categoryTags = useMemo(
-    () => (!tags || !currentCategory ? [] : tags.filter((tag) => tag.category.id === currentCategory.id)),
-    [currentCategory, tags]
-  );
+  // const categoryTags = useMemo(
+  //   () => (!tags || !currentCategory ? [] : tags.filter((tag) => tag.category.id === currentCategory.id)),
+  //   [currentCategory, tags]
+  // );
 
   React.useEffect(() => {
     if (!createTagReq.loading && !createThingReq.loading && !updateThingReq.loading) {
@@ -118,11 +120,11 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
   }
 
   const onNewTagBlur = (newTagName: string) => {
-    if (categoryTags.findIndex((categoryTag) => categoryTag.name === newTagName) != -1) {
+    if (currentCategory.tags.findIndex((categoryTag) => categoryTag.name === newTagName) != -1) {
       setShowDuplicateTagError(true);
-    } else if (newTagName && categoryTags.findIndex((categoryTag) => categoryTag.name === newTagName) === -1) {
+    } else if (newTagName && currentCategory.tags.findIndex((categoryTag) => categoryTag.name === newTagName) === -1) {
       setShowDuplicateTagError(false);
-      createTag({ variables: { category: currentCategory.id, name: newTagName } });
+      createTag({ variables: { name: newTagName, thing: currentThing!.id } });
     } else {
       setCreateNewTag(false);
     }
@@ -136,7 +138,6 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
           description: description || thing.description,
           name: name || thing.name,
           tags: selectedTags || thing.tags.map((tag) => tag.id),
-          category: currentCategory.id!,
         },
         update: (store, { data }) => {
           console.log(data);
@@ -187,7 +188,7 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
           </Typography>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {categoryTags.map((tag) => (
+          {currentCategory.tags.map((tag) => (
             <Tag
               sx={{ marginLeft: "3px", marginRight: "3px", marginBottom: "5px" }}
               tag={tag}

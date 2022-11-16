@@ -13,7 +13,7 @@ import { client } from "./graphql";
 import { useStore } from "./store";
 import { Modal } from "./store/modals";
 import { ThingPage } from "./pages/Thing";
-import { GetThingsDocument, useGetCategoriesQuery, useGetThingsQuery } from "@ttd/graphql";
+import { GetCategoriesDocument, useGetCategoriesQuery } from "@ttd/graphql";
 
 const theme = createTheme({
   typography: {
@@ -93,35 +93,37 @@ const theme = createTheme({
 });
 
 const App = () => {
-  console.log(client.cache.readQuery({ query: GetThingsDocument }));
-
   const getCategories = useGetCategoriesQuery();
-  const getThings = useGetThingsQuery();
 
-  const { setCategories, setThings, currentThing, openModal, closeModal } = useStore();
-  const [loadingData, setLoadingData] = React.useState(getCategories.loading || getThings.loading);
-
+  const { setCategories, currentThing, openModal, closeModal } = useStore();
+  const [loadingData, setLoadingData] = React.useState(getCategories.loading);
+  React.useEffect(() => {
+    client.watchQuery({ query: GetCategoriesDocument }).subscribe({
+      next(value) {
+        setCategories(value.data.categories as any);
+      },
+    });
+  }, []);
   React.useEffect(() => {
     openModal(Modal.Loading);
   }, []);
 
   React.useEffect(() => {
-    if (!getCategories.loading && getCategories.data && !getThings.loading && getThings.data) {
+    if (!getCategories.loading && getCategories.data) {
       setCategories(getCategories.data.categories);
-      setThings(getThings.data.things);
       closeModal(Modal.Loading);
       setLoadingData(false);
     }
-  }, [getCategories.loading, getThings.loading]);
+  }, [getCategories.loading]);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Categories loading={loadingData} />}></Route>
+          <Route path="/" element={<Categories />}></Route>
           <Route path="category">
-            <Route index element={<Categories loading={loadingData} />} />
+            <Route index element={<Categories />} />
             <Route path=":categoryId">
               <Route element={<CategoryPage loading={loadingData} />} index />
               <Route path="create" element={<ThingPage thing={currentThing || undefined} />} />

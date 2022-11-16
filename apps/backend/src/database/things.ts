@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { PopulateCategory, PopulateTag, ThingSelect } from "./aggregations";
+import { PopulateTag, ThingSelect } from "./aggregations";
 import { UpdateThingDAI, CreateThingDAI } from "./interfaces";
 import { ThingModel } from "./models";
 
@@ -17,18 +17,17 @@ class Things {
 
   async getAll(category?: string) {
     if (category) {
-      return await ThingModel.find({ category }, ThingSelect).populate(PopulateCategory).populate(PopulateTag).lean();
+      return await ThingModel.find({ category }, ThingSelect).populate(PopulateTag).lean();
     }
-    return await ThingModel.find({}, ThingSelect).populate(PopulateCategory).populate(PopulateTag).lean();
+    return await ThingModel.find({}, ThingSelect).populate(PopulateTag).lean();
   }
 
   async getById(_id: string) {
-    return await ThingModel.findById(_id, ThingSelect).populate(PopulateCategory).populate(PopulateTag).lean();
+    return await ThingModel.findById(_id, ThingSelect).populate(PopulateTag).lean();
   }
 
   async update(_id: string, updatedThing: UpdateThingDAI) {
     return await ThingModel.findByIdAndUpdate(_id, updatedThing, { projection: ThingSelect, returnDocument: "after" })
-      .populate(PopulateCategory)
       .populate(PopulateTag)
       .lean();
   }

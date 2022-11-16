@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { TagFields } from "./collections";
 import { Tag } from "@ttd/interfaces";
-import { PopulateCategory, TagsSelect } from "./aggregations";
+import { TagsSelect } from "./aggregations";
 import { TagModel } from "./models";
 
 export class Tags {
@@ -17,23 +17,21 @@ export class Tags {
   }
 
   async getAll() {
-    return await TagModel.find({}, TagsSelect).populate(PopulateCategory).lean();
+    return await TagModel.find({}, TagsSelect).lean();
   }
 
   async getById(_id: string) {
-    return await TagModel.findById(_id, TagsSelect).populate(PopulateCategory).lean();
+    return await TagModel.findById(_id, TagsSelect).lean();
   }
 
   async getByCategoryId(_id: string) {
     return await TagModel.find({ [TagFields.Category]: new ObjectId(_id) }, TagsSelect)
-      .populate(PopulateCategory)
-      .lean();
+    .lean();
   }
 
   async update(_id: string, updatedTag: Omit<Tag, "_id">) {
     return await TagModel.findOneAndUpdate({ _id: new ObjectId(_id) }, updatedTag, { lean: true, projection: TagsSelect })
-      .populate(PopulateCategory)
-      .lean();
+    .lean();
   }
 
   async create(tag: Omit<Tag, "_id">) {

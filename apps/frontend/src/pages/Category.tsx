@@ -1,5 +1,5 @@
 import { Divider, Drawer, Fab, List, ListItem, ListItemButton, ListItemText, styled, TextField, Typography } from "@mui/material";
-import { Tag as TagType, Thing as ThingType } from "@ttd/graphql";
+import { Tag as TagType, Thing as ThingType, useGetThingsByCategoryQuery } from "@ttd/graphql";
 import React from "react";
 import { useNavigate, useParams } from "react-router";
 import { useStore } from "../store";
@@ -15,8 +15,14 @@ interface ICategoryProps {
 }
 
 export const CategoryPage: React.FC<ICategoryProps> = (props) => {
-  const { loading } = props;
+  const navigate = useNavigate();
   const { categoryId } = useParams();
+
+  if (!categoryId) {
+    navigate("/");
+  }
+
+  const { loading } = props;
   const { categories, currentCategory, setCurrentCategory, tags, things, setCurrentThing } = useStore();
 
   const [searchText, setSearchText] = React.useState("");
@@ -24,19 +30,17 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
   const [searchBoxFocused, setSearchBoxFocused] = React.useState(false);
   const [showMoreDrawer, setShowMoreDrawer] = React.useState(false);
 
-  const navigate = useNavigate();
-
   const searchBoxRef = React.useRef<HTMLDivElement>(null);
 
-  const categoryTags = React.useMemo(
-    () => (!tags || !currentCategory ? [] : tags.filter((tag) => currentCategory?.id === tag.category.id)),
-    [tags, currentCategory]
-  );
+  // const categoryTags = React.useMemo(
+  //   () => (!tags || !currentCategory ? [] : tags.filter((tag) => currentCategory?.id === tag.category.id)),
+  //   [tags, currentCategory]
+  // );
 
-  const categoryThings = React.useMemo(
-    () => (!things || !currentCategory ? [] : things.filter((thing) => currentCategory.id === thing.category.id)),
-    [things, currentCategory]
-  );
+  // const categoryThings = React.useMemo(
+  //   () => (!things || !currentCategory ? [] : things.filter((thing) => currentCategory.id === thing.category.id)),
+  //   [things, currentCategory]
+  // );
 
   React.useEffect(() => {
     if (categories && !loading) {
@@ -50,7 +54,7 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
   }, [categories, categoryId, loading]);
 
   const getSelectableTags = () => {
-    return categoryTags.filter((tag) => selectedTags.findIndex((selectedTag) => selectedTag.id === tag.id) < 0) || [];
+    return currentCategory?.tags.filter((tag) => selectedTags.findIndex((selectedTag) => selectedTag.id === tag.id) < 0) || [];
   };
 
   const onTagClick = (tag: TagType) => {
@@ -60,10 +64,10 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
 
   const getFilteredThings = (): ThingType[] => {
     return selectedTags.length > 0
-      ? categoryThings.filter((thing) =>
+      ? currentCategory?.things.filter((thing) =>
           selectedTags.every((selectedTag) => thing.tags.findIndex((tag) => tag.id === selectedTag.id) >= 0)
         ) || []
-      : categoryThings || [];
+      : currentCategory?.things || [];
   };
 
   const removeSelectedTag = (tag: TagType) => {
@@ -112,7 +116,9 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
           getFilteredThings().map((thing, idx) => (
             <div key={thing.id} style={{ marginBottom: "10px" }}>
               <Thing thing={thing} onClickMore={() => onClickMore(thing)} />
-              {categoryThings.length! > 1 && idx < categoryThings!.length! - 1 ? <Divider sx={{ marginRight: "20px" }} /> : null}
+              {currentCategory?.things.length! > 1 && idx < currentCategory?.things!.length! - 1 ? (
+                <Divider sx={{ marginRight: "20px" }} />
+              ) : null}
             </div>
           ))}
 
@@ -122,7 +128,9 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
             .map((tag, idx) => (
               <div key={tag.id} style={{ marginBottom: "10px" }} onClick={() => onTagClick(tag)}>
                 <Typography>{tag.name}</Typography>
-                {categoryTags.length > 1 && idx < categoryTags.length - 1 ? <Divider sx={{ marginRight: "20px" }} /> : null}
+                {currentCategory?.tags.length! > 1 && idx < currentCategory?.tags.length! - 1 ? (
+                  <Divider sx={{ marginRight: "20px" }} />
+                ) : null}
               </div>
             ))}
       </div>

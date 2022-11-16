@@ -1,6 +1,7 @@
 import { Document, ObjectId } from "mongodb";
 import { CategoryModel } from "./models";
 import { Category } from "@ttd/interfaces";
+import { CategorySelect, PopulateThing, PopulateTag } from "./aggregations";
 
 class Categories {
   private static instance: Categories;
@@ -15,11 +16,11 @@ class Categories {
   }
 
   public async getAll() {
-    return await CategoryModel.find({});
+    return await CategoryModel.find({}, CategorySelect).populate(PopulateThing).populate(PopulateTag).lean();
   }
 
   public async getById(_id: string) {
-    return await CategoryModel.findById(_id);
+    return await CategoryModel.findById(_id, CategorySelect).populate(PopulateTag).populate(PopulateThing).lean();
   }
 
   public async update(_id: string, updatedCategory: Omit<Category, "_id">) {

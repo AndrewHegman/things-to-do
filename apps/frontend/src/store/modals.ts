@@ -3,6 +3,7 @@ import { StateCreator } from "zustand";
 export enum Modal {
   Loading = "loading",
   Error = "error",
+  CreateCategory = "createCategory",
 }
 
 export interface ModalsSlice {

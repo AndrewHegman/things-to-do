@@ -4,7 +4,6 @@ import { mongooseLeanVirtuals } from "mongoose-lean-virtuals";
 
 const TagSchema = new Schema({
   name: String,
-  category: { type: Schema.Types.ObjectId, ref: "categories" },
   dev: Boolean,
 });
 
