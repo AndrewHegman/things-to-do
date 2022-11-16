@@ -16,14 +16,19 @@ export const CreateCategoryModal: React.FC<ICategoriesProps> = (props) => {
   const { categories, setCurrentCategory, openModal, closeModal, modals } = useStore();
   const navigate = useNavigate();
 
-  const onClose = () => {
+  const onClose = (categoryToNavigateTo: Category | null = null) => {
     setName("");
     closeModal(Modal.CreateCategory);
+
+    if (categoryToNavigateTo) {
+      setCurrentCategory(categoryToNavigateTo);
+      navigate(`category/${categoryToNavigateTo.id}`);
+    }
   };
 
   const onCreateNewCategory = async () => {
     if (name !== "" && !categories.map((category) => category.name).includes(name)) {
-      await createCategory({
+      const newCategory = await createCategory({
         variables: { name },
         update: (store, { data }) => {
           const oldCategories = store.readQuery<{ categories: Category[] }>({ query: GetCategoriesDocument })?.categories || [];
@@ -33,7 +38,7 @@ export const CreateCategoryModal: React.FC<ICategoriesProps> = (props) => {
           });
         },
       });
-      onClose();
+      onClose(newCategory.data?.createCategory || null);
     }
   };
 
@@ -44,7 +49,7 @@ export const CreateCategoryModal: React.FC<ICategoriesProps> = (props) => {
         <TextField variant="standard" placeholder="New category" value={name} onChange={(e) => setName(e.target.value)} />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={() => onClose()}>Cancel</Button>
         <Button onClick={onCreateNewCategory}>Create</Button>
       </DialogActions>
     </Dialog>
