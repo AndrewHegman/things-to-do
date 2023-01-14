@@ -19,6 +19,7 @@ const server = new ApolloServer({
   resolvers,
   typeDefs,
 });
+
 server.start().then(() => {
   app.use(
     "/graphql",
@@ -31,7 +32,7 @@ server.start().then(() => {
 
   connect(`mongodb+srv://admin:${process.env.DATABASE_PW}@inventory.fcghx.mongodb.net/ttd2`)
     .then(async () => {
-      await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
+      await new Promise<void>((resolve) => httpServer.listen(resolve));
       console.log(`🚀 Server ready`);
     })
     .catch((e) => console.error(`Failed to connect to mongodb: ${e}`));
