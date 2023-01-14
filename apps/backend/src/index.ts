@@ -1,5 +1,6 @@
-import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
-import { ApolloServer } from "apollo-server";
+// import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
 import { typeDefs } from "@ttd/graphql";
 import { resolvers } from "./resolvers";
 import dotenv from "dotenv";
@@ -13,26 +14,12 @@ const server = new ApolloServer({
   resolvers,
   typeDefs,
   csrfPrevention: true,
-  cache: "bounded",
-  context: {},
-  cors: {
-    origin: "*",
-  },
-  /**
-   * What's up with this embed: true option?
-   * These are our recommended settings for using AS;
-   * they aren't the defaults in AS3 for backwards-compatibility reasons but
-   * will be the defaults in AS4. For production environments, use
-   * ApolloServerPluginLandingPageProductionDefault instead.
-   **/
-  plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
 });
 
 connect(`mongodb+srv://admin:${process.env.DATABASE_PW}@inventory.fcghx.mongodb.net/ttd2`)
   .then(() => {
-    // The `listen` method launches a web server.
-    server.listen().then(({ url }) => {
-      console.log(`🚀  Server ready at ${url}`);
+    startStandaloneServer(server, {
+      // listen: { port: 4000 },
     });
   })
   .catch((e) => console.error(`Failed to connect to mongodb: ${e}`));

@@ -20,7 +20,7 @@ export const client = new ApolloClient({
   link: new HttpLink({
     uri: "https://things-to-do-ruby.vercel.app/",
     fetchOptions: {
-      mode: "no-cors",
+      // mode: "no-cors",
     },
   }),
 });

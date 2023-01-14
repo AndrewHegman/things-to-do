@@ -3,8 +3,6 @@ import react from "@vitejs/plugin-react";
 import nodePolyfills from "rollup-plugin-node-polyfills";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
 import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill";
-import replace from "@rollup/plugin-replace";
-import path from "path";
 
 export default defineConfig({
   root: "./",
