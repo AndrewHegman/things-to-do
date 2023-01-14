@@ -19,6 +19,7 @@ export const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
     fetchOptions: {
+      uri: import.meta.env.VITE_BACKEND_ENDPOINT,
       mode: "no-cors",
     },
   }),
