@@ -17,7 +17,6 @@ const server = new ApolloServer({
   context: {},
   cors: {
     origin: "*",
-    credentials: true,
   },
   /**
    * What's up with this embed: true option?
