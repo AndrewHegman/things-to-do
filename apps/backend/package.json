@@ -15,6 +15,7 @@
     "@ttd/graphql": "workspace:^",
     "@ttd/interfaces": "workspace:^",
     "apollo-server": "^3.10.1",
+    "cors": "^2.8.5",
     "graphql": "^16.6.0",
     "mongoose": "^6.6.3"
   },

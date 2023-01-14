@@ -1,4 +1,4 @@
-import { ApolloCache, ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloCache, ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import {
   Category,
   CreateCategoryMutation,
@@ -17,6 +17,11 @@ export const client = new ApolloClient({
   connectToDevTools: true,
   typeDefs,
   cache: new InMemoryCache(),
+  link: new HttpLink({
+    fetchOptions: {
+      mode: "no-cors",
+    },
+  }),
 });
 
 export const updateCategoryCache = (
