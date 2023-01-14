@@ -13,12 +13,12 @@ import {
 import dotenv from "dotenv";
 
 export const client = new ApolloClient({
-  uri: import.meta.env.VITE_BACKEND_ENDPOINT,
+  uri: `${import.meta.env.VITE_BACKEND_ENDPOINT}/graphql`,
   connectToDevTools: true,
   typeDefs,
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: "https://things-to-do-ruby.vercel.app/",
+    uri: `${import.meta.env.VITE_BACKEND_ENDPOINT}/graphql`,
   }),
 });
 
