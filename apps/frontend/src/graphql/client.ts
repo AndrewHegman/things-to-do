@@ -19,7 +19,7 @@ export const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
     fetchOptions: {
-      uri: import.meta.env.VITE_BACKEND_ENDPOINT,
+      uri: "https://things-to-do-ruby.vercel.app/",
       mode: "no-cors",
     },
   }),
