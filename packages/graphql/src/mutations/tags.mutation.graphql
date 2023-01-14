@@ -1,5 +1,5 @@
-mutation CreateTag($thing: String!, $name: String!) {
-  createTag(thing: $thing, name: $name) {
+mutation CreateTag($name: String!) {
+  createTag(name: $name) {
     ...TagFragment
   }
 }

@@ -4,6 +4,8 @@ export enum Modal {
   Loading = "loading",
   Error = "error",
   CreateCategory = "createCategory",
+  CreateTag = "createTag",
+  ConfirmDelete = "confirmDelete",
 }
 
 export interface ModalsSlice {

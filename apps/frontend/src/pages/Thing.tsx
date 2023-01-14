@@ -1,19 +1,12 @@
-import { useMutation } from "@apollo/client";
 import { TextField, Typography } from "@mui/material";
-import {
-  CreateThingDocument,
-  GetThingsDocument,
-  Tag as TagType,
-  Thing,
-  useCreateTagMutation,
-  useGetThingsByCategoryQuery,
-  useUpdateThingMutation,
-} from "@ttd/graphql";
-import React, { useMemo } from "react";
-import { Navigate, useNavigate, useParams } from "react-router";
+import { Tag as TagType, Thing, useCreateThingMutation, useUpdateCategoryMutation, useUpdateThingMutation } from "@ttd/graphql";
+import React from "react";
+import { useNavigate, useParams } from "react-router";
 import { AppBar } from "../components/AppBar";
+import { CreateTagModal } from "../components/CreateTagDialog";
 import { PageWrapper } from "../components/PageWrapper";
 import { Tag } from "../components/Tag";
+import { updateThingCache } from "../graphql";
 import { useStore } from "../store";
 import { Modal } from "../store/modals";
 import { removeFromArray } from "../utils";
@@ -26,61 +19,25 @@ const MAX_DESC_LEN = 20;
 
 export const ThingPage: React.FC<IThingPageProps> = (props) => {
   const navigate = useNavigate();
-  const { categoryId } = useParams();
   const { thing } = props;
 
-  const { currentCategory, tags, setTags, setThings, openModal, closeModal, setCurrentThing, currentThing } = useStore();
+  const { openModal, closeModal, setCurrentThing, currentCategory } = useStore();
 
-  const [createTag, createTagReq] = useCreateTagMutation();
   const [updateThing, updateThingReq] = useUpdateThingMutation();
-
-  const [createThing, createThingReq] = useMutation(CreateThingDocument, {
-    update: (store, { data }) => {
-      if (data) {
-        const currentData = store.readQuery<{ things: Thing[] }>({
-          query: GetThingsDocument,
-        }) || { things: [] };
-
-        const newData = [...currentData.things, data.createThing];
-        store.writeQuery({
-          query: GetThingsDocument,
-          data: { ...currentData, things: newData },
-        });
-        setThings(newData);
-      }
-    },
-  });
+  const [updateCategory, {}] = useUpdateCategoryMutation();
+  const [createThing, createThingReq] = useCreateThingMutation({ update: updateThingCache });
 
   const [description, setDescription] = React.useState(thing?.description || "");
   const [selectedTags, setSelectedTags] = React.useState<string[]>(thing?.tags.map((tag) => tag.id) || []);
-  const [createNewTag, setCreateNewTag] = React.useState(false);
-  const [showDuplicateTagError, setShowDuplicateTagError] = React.useState(false);
   const [name, setName] = React.useState(thing?.name || "");
 
-  // const categoryTags = useMemo(
-  //   () => (!tags || !currentCategory ? [] : tags.filter((tag) => tag.category.id === currentCategory.id)),
-  //   [currentCategory, tags]
-  // );
-
   React.useEffect(() => {
-    if (!createTagReq.loading && !createThingReq.loading && !updateThingReq.loading) {
+    if (!createThingReq.loading && !updateThingReq.loading) {
       closeModal(Modal.Loading);
     } else {
       openModal(Modal.Loading);
     }
-  }, [createTagReq.loading, updateThingReq.loading, createThingReq.loading, closeModal, openModal]);
-
-  React.useEffect(() => {
-    if (!createTagReq.loading) {
-      if (createTagReq.data && createTagReq.called) {
-        setTags([...tags, createTagReq.data.createTag]);
-        setSelectedTags([...selectedTags, createTagReq.data.createTag.id]);
-        setCreateNewTag(false);
-
-        createTagReq.reset();
-      }
-    }
-  }, [createTagReq.loading, setTags, setSelectedTags, createTagReq.called, createTagReq.data, createTagReq.reset]);
+  }, [updateThingReq.loading, createThingReq.loading, closeModal, openModal]);
 
   React.useEffect(() => {
     if (!createThingReq.loading) {
@@ -115,22 +72,7 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
     navigate("../");
   };
 
-  if (!currentCategory) {
-    return <Navigate to={`/category/${categoryId}`} />;
-  }
-
-  const onNewTagBlur = (newTagName: string) => {
-    if (currentCategory.tags.findIndex((categoryTag) => categoryTag.name === newTagName) != -1) {
-      setShowDuplicateTagError(true);
-    } else if (newTagName && currentCategory.tags.findIndex((categoryTag) => categoryTag.name === newTagName) === -1) {
-      setShowDuplicateTagError(false);
-      createTag({ variables: { name: newTagName, thing: currentThing!.id } });
-    } else {
-      setCreateNewTag(false);
-    }
-  };
-
-  const onSaveClicked = () => {
+  const onSaveClicked = async () => {
     if (thing) {
       updateThing({
         variables: {
@@ -139,18 +81,23 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
           name: name || thing.name,
           tags: selectedTags || thing.tags.map((tag) => tag.id),
         },
-        update: (store, { data }) => {
-          console.log(data);
-        },
       });
     } else {
-      const variables = { description, name, tags: selectedTags, category: currentCategory.id! };
-      createThing({ variables });
+      const newThing = await createThing({ variables: { description, name, tags: selectedTags, category: currentCategory.id! } });
+      if (newThing.data) {
+        await updateCategory({
+          variables: {
+            id: currentCategory.id,
+            things: [...currentCategory.things.map((thing) => thing.id), newThing.data.createThing.id],
+          },
+        });
+      }
     }
   };
 
   return (
     <PageWrapper>
+      <CreateTagModal />
       <AppBar
         leftLinkTitle="Back"
         onLeftLinkClick={onBackClicked}
@@ -176,14 +123,16 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
           error={description.length > MAX_DESC_LEN}
         />
         <div style={{ display: "flex", justifyContent: description.length > MAX_DESC_LEN ? "space-between" : "flex-end" }}>
-          {description.length > MAX_DESC_LEN && <Typography sx={{ color: "error.main" }}>This is error text?</Typography>}
+          {description.length > MAX_DESC_LEN && (
+            <Typography sx={{ color: "error.main" }}>Description cannot exceed 20 characters</Typography>
+          )}
           <Typography
             sx={{ color: description.length > MAX_DESC_LEN ? "error.main" : "primary.main" }}
           >{`${description.length} / ${MAX_DESC_LEN}`}</Typography>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <Typography fontSize={24}>Tags</Typography>
-          <Typography fontSize={20} onClick={() => setCreateNewTag(true)}>
+          <Typography fontSize={20} onClick={() => openModal(Modal.CreateTag)}>
             + Add New
           </Typography>
         </div>
@@ -197,11 +146,7 @@ export const ThingPage: React.FC<IThingPageProps> = (props) => {
               active={selectedTags.includes(tag.id)}
             />
           ))}
-          {createNewTag && (
-            <Tag creating tag="" sx={{ marginLeft: "3px", marginRight: "3px", marginBottom: "5px" }} onBlur={onNewTagBlur} />
-          )}
         </div>
-        {showDuplicateTagError && <Typography color={"error.main"}>Tags must be unique!</Typography>}
       </div>
     </PageWrapper>
   );

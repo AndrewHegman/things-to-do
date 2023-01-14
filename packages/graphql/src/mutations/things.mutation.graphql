@@ -4,7 +4,7 @@ mutation CreateThing($name: String!, $description: String!, $tags: [String!]!, $
   }
 }
 
-mutation UpdateThing($id: String!, $name: String!, $description: String!, $tags: [String!]!) {
+mutation UpdateThing($id: String!, $name: String, $description: String, $tags: [String!]) {
   updateThing(id: $id, name: $name, description: $description, tags: $tags) {
     ...ThingFragment
   }

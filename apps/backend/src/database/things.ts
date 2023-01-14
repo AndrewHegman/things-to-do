@@ -27,7 +27,8 @@ class Things {
   }
 
   async update(_id: string, updatedThing: UpdateThingDAI) {
-    return await ThingModel.findByIdAndUpdate(_id, updatedThing, { projection: ThingSelect, returnDocument: "after" })
+    const oldThing = await this.getById(_id);
+    return await ThingModel.findByIdAndUpdate(_id, { ...updatedThing, ...oldThing })
       .populate(PopulateTag)
       .lean();
   }
@@ -41,7 +42,6 @@ class Things {
 
   async delete(_id: ObjectId) {
     const deleteAttempt = await ThingModel.deleteOne({ _id: new ObjectId(_id) });
-    console.log(deleteAttempt);
     if (deleteAttempt.acknowledged) {
       return _id;
     }

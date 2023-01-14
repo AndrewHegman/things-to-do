@@ -2,27 +2,25 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } 
 import { CreateCategoryDocument, GetCategoriesDocument, useCreateCategoryMutation, Category } from "@ttd/graphql";
 import React from "react";
 import { useNavigate } from "react-router";
+import { updateCategoryCache } from "../graphql";
 import { useStore } from "../store";
 import { Modal } from "../store/modals";
 
-interface ICategoriesProps {
-  // loading: boolean;
-}
+interface ICategoriesProps {}
 
 export const CreateCategoryModal: React.FC<ICategoriesProps> = (props) => {
   const [name, setName] = React.useState("");
 
   const [createCategory, { data, loading: createCategoryLoading, error, called }] = useCreateCategoryMutation();
-  const { categories, setCurrentCategory, openModal, closeModal, modals } = useStore();
+  const { categories, openModal, closeModal, modals } = useStore();
   const navigate = useNavigate();
 
-  const onClose = (categoryToNavigateTo: Category | null = null) => {
+  const onClose = (categoryIdToNavigateTo: string | null = null) => {
     setName("");
     closeModal(Modal.CreateCategory);
 
-    if (categoryToNavigateTo) {
-      setCurrentCategory(categoryToNavigateTo);
-      navigate(`category/${categoryToNavigateTo.id}`);
+    if (categoryIdToNavigateTo) {
+      navigate(`category/${categoryIdToNavigateTo}`);
     }
   };
 
@@ -30,27 +28,25 @@ export const CreateCategoryModal: React.FC<ICategoriesProps> = (props) => {
     if (name !== "" && !categories.map((category) => category.name).includes(name)) {
       const newCategory = await createCategory({
         variables: { name },
-        update: (store, { data }) => {
-          const oldCategories = store.readQuery<{ categories: Category[] }>({ query: GetCategoriesDocument })?.categories || [];
-          store.writeQuery({
-            query: GetCategoriesDocument,
-            data: { categories: [...oldCategories, data?.createCategory] },
-          });
-        },
+        update: updateCategoryCache,
       });
-      onClose(newCategory.data?.createCategory || null);
+      onClose(newCategory.data?.createCategory.id || null);
     }
   };
 
   return (
     <Dialog open={modals.includes(Modal.CreateCategory)}>
-      <DialogTitle component="h1">New Category</DialogTitle>
+      <DialogTitle component="h1">Create a New Category</DialogTitle>
       <DialogContent>
-        <TextField variant="standard" placeholder="New category" value={name} onChange={(e) => setName(e.target.value)} />
+        <TextField variant="standard" placeholder="New category name" value={name} onChange={(e) => setName(e.target.value)} />
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => onClose()}>Cancel</Button>
-        <Button onClick={onCreateNewCategory}>Create</Button>
+        <Button onClick={() => onClose()} sx={{ color: "text.primary" }}>
+          Cancel
+        </Button>
+        <Button onClick={onCreateNewCategory} sx={{ color: "secondary.main" }}>
+          Create
+        </Button>
       </DialogActions>
     </Dialog>
   );

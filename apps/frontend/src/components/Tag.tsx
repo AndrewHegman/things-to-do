@@ -4,6 +4,7 @@ import { Tag as TagType } from "@ttd/graphql";
 import React from "react";
 
 type TagProps = {
+  tag: TagType;
   sx?: SxProps<Theme>;
   color?: string;
   onClose?: (tag: TagType) => void;
@@ -11,20 +12,9 @@ type TagProps = {
   active?: boolean;
 };
 
-type OptionalTagProps =
-  | {
-      tag: TagType;
-      creating?: false | undefined;
-      onBlur?: never;
-    }
-  | {
-      tag: string;
-      creating: true;
-      onBlur?: (name: string) => void;
-    };
+export const Tag: React.FC<TagProps> = (props) => {
+  const { tag, sx, color, onClose, active, onClick } = props;
 
-export const Tag: React.FC<TagProps & OptionalTagProps> = (props) => {
-  const { tag, sx, color, onClose, active, onClick, creating, onBlur } = props;
   const newTagRef = React.useRef<HTMLSpanElement | null>(null);
 
   React.useEffect(() => {
@@ -37,14 +27,14 @@ export const Tag: React.FC<TagProps & OptionalTagProps> = (props) => {
     if (color) {
       return color;
     }
-    return active || creating ? "secondary.main" : "primary.main";
+    return active ? "secondary.main" : "primary.main";
   };
 
   const getTextColor = () => {
     if (color) {
       return color;
     }
-    return !creating && !active ? "text.primary" : "secondary.main";
+    return !active ? "text.primary" : "secondary.main";
 
     // NOT creating, NOT active --> text.primary
     // NOT creating, active --> secondary.main
@@ -66,26 +56,12 @@ export const Tag: React.FC<TagProps & OptionalTagProps> = (props) => {
         ...sx,
       }}
     >
-      {!creating ? (
-        <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-          <Typography sx={{ whiteSpace: "nowrap" }} color={getTextColor()}>
-            {tag.name}
-          </Typography>
-          {onClose && <HighlightOff onClick={() => onClose(tag)} />}
-        </div>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-          <Typography
-            sx={{ whiteSpace: "nowrap" }}
-            color={getTextColor()}
-            suppressContentEditableWarning
-            contentEditable
-            ref={newTagRef}
-            onChange={(e) => console.log(e)}
-            onBlur={() => onBlur && onBlur(newTagRef.current!.textContent || "")} // TODO: See if there is a better way to do this
-          ></Typography>
-        </div>
-      )}
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+        <Typography sx={{ whiteSpace: "nowrap" }} color={getTextColor()}>
+          {tag.name}
+        </Typography>
+        {onClose && <HighlightOff onClick={() => onClose(tag)} />}
+      </div>
     </Box>
   );
 };

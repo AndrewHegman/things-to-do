@@ -53,7 +53,6 @@ describe("Tags", () => {
     });
 
     it("should fetch all tags", async () => {
-      console.log(res.data.tags);
       expect(res.errors).toBeUndefined();
       expect(res.data?.tags.sort((tag1: Tag, tag2: Tag) => (tag1.name > tag2.name ? -1 : 1))).toEqual(
         Data.Expect.Tags.sort((tag1, tag2) => (tag1.name > tag2.name ? -1 : 1))

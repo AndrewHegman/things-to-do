@@ -12,7 +12,6 @@ interface ICategoryItemProps {
 export const CategoryItem: React.FC<ICategoryItemProps> = (props) => {
   const { category } = props;
   const navigate = useNavigate();
-  const { setCurrentCategory } = useStore();
   const newCategoryRef = React.useRef<HTMLSpanElement | null>(null);
 
   React.useEffect(() => {
@@ -22,8 +21,7 @@ export const CategoryItem: React.FC<ICategoryItemProps> = (props) => {
   }, [newCategoryRef]);
 
   const handleClick = () => {
-    setCurrentCategory(category);
-    navigate(`category/${category.id}`, { state: { category } });
+    navigate(`category/${category.id}`);
   };
 
   return (

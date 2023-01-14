@@ -9,6 +9,8 @@ import { Modal } from "../store/modals";
 import { PageWrapper } from "../components/PageWrapper";
 import { Tag } from "../components/Tag";
 import { Add, Search } from "@mui/icons-material";
+import { CurrentCategoryContext } from "../currentCategoryContext";
+import { ConfirmDeleteModal } from "../components/ConfirmDeleteDialog";
 
 interface ICategoryProps {
   loading: boolean;
@@ -16,14 +18,7 @@ interface ICategoryProps {
 
 export const CategoryPage: React.FC<ICategoryProps> = (props) => {
   const navigate = useNavigate();
-  const { categoryId } = useParams();
-
-  if (!categoryId) {
-    navigate("/");
-  }
-
-  const { loading } = props;
-  const { categories, currentCategory, setCurrentCategory, tags, things, setCurrentThing } = useStore();
+  const { setCurrentThing, currentCategory, openModal, closeModal } = useStore();
 
   const [searchText, setSearchText] = React.useState("");
   const [selectedTags, setSelectedTags] = React.useState<TagType[]>([]);
@@ -32,42 +27,13 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
 
   const searchBoxRef = React.useRef<HTMLDivElement>(null);
 
-  // const categoryTags = React.useMemo(
-  //   () => (!tags || !currentCategory ? [] : tags.filter((tag) => currentCategory?.id === tag.category.id)),
-  //   [tags, currentCategory]
-  // );
-
-  // const categoryThings = React.useMemo(
-  //   () => (!things || !currentCategory ? [] : things.filter((thing) => currentCategory.id === thing.category.id)),
-  //   [things, currentCategory]
-  // );
-
-  React.useEffect(() => {
-    if (categories && !loading) {
-      const _currentCategory = categories.find((category) => category.id === categoryId);
-      if (!_currentCategory) {
-        navigate("/error/not-found");
-      } else {
-        setCurrentCategory(_currentCategory);
-      }
-    }
-  }, [categories, categoryId, loading]);
-
   const getSelectableTags = () => {
-    return currentCategory?.tags.filter((tag) => selectedTags.findIndex((selectedTag) => selectedTag.id === tag.id) < 0) || [];
+    return currentCategory.tags.filter((tag) => selectedTags.findIndex((selectedTag) => selectedTag.id === tag.id) < 0) || [];
   };
 
   const onTagClick = (tag: TagType) => {
     setSelectedTags([...selectedTags, tag]);
     setSearchText("");
-  };
-
-  const getFilteredThings = (): ThingType[] => {
-    return selectedTags.length > 0
-      ? currentCategory?.things.filter((thing) =>
-          selectedTags.every((selectedTag) => thing.tags.findIndex((tag) => tag.id === selectedTag.id) >= 0)
-        ) || []
-      : currentCategory?.things || [];
   };
 
   const removeSelectedTag = (tag: TagType) => {
@@ -81,14 +47,56 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
     setShowMoreDrawer(true);
   };
 
+  const getSearchBarContent = () => {
+    const tagsToShow = getSelectableTags().filter((tag) => tag.name.toLowerCase().includes(searchText.toLowerCase()));
+    if (tagsToShow.length === 0) {
+      return <Typography>No tags found!</Typography>;
+    }
+    return tagsToShow.map((tag, idx) => (
+      <div key={tag.id} style={{ marginBottom: "10px" }} onClick={() => onTagClick(tag)}>
+        <Typography>{tag.name}</Typography>
+        <Divider sx={{ marginRight: "20px" }} />
+      </div>
+    ));
+  };
+
+  const getCategoryContent = () => {
+    const thingsToShow =
+      selectedTags.length > 0
+        ? currentCategory.things.filter((thing) =>
+            selectedTags.every((selectedTag) => thing.tags.findIndex((tag) => tag.id === selectedTag.id) >= 0)
+          ) || []
+        : currentCategory.things || [];
+    if (thingsToShow.length === 0) {
+      return <Typography>No things found!</Typography>;
+    }
+    return thingsToShow.map((thing, idx) => (
+      <div key={thing.id} style={{ marginBottom: "10px" }}>
+        <Thing thing={thing} onClickMore={() => onClickMore(thing)} />
+        <Divider sx={{ marginRight: "20px" }} />
+      </div>
+    ));
+  };
+
+  const onBackClicked = () => {
+    if (searchBoxFocused) {
+      setSearchBoxFocused(false);
+    } else {
+      navigate("/");
+    }
+  };
+
+  const deleteThing = () => {};
+
   return (
     <PageWrapper onFabClick={() => navigate("create")}>
+      <ConfirmDeleteModal />
       <AppBar
-        onLeftLinkClick={() => (searchBoxFocused ? setSearchBoxFocused(false) : navigate("/"))}
+        onLeftLinkClick={() => onBackClicked()}
         leftLinkTitle="Back"
         onRightLinkClick={searchBoxFocused ? () => setSearchBoxFocused(false) : undefined}
         rightLinkTitle="Done"
-        title={currentCategory?.name}
+        title={currentCategory.name}
       />
       <div style={{ display: "flex", flexDirection: "column", marginLeft: "10px" }}>
         <TextField
@@ -112,27 +120,9 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
           ref={searchBoxRef}
         />
 
-        {!searchBoxFocused &&
-          getFilteredThings().map((thing, idx) => (
-            <div key={thing.id} style={{ marginBottom: "10px" }}>
-              <Thing thing={thing} onClickMore={() => onClickMore(thing)} />
-              {currentCategory?.things.length! > 1 && idx < currentCategory?.things!.length! - 1 ? (
-                <Divider sx={{ marginRight: "20px" }} />
-              ) : null}
-            </div>
-          ))}
+        {!searchBoxFocused && getCategoryContent()}
 
-        {searchBoxFocused &&
-          getSelectableTags()
-            .filter((tag) => tag.name.toLowerCase().includes(searchText.toLowerCase()))
-            .map((tag, idx) => (
-              <div key={tag.id} style={{ marginBottom: "10px" }} onClick={() => onTagClick(tag)}>
-                <Typography>{tag.name}</Typography>
-                {currentCategory?.tags.length! > 1 && idx < currentCategory?.tags.length! - 1 ? (
-                  <Divider sx={{ marginRight: "20px" }} />
-                ) : null}
-              </div>
-            ))}
+        {searchBoxFocused && getSearchBarContent()}
       </div>
       <Drawer open={showMoreDrawer} anchor={"bottom"} onClose={() => setShowMoreDrawer(false)}>
         <List>
@@ -143,7 +133,14 @@ export const CategoryPage: React.FC<ICategoryProps> = (props) => {
           </ListItem>
           <ListItem disablePadding>
             <ListItemButton>
-              <ListItemText primary="Delete" />
+              <ListItemText
+                primary="Delete"
+                sx={{ color: "error.main" }}
+                onClick={() => {
+                  setShowMoreDrawer(false);
+                  openModal(Modal.ConfirmDelete);
+                }}
+              />
             </ListItemButton>
           </ListItem>
         </List>

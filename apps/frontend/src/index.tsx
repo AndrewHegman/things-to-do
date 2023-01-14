@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { Categories } from "./pages/Categories";
-import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { ApolloProvider } from "@apollo/client";
@@ -95,17 +94,15 @@ const theme = createTheme({
 const App = () => {
   const getCategories = useGetCategoriesQuery();
 
-  const { setCategories, currentThing, openModal, closeModal } = useStore();
+  const { setCategories, currentThing, closeModal } = useStore();
   const [loadingData, setLoadingData] = React.useState(getCategories.loading);
+
   React.useEffect(() => {
     client.watchQuery({ query: GetCategoriesDocument }).subscribe({
       next(value) {
         setCategories(value.data.categories as any);
       },
     });
-  }, []);
-  React.useEffect(() => {
-    openModal(Modal.Loading);
   }, []);
 
   React.useEffect(() => {
@@ -117,24 +114,19 @@ const App = () => {
   }, [getCategories.loading]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Categories />}></Route>
-          <Route path="category">
-            <Route index element={<Categories />} />
-            <Route path=":categoryId">
-              <Route element={<CategoryPage loading={loadingData} />} index />
-              <Route path="create" element={<ThingPage thing={currentThing || undefined} />} />
-            </Route>
-          </Route>
+    <Routes>
+      <Route path="/" element={<Categories />}></Route>
+      <Route path="category">
+        <Route index element={<Categories />} />
+        <Route path=":categoryId">
+          <Route element={<CategoryPage loading={loadingData} />} index />
+          <Route path="create" element={<ThingPage thing={currentThing || undefined} />} />
+        </Route>
+      </Route>
 
-          <Route path="/error/not-found" element={<NotFound />}></Route>
-          <Route path="*" element={<NotFound />}></Route>
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+      <Route path="/error/not-found" element={<NotFound />}></Route>
+      <Route path="*" element={<NotFound />}></Route>
+    </Routes>
   );
 };
 
@@ -142,7 +134,12 @@ const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <App />
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
     </ApolloProvider>
   </React.StrictMode>
 );

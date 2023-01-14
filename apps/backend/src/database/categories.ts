@@ -23,9 +23,10 @@ class Categories {
     return await CategoryModel.findById(_id, CategorySelect).populate(PopulateTag).populate(PopulateThing).lean();
   }
 
-  public async update(_id: string, updatedCategory: Omit<Category, "_id">) {
-    await CategoryModel.updateOne({ _id: new ObjectId(_id) }, updatedCategory);
-    return this.getAll();
+  public async update(_id: string, updatedCategory: Partial<Omit<Category, "_id">>) {
+    const oldCategory = this.getById(_id);
+    await CategoryModel.updateOne({ _id: new ObjectId(_id) }, { ...oldCategory, ...updatedCategory });
+    return this.getById(_id);
   }
 
   public async create(category: Omit<Category, "_id">) {

@@ -15,6 +15,10 @@ const server = new ApolloServer({
   csrfPrevention: true,
   cache: "bounded",
   context: {},
+  cors: {
+    origin: "*",
+    credentials: true,
+  },
   /**
    * What's up with this embed: true option?
    * These are our recommended settings for using AS;

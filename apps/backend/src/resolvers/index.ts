@@ -1,21 +1,11 @@
-import { categories, category, tagsByCategory, tags, things, thingsByCategory, thingsByCategories } from "./queries";
-import { createTag, createThing, createCategory, updateThing, deleteThing } from "./mutations";
+import * as queries from "./queries";
+import * as mutations from "./mutations";
 
 export const resolvers = {
   Query: {
-    categories,
-    category,
-    tagsByCategory,
-    tags,
-    things,
-    thingsByCategory,
-    thingsByCategories,
+    ...queries,
   },
   Mutation: {
-    createTag,
-    createThing,
-    createCategory,
-    updateThing,
-    deleteThing,
+    ...mutations,
   },
 };

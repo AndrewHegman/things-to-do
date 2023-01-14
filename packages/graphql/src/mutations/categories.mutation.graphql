@@ -3,3 +3,9 @@ mutation CreateCategory($name: String!) {
     ...CategoryFragment
   }
 }
+
+mutation UpdateCategory($id: String!, $name: String, $things: [String!], $tags: [String!]) {
+  updateCategory(id: $id, name: $name, things: $things, tags: $tags) {
+    ...CategoryFragment
+  }
+}

@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { TagFields } from "./collections";
-import { Tag } from "@ttd/interfaces";
+import { Tag } from "@ttd/graphql";
 import { TagsSelect } from "./aggregations";
 import { TagModel } from "./models";
 
@@ -25,13 +25,11 @@ export class Tags {
   }
 
   async getByCategoryId(_id: string) {
-    return await TagModel.find({ [TagFields.Category]: new ObjectId(_id) }, TagsSelect)
-    .lean();
+    return await TagModel.find({ [TagFields.Category]: new ObjectId(_id) }, TagsSelect).lean();
   }
 
   async update(_id: string, updatedTag: Omit<Tag, "_id">) {
-    return await TagModel.findOneAndUpdate({ _id: new ObjectId(_id) }, updatedTag, { lean: true, projection: TagsSelect })
-    .lean();
+    return await TagModel.findOneAndUpdate({ _id: new ObjectId(_id) }, updatedTag, { lean: true, projection: TagsSelect }).lean();
   }
 
   async create(tag: Omit<Tag, "_id">) {
