@@ -7,7 +7,8 @@
     "start": "yarn build && node dist/index.js",
     "dev": "nodemon --config nodemon.json",
     "start:dev": "nodemon --config nodemon.json",
-    "test": "jest"
+    "test": "jest",
+    "clean": "rm -rf .turbo/ dist/ node_modules/"
   },
   "author": "",
   "license": "ISC",
