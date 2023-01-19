@@ -13,7 +13,7 @@ import {
 import dotenv from "dotenv";
 
 export const client = new ApolloClient({
-  uri: `${"https://dostuffserver.onrender.com:3000"}`,
+  uri: `${import.meta.env.VITE_BACKEND_ENDPOINT}`,
   connectToDevTools: true,
   typeDefs,
   cache: new InMemoryCache(),
