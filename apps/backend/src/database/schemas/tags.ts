@@ -1,4 +1,3 @@
-import { Tag, WithDev } from "@ttd/interfaces";
 import { Schema } from "mongoose";
 import { mongooseLeanVirtuals } from "mongoose-lean-virtuals";
 

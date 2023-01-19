@@ -1,13 +1,10 @@
-import { Things } from "../../database";
+import { Resolvers } from "@ttd/graphql";
 
-export const things = async () => await Things.getAll();
-
-export const thingsByCategory = async (_: any, args: any) => {
-  return await Things.getAll(args.categoryId);
-};
-
-export const thingsByCategories = async (_: any, args: any) => {
-  return (await Promise.all(args.categoryIds.map(async (categoryId: string) => await Things.getAll(categoryId)))).flatMap(
-    (thing) => thing
-  );
+export const things: Resolvers["Query"] = {
+  things: async (parent, args, { Things }) => await Things.getAll(),
+  thingsByCategory: async (parent, args, { Things }) => await Things.getAll(args.categoryId),
+  thingsByCategories: async (parent, args, { Things }) =>
+    (await Promise.all(args.categoryIds.map(async (categoryId: string) => await Things.getAll(categoryId)))).flatMap(
+      (thing) => thing
+    ),
 };

@@ -14,14 +14,15 @@
   "license": "ISC",
   "dependencies": {
     "@apollo/server": "^4.3.0",
+    "@as-integrations/aws-lambda": "^1.2.0",
     "@ttd/graphql": "workspace:^",
-    "@ttd/interfaces": "workspace:^",
     "@types/cors": "^2.8.13",
+    "@vendia/serverless-express": "^4.10.1",
+    "@vercel/node": "^2.8.14",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "graphql": "^16.6.0",
-    "http": "^0.0.1-security",
     "mongoose": "^6.6.3"
   },
   "devDependencies": {
@@ -35,8 +36,9 @@
     "jest-jasmine": "^0.0.0",
     "kill-port": "^1.6.1",
     "nodemon": "^2.0.12",
+    "serverless-plugin-typescript": "^2.1.4",
     "ts-jest": "^29.0.3",
-    "typescript": "^4.8.2"
+    "typescript": "^4.9.4"
   },
   "files": [
     "./bin/*",

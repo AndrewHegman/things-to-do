@@ -77,7 +77,7 @@ export type MutationUpdateThingArgs = {
 export type Query = {
   __typename?: 'Query';
   categories: Array<Category>;
-  category: Category;
+  category?: Maybe<Category>;
   tags: Array<Tag>;
   tagsByCategory: Array<Tag>;
   things: Array<Thing>;
@@ -186,7 +186,7 @@ export type GetCategoryQueryVariables = Exact<{
 }>;
 
 
-export type GetCategoryQuery = { __typename?: 'Query', category: { __typename?: 'Category', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> } };
+export type GetCategoryQuery = { __typename?: 'Query', category?: { __typename?: 'Category', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> } | null };
 
 export type TagsByCategoryQueryVariables = Exact<{
   categoryId: Scalars['String'];
@@ -332,7 +332,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
-  category?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryArgs, 'categoryId'>>;
+  category?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryCategoryArgs, 'categoryId'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
   tagsByCategory?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsByCategoryArgs, 'categoryId'>>;
   things?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType>;
@@ -887,4 +887,4 @@ export type GetThingsQueryHookResult = ReturnType<typeof useGetThingsQuery>;
 export type GetThingsLazyQueryHookResult = ReturnType<typeof useGetThingsLazyQuery>;
 export type GetThingsQueryResult = Apollo.QueryResult<GetThingsQuery, GetThingsQueryVariables>;
 
-  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{id:String!name:String!tags:[Tag!]!things:[Thing!]!}type Mutation{createCategory(name:String!):Category!createTag(name:String!):Tag!createThing(category:String!description:String!name:String!tags:[String!]!):Thing!deleteThing(id:String!):String!updateCategory(id:String!name:String tags:[String!]things:[String!]):Category!updateThing(description:String id:String!name:String tags:[String!]):Thing!}type Query{categories:[Category!]!category(categoryId:String!):Category!tags:[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!things:[Thing!]!thingsByCategories(categoryIds:[String!]!):[Thing!]!thingsByCategory(categoryId:String!):[Thing!]!}type Tag{id:String!name:String!}type Thing{description:String!id:String!name:String!tags:[Tag!]!}`;
+  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{id:String!name:String!tags:[Tag!]!things:[Thing!]!}type Mutation{createCategory(name:String!):Category!createTag(name:String!):Tag!createThing(category:String!description:String!name:String!tags:[String!]!):Thing!deleteThing(id:String!):String!updateCategory(id:String!name:String tags:[String!]things:[String!]):Category!updateThing(description:String id:String!name:String tags:[String!]):Thing!}type Query{categories:[Category!]!category(categoryId:String!):Category tags:[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!things:[Thing!]!thingsByCategories(categoryIds:[String!]!):[Thing!]!thingsByCategory(categoryId:String!):[Thing!]!}type Tag{id:String!name:String!}type Thing{description:String!id:String!name:String!tags:[Tag!]!}`;

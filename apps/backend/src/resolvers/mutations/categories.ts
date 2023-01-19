@@ -1,8 +1,10 @@
-import { Categories } from "../../database";
+import { Category, Resolvers } from "@ttd/graphql";
 
-export const createCategory = async (_: any, args: any) => await Categories.create(args);
-
-export const updateCategory = async (_: any, args: any) => {
-  const { id, ...updatedCategory } = args;
-  return await Categories.update(id, updatedCategory);
+export const categories: Resolvers["Mutation"] = {
+  createCategory: async (parent, args, { Categories }) => await Categories.create(args.name),
+  updateCategory: async (parent, args, { Categories }) => {
+    const { id, ...updatedCategory } = args;
+    // TODO: Get better types here
+    return (await Categories.update(id, updatedCategory as Partial<Omit<Category, "_id">>))!;
+  },
 };

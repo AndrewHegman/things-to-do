@@ -1,4 +1,6 @@
-import { Tags } from "../../database";
+import { Resolvers } from "@ttd/graphql";
 
-export const tagsByCategory = async (_: any, args: any) => await Tags.getByCategoryId(args.categoryId);
-export const tags = async () => await Tags.getAll();
+export const tags: Resolvers["Query"] = {
+  tags: async (parent, args, { Tags }) => await Tags.getAll(),
+  tagsByCategory: async (parent, args, { Tags }) => await Tags.getByCategoryId(args.categoryId),
+};

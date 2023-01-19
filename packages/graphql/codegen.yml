@@ -9,7 +9,6 @@ generates:
       - "typescript-resolvers"
       - "typescript-react-apollo"
       - "src/plugins/typedefs.ts"
-      # - "typescript-mongodb"
   ./graphql.schema.json:
     plugins:
       - "introspection"

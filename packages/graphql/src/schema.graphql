@@ -19,7 +19,7 @@ type Category {
 
 type Query {
   categories: [Category!]!
-  category(categoryId: String!): Category!
+  category(categoryId: String!): Category
   tagsByCategory(categoryId: String!): [Tag!]!
   tags: [Tag!]!
   things: [Thing!]!

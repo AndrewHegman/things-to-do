@@ -40,7 +40,7 @@ class Things {
     }
   }
 
-  async delete(_id: ObjectId) {
+  async delete(_id: string) {
     const deleteAttempt = await ThingModel.deleteOne({ _id: new ObjectId(_id) });
     if (deleteAttempt.acknowledged) {
       return _id;

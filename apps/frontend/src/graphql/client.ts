@@ -13,13 +13,10 @@ import {
 import dotenv from "dotenv";
 
 export const client = new ApolloClient({
-  uri: `${import.meta.env.VITE_BACKEND_ENDPOINT}/graphql`,
+  uri: `${import.meta.env.VITE_BACKEND_ENDPOINT}`,
   connectToDevTools: true,
   typeDefs,
   cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: `${import.meta.env.VITE_BACKEND_ENDPOINT}/graphql`,
-  }),
 });
 
 export const updateCategoryCache = (

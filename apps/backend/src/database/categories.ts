@@ -1,6 +1,6 @@
 import { Document, ObjectId } from "mongodb";
 import { CategoryModel } from "./models";
-import { Category } from "@ttd/interfaces";
+import { Category } from "@ttd/graphql";
 import { CategorySelect, PopulateThing, PopulateTag } from "./aggregations";
 
 class Categories {
@@ -29,8 +29,8 @@ class Categories {
     return this.getById(_id);
   }
 
-  public async create(category: Omit<Category, "_id">) {
-    return await CategoryModel.create(category);
+  public async create(name: string) {
+    return await CategoryModel.create({ name, tags: [], things: [] });
   }
 
   // async delete(_id: string) {

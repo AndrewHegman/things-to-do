@@ -1,4 +1,7 @@
-import { Categories } from "../../database";
+import { Resolvers } from "@ttd/graphql";
 
-export const categories = async () => await Categories.getAll();
-export const category = async (_: any, args: any) => await Categories.getById(args.categoryId);
+export const categories: Resolvers["Query"] = {
+  categories: async (parent, args, { Categories }) => await Categories.getAll(),
+  // TODO: Get rid of the non-null assertion
+  category: async (parent, args, { Categories }) => (await Categories.getById(args.categoryId))!,
+};

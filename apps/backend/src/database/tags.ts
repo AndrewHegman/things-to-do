@@ -28,11 +28,11 @@ export class Tags {
     return await TagModel.find({ [TagFields.Category]: new ObjectId(_id) }, TagsSelect).lean();
   }
 
-  async update(_id: string, updatedTag: Omit<Tag, "_id">) {
+  async update(_id: string, updatedTag: Omit<Tag, "_id" | "id">) {
     return await TagModel.findOneAndUpdate({ _id: new ObjectId(_id) }, updatedTag, { lean: true, projection: TagsSelect }).lean();
   }
 
-  async create(tag: Omit<Tag, "_id">) {
+  async create(tag: Omit<Tag, "_id" | "id">) {
     const insertedAttempt = await TagModel.create(tag);
     if (insertedAttempt.id) {
       return await this.getById(insertedAttempt.id);

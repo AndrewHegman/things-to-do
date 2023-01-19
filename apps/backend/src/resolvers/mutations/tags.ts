@@ -1,3 +1,6 @@
-import { Tags } from "../../database";
+import { Resolvers } from "@ttd/graphql";
 
-export const createTag = async (_: any, args: any) => await Tags.create(args);
+export const tags: Resolvers["Mutation"] = {
+  // TODO: Get rid of the non-null assertion
+  createTag: async (parent, args, { Tags }) => (await Tags.create(args))!,
+};
