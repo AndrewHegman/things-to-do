@@ -12,9 +12,7 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { Categories, Tags, Things } from "./database";
 
-dotenv.config({ path: `${process.cwd()}/../../.env` });
-
-dotenv.config({ path: `${process.cwd()}/../../.env` });
+dotenv.config();
 
 // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.
@@ -25,8 +23,8 @@ const server = new ApolloServer({
 });
 
 connect(`mongodb+srv://admin:${process.env.DATABASE_PW}@inventory.fcghx.mongodb.net/ttd2`)
-  .then(() => {
-    startStandaloneServer(server, {
+  .then(async () => {
+    const { url } = await startStandaloneServer(server, {
       listen: { port: 3000 },
       context: async () => ({
         Categories,
@@ -34,6 +32,7 @@ connect(`mongodb+srv://admin:${process.env.DATABASE_PW}@inventory.fcghx.mongodb.
         Things,
       }),
     });
+    console.log(`🚀  Server ready at ${url}`);
   })
   .catch((e) => console.error(`Failed to connect to mongodb: ${e}`));
 
