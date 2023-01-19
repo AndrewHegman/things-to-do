@@ -287,17 +287,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@as-integrations/aws-lambda@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@as-integrations/aws-lambda@npm:1.2.0"
-  dependencies:
-    "@types/aws-lambda": ^8.10.106
-  peerDependencies:
-    "@apollo/server": ^4.0.0
-  checksum: f07f80493bacc8b21966b89bf2b2026f73e155e5d9915881fc9eeb4a4558a71d040fd7fd29ccbe6b13ffce9ed4b195a40548af02d6dd8f485bdbb3e2045f941e
-  languageName: node
-  linkType: hard
-
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.12.13, @babel/code-frame@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/code-frame@npm:7.18.6"
@@ -3732,8 +3721,6 @@ __metadata:
     "@swc-node/register": ^1.5.1
     "@swc/cli": ^0.1.57
     "@swc/core": ^1.3.2
-    "@ttd/interfaces": "workspace:^"
-    "@ttd/mock-data": "workspace:^"
     graphql: ^16.6.0
     nodemon: ^2.0.20
   languageName: unknown
@@ -3747,7 +3734,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ttd/mock-data@workspace:^, @ttd/mock-data@workspace:packages/mock-data":
+"@ttd/mock-data@workspace:packages/mock-data":
   version: 0.0.0-use.local
   resolution: "@ttd/mock-data@workspace:packages/mock-data"
   dependencies:
@@ -3760,7 +3747,6 @@ __metadata:
   resolution: "@ttd/server@workspace:apps/backend"
   dependencies:
     "@apollo/server": ^4.3.0
-    "@as-integrations/aws-lambda": ^1.2.0
     "@babel/core": ^7.19.3
     "@babel/preset-env": ^7.19.3
     "@swc/cli": ^0.1.57
@@ -3785,13 +3771,6 @@ __metadata:
     typescript: ^4.9.4
   languageName: unknown
   linkType: soft
-
-"@types/aws-lambda@npm:^8.10.106":
-  version: 8.10.109
-  resolution: "@types/aws-lambda@npm:8.10.109"
-  checksum: 879dd30806bbcdcc5495192ed139ab6e7e65d2481c4c80237d8293e3a33e9fcbfb662109246164c493de9fd13b32d1780359a0f191238bd62fd4be14c1efe2fe
-  languageName: node
-  linkType: hard
 
 "@types/babel__core@npm:^7.1.14":
   version: 7.1.19

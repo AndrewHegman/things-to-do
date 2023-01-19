@@ -15,8 +15,6 @@
   "dependencies": {
     "@swc/cli": "^0.1.57",
     "@swc/core": "^1.3.2",
-    "@ttd/interfaces": "workspace:^",
-    "@ttd/mock-data": "workspace:^",
     "graphql": "^16.6.0"
   },
   "devDependencies": {

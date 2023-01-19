@@ -14,7 +14,6 @@
   "license": "ISC",
   "dependencies": {
     "@apollo/server": "^4.3.0",
-    "@as-integrations/aws-lambda": "^1.2.0",
     "@ttd/graphql": "workspace:^",
     "@types/cors": "^2.8.13",
     "@vendia/serverless-express": "^4.10.1",
