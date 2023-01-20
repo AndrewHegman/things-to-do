@@ -11,6 +11,11 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { Categories, Tags, Things } from "./database";
+import {
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} from "@apollo/server/plugin/landingPage/default";
+import { ApolloServerPluginLandingPageDisabled } from "@apollo/server/plugin/disabled";
 
 dotenv.config();
 
@@ -20,6 +25,7 @@ const server = new ApolloServer({
   resolvers,
   typeDefs,
   csrfPrevention: true,
+  plugins: [ApolloServerPluginLandingPageDisabled()],
 });
 
 connect(`mongodb+srv://admin:${process.env.DATABASE_PW}@inventory.fcghx.mongodb.net/ttd2`)
