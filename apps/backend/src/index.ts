@@ -52,13 +52,14 @@ const server = new ApolloServer({
 server.start().then(() => {
   app.use(
     "/graphql",
-    cors<cors.CorsRequest>({ origin: "*" }),
+    cors<cors.CorsRequest>(),
     json(),
     expressMiddleware(server, {
-      context: async () => ({
+      context: async ({ req }) => ({
         Categories,
         Tags,
         Things,
+        token: req.headers.token,
       }),
     })
   );
