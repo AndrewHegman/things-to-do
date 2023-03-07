@@ -3,4 +3,4 @@ import { model } from "mongoose";
 import { WithDev } from "../interfaces";
 import { ThingSchema } from "../schemas";
 
-export const ThingModel = model<WithDev<Thing>>("things", ThingSchema, "things");
+export const ThingModel = model<Thing>("things", ThingSchema, "things");

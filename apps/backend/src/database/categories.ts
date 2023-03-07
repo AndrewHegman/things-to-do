@@ -29,8 +29,8 @@ class Categories {
     return this.getById(_id);
   }
 
-  public async create(name: string) {
-    return await CategoryModel.create({ name, tags: [], things: [] });
+  public async create(name: string, dev: boolean) {
+    return await CategoryModel.create({ name, dev, tags: [], things: [] });
   }
 
   // async delete(_id: string) {

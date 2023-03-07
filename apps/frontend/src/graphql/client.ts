@@ -16,6 +16,23 @@ export const client = new ApolloClient({
   // connectToDevTools: true,
   typeDefs,
   cache: new InMemoryCache(),
+  defaultOptions: {
+    watchQuery: {
+      variables: {
+        dev: import.meta.env.VITE_DEV === "true",
+      },
+    },
+    query: {
+      variables: {
+        dev: import.meta.env.VITE_DEV === "true",
+      },
+    },
+    mutate: {
+      variables: {
+        dev: import.meta.env.VITE_DEV === "true",
+      },
+    },
+  },
 });
 
 export const updateCategoryCache = (

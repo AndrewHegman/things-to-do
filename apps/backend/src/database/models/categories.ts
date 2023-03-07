@@ -3,4 +3,4 @@ import { model } from "mongoose";
 import { WithDev } from "../interfaces";
 import { CategorySchema } from "../schemas";
 
-export const CategoryModel = model<WithDev<Category>>("categories", CategorySchema, "categories");
+export const CategoryModel = model<Category>("categories", CategorySchema, "categories");
