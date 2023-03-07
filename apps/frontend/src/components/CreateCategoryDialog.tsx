@@ -11,8 +11,8 @@ interface ICategoriesProps {}
 export const CreateCategoryModal: React.FC<ICategoriesProps> = (props) => {
   const [name, setName] = React.useState("");
 
-  const [createCategory, { data, loading: createCategoryLoading, error, called }] = useCreateCategoryMutation();
-  const { categories, openModal, closeModal, modals } = useStore();
+  const [createCategory] = useCreateCategoryMutation();
+  const { categories, closeModal, modals } = useStore();
   const navigate = useNavigate();
 
   const onClose = (categoryIdToNavigateTo: string | null = null) => {

@@ -16,8 +16,8 @@ export class Tags {
     return Tags.instance;
   }
 
-  async getAll() {
-    return await TagModel.find({}, TagsSelect).lean();
+  async getAll(dev: boolean) {
+    return await TagModel.find({ dev }, TagsSelect).lean();
   }
 
   async getById(_id: string) {

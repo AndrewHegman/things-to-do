@@ -15,8 +15,8 @@ class Categories {
     return Categories.instance;
   }
 
-  public async getAll() {
-    return await CategoryModel.find({}, CategorySelect).populate(PopulateThing).populate(PopulateTag).lean();
+  public async getAll(dev: boolean) {
+    return await CategoryModel.find({ dev }, CategorySelect).populate(PopulateThing).populate(PopulateTag).lean();
   }
 
   public async getById(_id: string) {

@@ -19,6 +19,7 @@ export type Scalars = {
 
 export type Category = {
   __typename?: 'Category';
+  dev: Scalars['Boolean'];
   id: Scalars['String'];
   name: Scalars['String'];
   tags: Array<Tag>;
@@ -37,11 +38,13 @@ export type Mutation = {
 
 
 export type MutationCreateCategoryArgs = {
+  dev?: InputMaybe<Scalars['Boolean']>;
   name: Scalars['String'];
 };
 
 
 export type MutationCreateTagArgs = {
+  dev?: InputMaybe<Scalars['Boolean']>;
   name: Scalars['String'];
 };
 
@@ -49,6 +52,7 @@ export type MutationCreateTagArgs = {
 export type MutationCreateThingArgs = {
   category: Scalars['String'];
   description: Scalars['String'];
+  dev?: InputMaybe<Scalars['Boolean']>;
   name: Scalars['String'];
   tags: Array<Scalars['String']>;
 };
@@ -86,13 +90,28 @@ export type Query = {
 };
 
 
+export type QueryCategoriesArgs = {
+  dev?: InputMaybe<Scalars['Boolean']>;
+};
+
+
 export type QueryCategoryArgs = {
   categoryId: Scalars['String'];
 };
 
 
+export type QueryTagsArgs = {
+  dev?: InputMaybe<Scalars['Boolean']>;
+};
+
+
 export type QueryTagsByCategoryArgs = {
   categoryId: Scalars['String'];
+};
+
+
+export type QueryThingsArgs = {
+  dev?: InputMaybe<Scalars['Boolean']>;
 };
 
 
@@ -107,6 +126,7 @@ export type QueryThingsByCategoryArgs = {
 
 export type Tag = {
   __typename?: 'Tag';
+  dev: Scalars['Boolean'];
   id: Scalars['String'];
   name: Scalars['String'];
 };
@@ -114,23 +134,25 @@ export type Tag = {
 export type Thing = {
   __typename?: 'Thing';
   description: Scalars['String'];
+  dev: Scalars['Boolean'];
   id: Scalars['String'];
   name: Scalars['String'];
   tags: Array<Tag>;
 };
 
-export type CategoryFragmentFragment = { __typename?: 'Category', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> };
+export type CategoryFragmentFragment = { __typename?: 'Category', id: string, name: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> }> };
 
-export type TagFragmentFragment = { __typename?: 'Tag', id: string, name: string };
+export type TagFragmentFragment = { __typename?: 'Tag', id: string, name: string, dev: boolean };
 
-export type ThingFragmentFragment = { __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> };
+export type ThingFragmentFragment = { __typename?: 'Thing', id: string, name: string, description: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> };
 
 export type CreateCategoryMutationVariables = Exact<{
   name: Scalars['String'];
+  dev?: InputMaybe<Scalars['Boolean']>;
 }>;
 
 
-export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> } };
+export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', id: string, name: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> }> } };
 
 export type UpdateCategoryMutationVariables = Exact<{
   id: Scalars['String'];
@@ -140,24 +162,26 @@ export type UpdateCategoryMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCategoryMutation = { __typename?: 'Mutation', updateCategory: { __typename?: 'Category', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> } };
+export type UpdateCategoryMutation = { __typename?: 'Mutation', updateCategory: { __typename?: 'Category', id: string, name: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> }> } };
 
 export type CreateTagMutationVariables = Exact<{
   name: Scalars['String'];
+  dev?: InputMaybe<Scalars['Boolean']>;
 }>;
 
 
-export type CreateTagMutation = { __typename?: 'Mutation', createTag: { __typename?: 'Tag', id: string, name: string } };
+export type CreateTagMutation = { __typename?: 'Mutation', createTag: { __typename?: 'Tag', id: string, name: string, dev: boolean } };
 
 export type CreateThingMutationVariables = Exact<{
   name: Scalars['String'];
   description: Scalars['String'];
   tags: Array<Scalars['String']> | Scalars['String'];
   category: Scalars['String'];
+  dev?: InputMaybe<Scalars['Boolean']>;
 }>;
 
 
-export type CreateThingMutation = { __typename?: 'Mutation', createThing: { __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> } };
+export type CreateThingMutation = { __typename?: 'Mutation', createThing: { __typename?: 'Thing', id: string, name: string, description: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> } };
 
 export type UpdateThingMutationVariables = Exact<{
   id: Scalars['String'];
@@ -167,7 +191,7 @@ export type UpdateThingMutationVariables = Exact<{
 }>;
 
 
-export type UpdateThingMutation = { __typename?: 'Mutation', updateThing: { __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> } };
+export type UpdateThingMutation = { __typename?: 'Mutation', updateThing: { __typename?: 'Thing', id: string, name: string, description: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> } };
 
 export type DeleteThingMutationVariables = Exact<{
   id: Scalars['String'];
@@ -176,53 +200,54 @@ export type DeleteThingMutationVariables = Exact<{
 
 export type DeleteThingMutation = { __typename?: 'Mutation', deleteThing: string };
 
-export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetCategoriesQueryVariables = Exact<{
+  dev?: InputMaybe<Scalars['Boolean']>;
+}>;
 
 
-export type GetCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> }> };
+export type GetCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> }> }> };
 
 export type GetCategoryQueryVariables = Exact<{
   categoryId: Scalars['String'];
 }>;
 
 
-export type GetCategoryQuery = { __typename?: 'Query', category?: { __typename?: 'Category', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> } | null };
+export type GetCategoryQuery = { __typename?: 'Query', category?: { __typename?: 'Category', id: string, name: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> }> } | null };
 
 export type TagsByCategoryQueryVariables = Exact<{
   categoryId: Scalars['String'];
 }>;
 
 
-export type TagsByCategoryQuery = { __typename?: 'Query', tagsByCategory: Array<{ __typename?: 'Tag', id: string, name: string }> };
+export type TagsByCategoryQuery = { __typename?: 'Query', tagsByCategory: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> };
 
-export type GetTagsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetTagsQuery = { __typename?: 'Query', tags: Array<{ __typename?: 'Tag', id: string, name: string }> };
-
-export type GetThingsTagsCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetTagsQueryVariables = Exact<{
+  dev?: InputMaybe<Scalars['Boolean']>;
+}>;
 
 
-export type GetThingsTagsCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> }>, tags: Array<{ __typename?: 'Tag', id: string, name: string }>, things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> };
+export type GetTagsQuery = { __typename?: 'Query', tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> };
 
 export type GetThingsByCategoryQueryVariables = Exact<{
   categoryId: Scalars['String'];
 }>;
 
 
-export type GetThingsByCategoryQuery = { __typename?: 'Query', thingsByCategory: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> };
+export type GetThingsByCategoryQuery = { __typename?: 'Query', thingsByCategory: Array<{ __typename?: 'Thing', id: string, name: string, description: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> }> };
 
 export type GetThingsByCategoriesQueryVariables = Exact<{
   categoryIds: Array<Scalars['String']> | Scalars['String'];
 }>;
 
 
-export type GetThingsByCategoriesQuery = { __typename?: 'Query', thingsByCategories: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> };
+export type GetThingsByCategoriesQuery = { __typename?: 'Query', thingsByCategories: Array<{ __typename?: 'Thing', id: string, name: string, description: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> }> };
 
-export type GetThingsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetThingsQueryVariables = Exact<{
+  dev?: InputMaybe<Scalars['Boolean']>;
+}>;
 
 
-export type GetThingsQuery = { __typename?: 'Query', things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, tags: Array<{ __typename?: 'Tag', id: string, name: string }> }> };
+export type GetThingsQuery = { __typename?: 'Query', things: Array<{ __typename?: 'Thing', id: string, name: string, description: string, dev: boolean, tags: Array<{ __typename?: 'Tag', id: string, name: string, dev: boolean }> }> };
 
 
 
@@ -314,6 +339,7 @@ export type ResolversParentTypes = {
 };
 
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
+  dev?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
@@ -322,25 +348,26 @@ export type CategoryResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'name'>>;
-  createTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationCreateTagArgs, 'name'>>;
-  createThing?: Resolver<ResolversTypes['Thing'], ParentType, ContextType, RequireFields<MutationCreateThingArgs, 'category' | 'description' | 'name' | 'tags'>>;
+  createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'dev' | 'name'>>;
+  createTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationCreateTagArgs, 'dev' | 'name'>>;
+  createThing?: Resolver<ResolversTypes['Thing'], ParentType, ContextType, RequireFields<MutationCreateThingArgs, 'category' | 'description' | 'dev' | 'name' | 'tags'>>;
   deleteThing?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationDeleteThingArgs, 'id'>>;
   updateCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationUpdateCategoryArgs, 'id'>>;
   updateThing?: Resolver<ResolversTypes['Thing'], ParentType, ContextType, RequireFields<MutationUpdateThingArgs, 'id'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
+  categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryCategoriesArgs, 'dev'>>;
   category?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryCategoryArgs, 'categoryId'>>;
-  tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
+  tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'dev'>>;
   tagsByCategory?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsByCategoryArgs, 'categoryId'>>;
-  things?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType>;
+  things?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType, RequireFields<QueryThingsArgs, 'dev'>>;
   thingsByCategories?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType, RequireFields<QueryThingsByCategoriesArgs, 'categoryIds'>>;
   thingsByCategory?: Resolver<Array<ResolversTypes['Thing']>, ParentType, ContextType, RequireFields<QueryThingsByCategoryArgs, 'categoryId'>>;
 };
 
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = {
+  dev?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -348,6 +375,7 @@ export type TagResolvers<ContextType = any, ParentType extends ResolversParentTy
 
 export type ThingResolvers<ContextType = any, ParentType extends ResolversParentTypes['Thing'] = ResolversParentTypes['Thing']> = {
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  dev?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
@@ -367,6 +395,7 @@ export const TagFragmentFragmentDoc = gql`
     fragment TagFragment on Tag {
   id
   name
+  dev
 }
     `;
 export const ThingFragmentFragmentDoc = gql`
@@ -374,6 +403,7 @@ export const ThingFragmentFragmentDoc = gql`
   id
   name
   description
+  dev
   tags {
     ...TagFragment
   }
@@ -383,6 +413,7 @@ export const CategoryFragmentFragmentDoc = gql`
     fragment CategoryFragment on Category {
   id
   name
+  dev
   tags {
     ...TagFragment
   }
@@ -393,8 +424,8 @@ export const CategoryFragmentFragmentDoc = gql`
     ${TagFragmentFragmentDoc}
 ${ThingFragmentFragmentDoc}`;
 export const CreateCategoryDocument = gql`
-    mutation CreateCategory($name: String!) {
-  createCategory(name: $name) {
+    mutation CreateCategory($name: String!, $dev: Boolean = false) {
+  createCategory(name: $name, dev: $dev) {
     ...CategoryFragment
   }
 }
@@ -415,6 +446,7 @@ export type CreateCategoryMutationFn = Apollo.MutationFunction<CreateCategoryMut
  * const [createCategoryMutation, { data, loading, error }] = useCreateCategoryMutation({
  *   variables: {
  *      name: // value for 'name'
+ *      dev: // value for 'dev'
  *   },
  * });
  */
@@ -462,8 +494,8 @@ export type UpdateCategoryMutationHookResult = ReturnType<typeof useUpdateCatego
 export type UpdateCategoryMutationResult = Apollo.MutationResult<UpdateCategoryMutation>;
 export type UpdateCategoryMutationOptions = Apollo.BaseMutationOptions<UpdateCategoryMutation, UpdateCategoryMutationVariables>;
 export const CreateTagDocument = gql`
-    mutation CreateTag($name: String!) {
-  createTag(name: $name) {
+    mutation CreateTag($name: String!, $dev: Boolean = false) {
+  createTag(name: $name, dev: $dev) {
     ...TagFragment
   }
 }
@@ -484,6 +516,7 @@ export type CreateTagMutationFn = Apollo.MutationFunction<CreateTagMutation, Cre
  * const [createTagMutation, { data, loading, error }] = useCreateTagMutation({
  *   variables: {
  *      name: // value for 'name'
+ *      dev: // value for 'dev'
  *   },
  * });
  */
@@ -495,12 +528,13 @@ export type CreateTagMutationHookResult = ReturnType<typeof useCreateTagMutation
 export type CreateTagMutationResult = Apollo.MutationResult<CreateTagMutation>;
 export type CreateTagMutationOptions = Apollo.BaseMutationOptions<CreateTagMutation, CreateTagMutationVariables>;
 export const CreateThingDocument = gql`
-    mutation CreateThing($name: String!, $description: String!, $tags: [String!]!, $category: String!) {
+    mutation CreateThing($name: String!, $description: String!, $tags: [String!]!, $category: String!, $dev: Boolean = false) {
   createThing(
     name: $name
     description: $description
     tags: $tags
     category: $category
+    dev: $dev
   ) {
     ...ThingFragment
   }
@@ -525,6 +559,7 @@ export type CreateThingMutationFn = Apollo.MutationFunction<CreateThingMutation,
  *      description: // value for 'description'
  *      tags: // value for 'tags'
  *      category: // value for 'category'
+ *      dev: // value for 'dev'
  *   },
  * });
  */
@@ -603,8 +638,8 @@ export type DeleteThingMutationHookResult = ReturnType<typeof useDeleteThingMuta
 export type DeleteThingMutationResult = Apollo.MutationResult<DeleteThingMutation>;
 export type DeleteThingMutationOptions = Apollo.BaseMutationOptions<DeleteThingMutation, DeleteThingMutationVariables>;
 export const GetCategoriesDocument = gql`
-    query GetCategories {
-  categories {
+    query GetCategories($dev: Boolean = false) {
+  categories(dev: $dev) {
     ...CategoryFragment
   }
 }
@@ -622,6 +657,7 @@ export const GetCategoriesDocument = gql`
  * @example
  * const { data, loading, error } = useGetCategoriesQuery({
  *   variables: {
+ *      dev: // value for 'dev'
  *   },
  * });
  */
@@ -707,8 +743,8 @@ export type TagsByCategoryQueryHookResult = ReturnType<typeof useTagsByCategoryQ
 export type TagsByCategoryLazyQueryHookResult = ReturnType<typeof useTagsByCategoryLazyQuery>;
 export type TagsByCategoryQueryResult = Apollo.QueryResult<TagsByCategoryQuery, TagsByCategoryQueryVariables>;
 export const GetTagsDocument = gql`
-    query GetTags {
-  tags {
+    query GetTags($dev: Boolean = false) {
+  tags(dev: $dev) {
     ...TagFragment
   }
 }
@@ -726,6 +762,7 @@ export const GetTagsDocument = gql`
  * @example
  * const { data, loading, error } = useGetTagsQuery({
  *   variables: {
+ *      dev: // value for 'dev'
  *   },
  * });
  */
@@ -740,48 +777,6 @@ export function useGetTagsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Ge
 export type GetTagsQueryHookResult = ReturnType<typeof useGetTagsQuery>;
 export type GetTagsLazyQueryHookResult = ReturnType<typeof useGetTagsLazyQuery>;
 export type GetTagsQueryResult = Apollo.QueryResult<GetTagsQuery, GetTagsQueryVariables>;
-export const GetThingsTagsCategoriesDocument = gql`
-    query GetThingsTagsCategories {
-  categories {
-    ...CategoryFragment
-  }
-  tags {
-    ...TagFragment
-  }
-  things {
-    ...ThingFragment
-  }
-}
-    ${CategoryFragmentFragmentDoc}
-${TagFragmentFragmentDoc}
-${ThingFragmentFragmentDoc}`;
-
-/**
- * __useGetThingsTagsCategoriesQuery__
- *
- * To run a query within a React component, call `useGetThingsTagsCategoriesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetThingsTagsCategoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetThingsTagsCategoriesQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetThingsTagsCategoriesQuery(baseOptions?: Apollo.QueryHookOptions<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>(GetThingsTagsCategoriesDocument, options);
-      }
-export function useGetThingsTagsCategoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>(GetThingsTagsCategoriesDocument, options);
-        }
-export type GetThingsTagsCategoriesQueryHookResult = ReturnType<typeof useGetThingsTagsCategoriesQuery>;
-export type GetThingsTagsCategoriesLazyQueryHookResult = ReturnType<typeof useGetThingsTagsCategoriesLazyQuery>;
-export type GetThingsTagsCategoriesQueryResult = Apollo.QueryResult<GetThingsTagsCategoriesQuery, GetThingsTagsCategoriesQueryVariables>;
 export const GetThingsByCategoryDocument = gql`
     query GetThingsByCategory($categoryId: String!) {
   thingsByCategory(categoryId: $categoryId) {
@@ -853,8 +848,8 @@ export type GetThingsByCategoriesQueryHookResult = ReturnType<typeof useGetThing
 export type GetThingsByCategoriesLazyQueryHookResult = ReturnType<typeof useGetThingsByCategoriesLazyQuery>;
 export type GetThingsByCategoriesQueryResult = Apollo.QueryResult<GetThingsByCategoriesQuery, GetThingsByCategoriesQueryVariables>;
 export const GetThingsDocument = gql`
-    query GetThings {
-  things {
+    query GetThings($dev: Boolean = false) {
+  things(dev: $dev) {
     ...ThingFragment
   }
 }
@@ -872,6 +867,7 @@ export const GetThingsDocument = gql`
  * @example
  * const { data, loading, error } = useGetThingsQuery({
  *   variables: {
+ *      dev: // value for 'dev'
  *   },
  * });
  */
@@ -887,4 +883,4 @@ export type GetThingsQueryHookResult = ReturnType<typeof useGetThingsQuery>;
 export type GetThingsLazyQueryHookResult = ReturnType<typeof useGetThingsLazyQuery>;
 export type GetThingsQueryResult = Apollo.QueryResult<GetThingsQuery, GetThingsQueryVariables>;
 
-  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{id:String!name:String!tags:[Tag!]!things:[Thing!]!}type Mutation{createCategory(name:String!):Category!createTag(name:String!):Tag!createThing(category:String!description:String!name:String!tags:[String!]!):Thing!deleteThing(id:String!):String!updateCategory(id:String!name:String tags:[String!]things:[String!]):Category!updateThing(description:String id:String!name:String tags:[String!]):Thing!}type Query{categories:[Category!]!category(categoryId:String!):Category tags:[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!things:[Thing!]!thingsByCategories(categoryIds:[String!]!):[Thing!]!thingsByCategory(categoryId:String!):[Thing!]!}type Tag{id:String!name:String!}type Thing{description:String!id:String!name:String!tags:[Tag!]!}`;
+  export const typeDefs = gql`schema{query:Query mutation:Mutation}type Category{dev:Boolean!id:String!name:String!tags:[Tag!]!things:[Thing!]!}type Mutation{createCategory(dev:Boolean=false name:String!):Category!createTag(dev:Boolean=false name:String!):Tag!createThing(category:String!description:String!dev:Boolean=false name:String!tags:[String!]!):Thing!deleteThing(id:String!):String!updateCategory(id:String!name:String tags:[String!]things:[String!]):Category!updateThing(description:String id:String!name:String tags:[String!]):Thing!}type Query{categories(dev:Boolean=false):[Category!]!category(categoryId:String!):Category tags(dev:Boolean=false):[Tag!]!tagsByCategory(categoryId:String!):[Tag!]!things(dev:Boolean=false):[Thing!]!thingsByCategories(categoryIds:[String!]!):[Thing!]!thingsByCategory(categoryId:String!):[Thing!]!}type Tag{dev:Boolean!id:String!name:String!}type Thing{description:String!dev:Boolean!id:String!name:String!tags:[Tag!]!}`;

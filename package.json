@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@ttd/server": "workspace:^",
+    "dotenv": "^16.0.3",
     "mongoose-lean-virtuals": "^0.9.1",
     "vite": "2.9.12"
   },

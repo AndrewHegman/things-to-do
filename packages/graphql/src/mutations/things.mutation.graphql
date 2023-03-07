@@ -1,5 +1,5 @@
-mutation CreateThing($name: String!, $description: String!, $tags: [String!]!, $category: String!) {
-  createThing(name: $name, description: $description, tags: $tags, category: $category) {
+mutation CreateThing($name: String!, $description: String!, $tags: [String!]!, $category: String!, $dev: Boolean = false) {
+  createThing(name: $name, description: $description, tags: $tags, category: $category, dev: $dev) {
     ...ThingFragment
   }
 }

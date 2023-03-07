@@ -4,8 +4,8 @@ query TagsByCategory($categoryId: String!) {
   }
 }
 
-query GetTags {
-  tags {
+query GetTags($dev: Boolean = false) {
+  tags(dev: $dev) {
     ...TagFragment
   }
 }

@@ -1,16 +1,3 @@
-query GetThingsTagsCategories {
-  categories {
-    ...CategoryFragment
-  }
-
-  tags {
-    ...TagFragment
-  }
-  things {
-    ...ThingFragment
-  }
-}
-
 query GetThingsByCategory($categoryId: String!) {
   thingsByCategory(categoryId: $categoryId) {
     ...ThingFragment
@@ -23,8 +10,8 @@ query GetThingsByCategories($categoryIds: [String!]!) {
   }
 }
 
-query GetThings {
-  things {
+query GetThings($dev: Boolean = false) {
+  things(dev: $dev) {
     ...ThingFragment
   }
 }

@@ -1,4 +1,4 @@
-import { ApolloCache, ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloCache, ApolloClient, InMemoryCache } from "@apollo/client";
 import {
   Category,
   CreateCategoryMutation,
@@ -10,11 +10,10 @@ import {
   UpdateCategoryMutation,
   UpdateThingMutation,
 } from "@ttd/graphql";
-import dotenv from "dotenv";
 
 export const client = new ApolloClient({
-  uri: `${import.meta.env.VITE_BACKEND_ENDPOINT}`,
-  connectToDevTools: true,
+  uri: import.meta.env.VITE_BACKEND_ENDPOINT,
+  // connectToDevTools: true,
   typeDefs,
   cache: new InMemoryCache(),
 });

@@ -1,6 +1,7 @@
 type Tag {
   id: String!
   name: String!
+  dev: Boolean!
 }
 
 type Thing {
@@ -8,6 +9,7 @@ type Thing {
   name: String!
   description: String!
   tags: [Tag!]!
+  dev: Boolean!
 }
 
 type Category {
@@ -15,22 +17,23 @@ type Category {
   name: String!
   tags: [Tag!]!
   things: [Thing!]!
+  dev: Boolean!
 }
 
 type Query {
-  categories: [Category!]!
+  categories(dev: Boolean = false): [Category!]!
   category(categoryId: String!): Category
   tagsByCategory(categoryId: String!): [Tag!]!
-  tags: [Tag!]!
-  things: [Thing!]!
+  tags(dev: Boolean = false): [Tag!]!
+  things(dev: Boolean = false): [Thing!]!
   thingsByCategory(categoryId: String!): [Thing!]!
   thingsByCategories(categoryIds: [String!]!): [Thing!]!
 }
 
 type Mutation {
-  createTag(name: String!): Tag!
-  createThing(name: String!, description: String!, tags: [String!]!, category: String!): Thing!
-  createCategory(name: String!): Category!
+  createTag(name: String!, dev: Boolean = false): Tag!
+  createThing(name: String!, description: String!, tags: [String!]!, category: String!, dev: Boolean = false): Thing!
+  createCategory(name: String!, dev: Boolean = false): Category!
 
   updateThing(id: String!, name: String, description: String, tags: [String!]): Thing!
   updateCategory(id: String!, name: String, things: [String!], tags: [String!]): Category!

@@ -1,5 +1,5 @@
-query GetCategories {
-  categories {
+query GetCategories($dev: Boolean = false) {
+  categories(dev: $dev) {
     ...CategoryFragment
   }
 }

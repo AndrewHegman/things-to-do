@@ -98,9 +98,9 @@ const App = () => {
   const [loadingData, setLoadingData] = React.useState(getCategories.loading);
 
   React.useEffect(() => {
-    client.watchQuery({ query: GetCategoriesDocument }).subscribe({
+    client.watchQuery({ query: GetCategoriesDocument, variables: { dev: import.meta.env.VITE_DEV === "true" } }).subscribe({
       next(value) {
-        setCategories(value.data.categories as any);
+        setCategories(value.data.categories);
       },
     });
   }, []);
@@ -143,8 +143,3 @@ root.render(
     </ApolloProvider>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-// reportWebVitals();

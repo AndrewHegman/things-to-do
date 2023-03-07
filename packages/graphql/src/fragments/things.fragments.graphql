@@ -2,6 +2,7 @@ fragment ThingFragment on Thing {
   id
   name
   description
+  dev
   tags {
     ...TagFragment
   }

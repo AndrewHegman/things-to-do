@@ -1,5 +1,5 @@
-mutation CreateCategory($name: String!) {
-  createCategory(name: $name) {
+mutation CreateCategory($name: String!, $dev: Boolean = false) {
+  createCategory(name: $name, dev: $dev) {
     ...CategoryFragment
   }
 }

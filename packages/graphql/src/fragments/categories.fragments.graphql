@@ -1,6 +1,7 @@
 fragment CategoryFragment on Category {
   id
   name
+  dev
   tags {
     ...TagFragment
   }

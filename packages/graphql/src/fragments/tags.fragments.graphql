@@ -1,4 +1,5 @@
 fragment TagFragment on Tag {
   id
   name
+  dev
 }

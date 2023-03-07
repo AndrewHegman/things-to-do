@@ -15,11 +15,12 @@ class Things {
     return Things.instance;
   }
 
-  async getAll(category?: string) {
-    if (category) {
-      return await ThingModel.find({ category }, ThingSelect).populate(PopulateTag).lean();
-    }
-    return await ThingModel.find({}, ThingSelect).populate(PopulateTag).lean();
+  async getAll(dev: boolean) {
+    return await ThingModel.find({ dev }, ThingSelect).populate(PopulateTag).lean();
+  }
+
+  async getByCategory(category: string) {
+    return await ThingModel.find({ category }, ThingSelect).populate(PopulateTag).lean();
   }
 
   async getById(_id: string) {
