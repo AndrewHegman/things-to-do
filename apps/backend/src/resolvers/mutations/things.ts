@@ -8,7 +8,9 @@ export const things: Resolvers<Context>["Mutation"] = {
   // TODO: Get rid of the 'as any'
   updateThing: async (parent, args, { Things }) => {
     const { id, ...updatedThing } = args;
-    return (await Things.update(id, updatedThing as any))!;
+    const foo = (await Things.update(id, updatedThing as any))!;
+    console.log(foo);
+    return foo;
   },
   deleteThing: async (parent, args, { Things }) => (await Things.delete(args.id)) || "",
 };

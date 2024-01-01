@@ -28,8 +28,13 @@ class Things {
   }
 
   async update(_id: string, updatedThing: UpdateThingDAI) {
-    const oldThing = await this.getById(_id);
-    return await ThingModel.findByIdAndUpdate(_id, { ...updatedThing, ...oldThing })
+    let oldThing = await this.getById(_id);
+    const _oldThing: UpdateThingDAI = {
+      ...oldThing,
+      tags: oldThing?.tags ? [...oldThing?.tags.map((tag) => tag.id)] : [],
+    };
+
+    return await ThingModel.findByIdAndUpdate(_id, { ..._oldThing, ...updatedThing }, { projection: ThingSelect, new: true })
       .populate(PopulateTag)
       .lean();
   }
